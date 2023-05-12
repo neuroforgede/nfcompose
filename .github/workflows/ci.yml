@@ -26,7 +26,7 @@ jobs:
           cd consumer_gateway
           ARGS='--no-cache' exec bash build_production.sh
 
-  skipper-tests:
+  skipper:
     runs-on: ubuntu-latest
     steps:
 

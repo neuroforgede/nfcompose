@@ -33,7 +33,7 @@ jobs:
           cd consumer_gateway
           ARGS='--no-cache' exec bash push_production.sh
 
-  skipper-tests:
+  skipper:
     runs-on: ubuntu-latest
     steps:
 
