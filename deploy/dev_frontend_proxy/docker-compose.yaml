@@ -16,7 +16,7 @@ services:
       TCP_PROXY_LISTEN_PORT: "8080"
       TCP_UPSTREAM: "skipper.proxy.${INTERNAL_DOMAIN_SUFFIX:-test.local}:80"
     ports:
-     - "8080:8080"
+     - "127.0.0.1:8080:8080"
 
   s3_forward:
     image: neuroforgede/nginx-tcp-forward
@@ -27,7 +27,7 @@ services:
       TCP_PROXY_LISTEN_PORT: "8000"
       TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
     ports:
-     - "8000:8000"
+     - "127.0.0.1:8000:8000"
 
   minio_console_forward:
     image: neuroforgede/nginx-tcp-forward
@@ -38,7 +38,7 @@ services:
       TCP_PROXY_LISTEN_PORT: "8001"
       TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8001"
     ports:
-     - "8001:8001"
+     - "127.0.0.1:8001:8001"
 
 networks:
   nfcompose_test:
