@@ -1,0 +1,20 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first.rules"
+  # - "second.rules"
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'statsd_scraper'
+    static_configs:
+      - targets: ['statsd:9102']
+  - job_name: "skipper_scraper"
+    static_configs:
+      - targets:
+        - 'neuroforge_skipper_base_dev:8001'
+        - 'neuroforge_skipper_base_dev:8002'

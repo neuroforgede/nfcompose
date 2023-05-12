@@ -1,0 +1,54 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+
+
+ARG BASE_IMAGE=ghcr.io/neuroforgede/nfcompose-skipper-base
+ARG BASE_IMAGE_TAG=py-3.11
+
+FROM $BASE_IMAGE:$BASE_IMAGE_TAG
+
+# so celery immediately quits and does not wait around to get killed by docker
+# this way it puts jobs back that were set to acks_late
+ENV REMAP_SIGTERM=SIGQUIT
+
+USER root
+
+RUN mkdir -p /neuroforge/skipper
+
+RUN chown skipper:nogroup /neuroforge/skipper
+
+COPY Pipfile /neuroforge/skipper/Pipfile
+COPY Pipfile.lock /neuroforge/skipper/Pipfile.lock
+
+RUN cd /neuroforge/skipper && pipenv sync --verbose --system
+
+COPY . /neuroforge/skipper
+
+RUN chown -R skipper:nogroup /neuroforge/skipper
+
+# remove the skipper use from all superuser roles once we are done
+RUN usermod -g users skipper
+RUN deluser skipper sudo
+
+USER skipper
+
+RUN cd /neuroforge/skipper && PRODUCTION_BUILD=yes bash typecheck.sh
+
+RUN pip-licenses --with-license-file --with-authors --with-urls --format=plain-vertical --no-license-path > /neuroforge/skipper/OPENSOURCE_LICENSES.md
+
+RUN pip-licenses --with-license-file --with-authors --with-urls --format=html --no-license-path > /neuroforge/skipper/skipper/static-private/OPENSOURCE_LICENSES.html
+
+ARG SKIPPER_VERSION="NO_VERSION_SPECIFIED"
+ENV SKIPPER_VERSION="${SKIPPER_VERSION}"
+RUN echo "${SKIPPER_VERSION}" > /neuroforge/skipper/skipper/static-private/version.txt
+
+RUN chmod +x /neuroforge/skipper/runProduction.sh
+RUN chmod +x /neuroforge/skipper/healthcheck.sh
+
+CMD ["/neuroforge/skipper/runProduction.sh"]
+
+HEALTHCHECK --interval=30s --timeout=30s \
+    CMD /neuroforge/skipper/healthcheck.sh

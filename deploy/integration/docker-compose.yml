@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+
+  integration_tests_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      args:
+        - CONTAINER_USER_ID=${CONTAINER_USER_ID}
+        - CONTAINER_GROUP_ID=${CONTAINER_GROUP_ID}
+    volumes:
+      - "./:/integration"
+    networks:
+      nfcompose:
+    restart: unless-stopped
+
+networks:
+  nfcompose:
+    external: true
+    name: ${DEV_NETWORK_NAME}

@@ -1,0 +1,34 @@
+{% load static %}
+<html>
+<head>
+{% block head %}
+
+  {% block meta %}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="robots" content="NONE,NOARCHIVE" />
+  {% endblock %}
+
+  <title>{% block title %}{% if name %}{{ name }} – {% endif %}NF Compose{% endblock %}</title>
+
+  {% block style %}
+    {% block bootstrap_theme %}
+    <link rel="stylesheet" href="{% static 'nf.css' %}" type="text/css">
+    {% endblock %}
+
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+    {% if code_style %}<style>{{ code_style }}</style>{% endif %}
+  {% endblock %}
+
+{% endblock %}
+</head>
+<body>
+    <h1>License information about NF Compose</h1>
+    Copyright © 2019-2022 <a href="https://neuroforge.de"><i class="fa fa-link">NeuroForge GmbH & Co. KG</i></a> <br/>
+    <h1>Other Licenses</h1>
+    Some parts of this software are licensed under different licenses:
+    <a href="{% url 'skipper-licensing-oss-view' %}">Licenses for used Open Source Software</a> <br/>
+    <a href="{% static 'fonts/Teko/OFL.txt' %}">License for the Teko font</a> <br/>
+    Version: {{ version }}
+</body>
+</html>

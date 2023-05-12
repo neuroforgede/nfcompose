@@ -1,0 +1,49 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+# All rights reserved
+
+version: '3.5'
+services:
+  nfcomposeskipperproxy_forward:
+    image: neuroforgede/nginx-tcp-forward
+    restart: unless-stopped
+    networks:
+      - nfcompose_test
+    environment:
+      TCP_PROXY_LISTEN_PORT: "8080"
+      TCP_UPSTREAM: "skipper.proxy.${INTERNAL_DOMAIN_SUFFIX:-test.local}:80"
+    ports:
+     - "8080:8080"
+
+  s3_forward:
+    image: neuroforgede/nginx-tcp-forward
+    restart: unless-stopped
+    networks:
+      - nfcompose_test
+    environment:
+      TCP_PROXY_LISTEN_PORT: "8000"
+      TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+    ports:
+     - "8000:8000"
+
+  minio_console_forward:
+    image: neuroforgede/nginx-tcp-forward
+    restart: unless-stopped
+    networks:
+      - nfcompose_test
+    environment:
+      TCP_PROXY_LISTEN_PORT: "8001"
+      TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8001"
+    ports:
+     - "8001:8001"
+
+networks:
+  nfcompose_test:
+    name: "${COMPOSE_PROJECT_NAME}_nfcompose_test"
+    external: true
+  nfcompose:
+    name: "${COMPOSE_PROJECT_NAME}_nfcompose"
+    external: true

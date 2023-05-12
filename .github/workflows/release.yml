@@ -1,0 +1,109 @@
+name: Production Build
+
+on:
+  push:
+    # Publish semver tags as releases.
+    tags: [ 'release/*' ]
+
+jobs:
+  consumer-gateway:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build consumer_gateway
+        run: |
+          ls -la
+          export BUILD_NF_COMPOSE_DOCKER_TAG=$(bash version.sh)
+          cd consumer_gateway
+          ARGS='--no-cache' exec bash build_production.sh
+
+      - name: Push consumer_gateway
+        run: |
+          ls -la
+          export BUILD_NF_COMPOSE_DOCKER_TAG=$(bash version.sh)
+          cd consumer_gateway
+          ARGS='--no-cache' exec bash push_production.sh
+
+  skipper-tests:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' 
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print environment variables
+        run: |
+          printenv
+
+      # build this here (without pushing, so the integration tests work)      
+      - name: Build skipper_proxy
+        run: |
+          ls -la
+          export BUILD_NF_COMPOSE_DOCKER_TAG=$(bash version.sh)
+          cd skipper_proxy
+          ARGS='--no-cache' exec bash build_production.sh
+
+      - name: Setup Devenv
+        run: |
+          bash setup_devenv.sh
+
+      - name: "Run Setup for CI"
+        run: |
+          cd skipper
+          exec python3 build.py setup
+
+      - name: "Run Skipper Tests"
+        run: |
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.0.0"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0"
+
+          cd skipper
+          exec python3 build.py \
+            build \
+            --imageName ghcr.io/neuroforgede/nfcompose-skipper \
+            --buildBase \
+            --skipTests
+
+      - name: "Run client Tests"
+        run: |
+          export NFCOMPOSE_SETUP_SKIP_PULL="yes"
+          export COMPOSE_PROJECT_NAME="ci_test_unit_tests"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.0.0"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0"
+
+          cd client
+          bash ci_test.sh || exit 1
+
+      - name: Push skipper_proxy
+        run: |
+          ls -la
+          export BUILD_NF_COMPOSE_DOCKER_TAG=$(bash version.sh)
+          cd skipper_proxy
+          ARGS='--no-cache' exec bash push_production.sh
+
+      - name: "Build client source release"
+        run: |
+          cd client
+          python3 -m venv venv
+          source venv/bin/activate
+          (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1

@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+
+
+FROM python:3.11
+
+RUN apt-get update && apt-get install -y sudo vim python3-virtualenv python3-setuptools
+RUN sudo apt-get upgrade -y
+
+RUN pip install --upgrade pip==23.0.1
+RUN pip install pipenv==2022.8.17
+ENV PIPENV_IGNORE_VIRTUALENVS=1
+
+RUN useradd -rm -d /home/skipper -s /bin/bash -g root -G sudo -u 9999 skipper
+RUN useradd -rm -d /home/neuroforge -s /bin/bash -g root -G sudo -u 1000 neuroforge
+
+RUN passwd -d skipper
+RUN passwd -d neuroforge
+
+RUN echo '%skipper ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%neuroforge ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER skipper
+

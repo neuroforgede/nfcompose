@@ -1,0 +1,204 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+# All rights reserved
+version: '3.5'
+
+x-minio-credentials: &minio-credentials
+  MINIO_ROOT_USER: skipper-test
+  MINIO_ROOT_PASSWORD: WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C
+
+services:
+  awscli:
+    entrypoint: "tail -f /dev/null"
+    image: amazon/aws-cli
+    restart: unless-stopped
+    networks:
+      nfcompose: {}
+
+  redis:
+    image: redis
+    networks:
+      nfcompose:
+        aliases:
+          - redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+      
+  postgres:
+    image: postgres:12
+    shm_size: '2gb'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cephalopod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cephalopod}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      postgres:
+        aliases:
+          - "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+    restart: unless-stopped
+
+  nfcomposeskipper:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    networks:
+      postgres:
+      nfcompose:
+        aliases:
+          - skipper.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+    restart: unless-stopped
+    environment:
+        SKIPPER_DEBUG_LOCAL: "true"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
+        SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
+    depends_on:
+    - s3
+  
+  # inside facing container used for separating internal requests so that outside requests are not harmed by etl jobs
+  nfcomposeskipper_internal:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    networks:
+      postgres:
+      nfcompose:
+        aliases:
+          - skipper.internal.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+    restart: unless-stopped
+    environment:
+        SKIPPER_DEBUG_LOCAL: "true"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
+        SKIPPER_WORKER_TIMEOUT: "120"
+        SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.internal.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
+
+  nfcompose_skipper_celery:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    networks:
+      - postgres
+      - nfcompose
+      - nfcompose_test
+    environment:
+        SKIPPER_DEBUG_LOCAL: "true"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_CELERY_WORKER_CONCURRENCY: "2"
+        SKIPPER_CONTAINER_TYPE: "CELERY"
+        SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
+    restart: unless-stopped
+
+  nfcompose_skipper_celery_beat:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    networks:
+      - postgres
+      - nfcompose
+    environment:
+        SKIPPER_DEBUG_LOCAL: "true"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
+        SKIPPER_CONTAINER_TYPE: "CELERY_BEAT"
+        SINGLE_BEAT_LOCK_TIME: "300"
+        SINGLE_BEAT_HEARTBEAT_INTERVAL: "60"
+        SINGLE_BEAT_LOG_LEVEL: "info"
+        SINGLE_BEAT_HOST_IDENTIFIER: "celerybeat"
+        SINGLE_BEAT_IDENTIFIER: "celery-beat"
+        SINGLE_BEAT_REDIS_SERVER: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+    restart: unless-stopped
+
+  nfcompose_skipper_task_dashboard:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    networks:
+      postgres: {}
+      nfcompose:
+        aliases:
+          - skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+    environment:
+        SKIPPER_DEBUG_LOCAL: "true"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_CONTAINER_TYPE: "TASK_DASHBOARD"
+        SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
+        SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+        SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
+    restart: unless-stopped
+
+  nfcomposeskipperproxy:
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0}"
+    restart: unless-stopped
+    depends_on:
+      - nfcomposeskipper
+    environment:
+      SKIPPER_BACKEND_SERVICE: "skipper.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+      SKIPPER_BACKEND_SERVICE_PORT: "8000"
+    networks:
+      nfcompose:
+        aliases:
+          - "skipper.proxy.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
+      nfcompose_test:
+        aliases:
+          - skipper.proxy.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+
+    #volumes:
+    #  - /etc/ssl/certs/ca-certificates.crt:/neuroforge/skipper/trusted_ca.crt
+
+  s3:
+    image: minio/minio:RELEASE.2023-01-25T00-19-54Z
+    command: server /data --console-address ":8001" --address ":8000"
+    networks:
+      nfcompose:
+        aliases:
+          - nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+      nfcompose_test:
+        aliases:
+          - nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}
+    volumes:
+      - s3_volume:/data
+    environment:
+      *minio-credentials
+
+  minio_client:
+    image: minio/mc:RELEASE.2023-01-11T03-14-16Z
+    command: /minio_client_scripts/setup_skipper-test_user.sh
+    entrypoint: /bin/sh
+    networks:
+      nfcompose:
+    volumes:
+      - ./minio_client_scripts:/minio_client_scripts
+    depends_on:
+      - s3
+    environment:
+      *minio-credentials
+
+networks:
+  nfcompose:
+    driver: bridge
+  postgres:
+    driver: bridge
+  nfcompose_test:
+    driver: bridge
+
+volumes:
+  s3_volume:
+  postgres:
+  redis:

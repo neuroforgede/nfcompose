@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+
+
+# we use a custom dockerfile so we can get python 3.8 improvements by disabling
+# semantic interposition, see https://github.com/docker-library/python/issues/501
+FROM python:3.8
+
+ARG CONTAINER_USER_ID
+ARG CONTAINER_GROUP_ID
+
+RUN apt-get update && apt-get install -y \
+	sudo \
+	vim \
+	virtualenv \
+	python3-virtualenv \
+	python3-setuptools
+
+RUN pip install --upgrade pip==21.2.4
+
+RUN apt-get update && apt-get install -y \
+    openssh-server
+
+
+RUN groupadd -g ${CONTAINER_GROUP_ID} devenv || echo "group with id ${CONTAINER_GROUP_ID} already exists, ignoring..."
+
+RUN useradd -rm -d /home/skipper -s /bin/bash -g root -G sudo -u 9999 skipper
+RUN useradd -rm -d /home/neuroforge -s /bin/bash -g root -G sudo -u "${CONTAINER_USER_ID}" -g "${CONTAINER_GROUP_ID}" neuroforge
+
+RUN passwd -d skipper
+RUN passwd -d neuroforge
+
+RUN echo '%skipper ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%neuroforge ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER neuroforge
+
+WORKDIR /integration
+
+CMD tail -f /dev/null
+

@@ -1,0 +1,15 @@
+{% extends "rest_framework/admin.html" %}
+{% load i18n %}
+
+{% block title %}{% if name %}{{ name }} – {% endif %}NF Compose{% endblock %}
+
+{% block bootstrap_theme %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'nf.css' %}" type="text/css">
+{% endblock %}
+
+{% block branding %}
+    <a class="navbar-brand" rel="nofollow" href="#">
+        {% trans 'NF Compose REST API' %}
+    </a>
+{% endblock %}

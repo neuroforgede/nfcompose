@@ -1,0 +1,33 @@
+<html>
+<h1>
+    Our Application goes here in production
+</h1>
+<!--iframe src="https://localhost:6043/api" height="80%" width="80%"></iframe-->
+<script>
+    fetch('https://localhost:6043/api/common/auth/csrftoken/', {
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then(response => {
+        return response.json();
+    }).then(csrfTokenJson => {
+        console.log(csrfTokenJson);
+        return fetch('https://localhost:6043/api/dataseries/dataseries/', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRFToken': csrfTokenJson['csrftoken']
+            }
+        })
+        .then(response => {
+            return response.json();
+        }).then(json => {
+            console.log(json);
+        });
+    }).catch(e => {
+        console.error(e);
+    });
+</script>
+</html>

@@ -1,0 +1,65 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. 
+# If a copy of the MPL was not distributed with this file, 
+# You can obtain one at https://mozilla.org/MPL/2.0/.
+# This file is part of NF Compose
+# [2019] - [2023] © NeuroForge GmbH & Co. KG
+
+FROM python:3.11
+
+# so celery immediately quits and does not wait around to get killed by docker
+# this way it puts jobs back that were set to acks_late=True
+ENV REMAP_SIGTERM=SIGQUIT
+
+ARG CONTAINER_USER_ID
+ARG CONTAINER_GROUP_ID
+
+RUN apt-get update && apt-get install -y \
+	sudo \
+	vim \
+	build-essential \
+	libssl-dev \
+	libffi-dev \
+	cargo \
+	pkg-config
+
+RUN pip install setuptools==67.3.2
+RUN pip install --upgrade pip==23.0.1
+RUN pip install pipenv==2023.2.18
+ENV PIPENV_IGNORE_VIRTUALENVS=1
+ENV PIPENV_VENV_IN_PROJECT=1
+
+RUN apt-get update && apt-get install -y \
+    openssh-server
+
+
+RUN groupadd -g ${CONTAINER_GROUP_ID} devenv || echo "group with id ${CONTAINER_GROUP_ID} already exists, ignoring..."
+
+RUN useradd -rm -d /home/skipper -s /bin/bash -g root -G sudo -u 9999 skipper
+RUN useradd -rm -d /home/neuroforge -s /bin/bash -g root -G sudo -u "${CONTAINER_USER_ID}" -g "${CONTAINER_GROUP_ID}" neuroforge
+
+RUN passwd -d skipper
+RUN passwd -d neuroforge
+
+RUN echo '%skipper ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%neuroforge ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# expose everything via ssh as well:
+
+RUN mkdir /var/run/sshd
+RUN chmod 0755 /var/run/sshd
+RUN mkdir /home/neuroforge/.ssh
+RUN chown -R neuroforge /home/neuroforge/.ssh
+RUN chown -R neuroforge /etc/ssh/
+RUN chown -R neuroforge /tmp
+
+COPY ./devenv/dev_ssh/dev_rsa.pub /home/neuroforge/.ssh/authorized_keys
+RUN chmod 600 /home/neuroforge/.ssh/authorized_keys
+
+RUN chown -R neuroforge /home/neuroforge/.ssh
+
+RUN apt-get install -y rsync
+
+USER neuroforge
+
+WORKDIR /neuroforge/skipper/
+

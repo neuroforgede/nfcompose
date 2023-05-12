@@ -1,0 +1,9 @@
+grafana-storage
+postgres
+superset-data
+superset-config
+metabase-data
+pgadmin
+minio_data
+dev-files
+integrations/*

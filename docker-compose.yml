@@ -1,0 +1,229 @@
+version: '3.5'
+
+services:
+
+  redis:
+    image: redis
+    networks:
+      cephalopod:
+        aliases:
+          - redis_container_cephalopod
+          - "redis.local"
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+      
+  postgres:
+    #command: "-c log_statement=all -c log_destination=stderr -c fsync=off -c synchronous_commit=off -c full_page_writes=off"
+    image: postgres:12
+    shm_size: '2gb'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cephalopod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cephalopod}
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-6435}:5432"
+    networks:
+      postgres:
+        aliases:
+          - postgres_container_cephalopod
+    restart: unless-stopped
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-cephalopod@neuroforge.de}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-cephalopod}
+    volumes:
+       - "pgadmin:/var/lib/pgadmin"
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-6053}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  neuroforge_skipper_base_dev:
+    entrypoint: >
+      /bin/sh -c "sudo service ssh restart; tail -f /dev/null;"
+    build:
+      context: .
+      dockerfile: skipper/Dockerfile-base-dev
+      args:
+        - CONTAINER_USER_ID=${CONTAINER_USER_ID}
+        - CONTAINER_GROUP_ID=${CONTAINER_GROUP_ID}
+    volumes:
+      - ./skipper:/neuroforge/skipper
+    ports:
+      - "127.0.0.1:${PYTHON_DEV_OUTSIDE_PORT:-10000}:8000"
+      - "127.0.0.1:${PYTHON_DEV_FLOWER_OUTSIDE_PORT:-5555}:5555"
+      - "127.0.0.1:${PYTHON_DEV_SSH_OUTSIDE_PORT:-2222}:22"
+    environment:
+      SKIPPER_DEBUG_LOCAL: 'true'
+    networks:
+      postgres:
+      cephalopod:
+        aliases:
+          - skipper.local
+          - neuroforge_skipper_base_dev
+    restart: unless-stopped
+    #userid: 0
+  
+  # this simulates an outside docker container, when deploying, this is some kind of ingress into the system
+  # this could be any kind of proxying software, since the heavy lifting is handled by skipper_proxy
+  cephalopodnginxdev:
+    image: "nginx:1.23.3"
+    ports:
+      - "127.0.0.1:${NGINX_DEV_OUTSIDE_PORT:-6043}:443"
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - cephalopodnginxdev.local
+    volumes:
+      - ./devenv/nginx_config/auth:/auth
+      - ./devenv/nginx_config/conf.d:/etc/nginx/conf.d
+
+  # we do a lot of routing between the different apps. This is abstracted by this container
+  skipper_proxy:
+    build:
+      context: skipper_proxy
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${SKIPPER_PROXY_OUTSIDE_PORT:-6033}:80"
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - skipper.proxy.local
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/neuroforge/skipper/trusted_ca.crt
+
+  statsd:
+    command: "--statsd.mapping-config=/statsd/statsd.conf"
+    image: "prom/statsd-exporter"
+    ports:
+      - "127.0.0.1:${STATSD_OUTSIDE_PORT:-9102}:9102"
+      - "127.0.0.1:${STATSD_UDP_OUTSIDE_PORT:-9125}:9125/udp"
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - statsd
+    volumes:
+      - ./devenv/statsd_config/statsd.conf:/statsd/statsd.conf
+      
+  prometheus:
+    image: "prom/prometheus"
+    ports:
+      - "127.0.0.1:${NGINX_PROMETHEUS_OUTSIDE_PORT:-19090}:9090"
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - prometheus
+    volumes:
+      - ./devenv/prometheus_config:/etc/prometheus
+      - prometheus:/prometheus
+      
+  nodered:
+      ports:
+        - '127.0.0.1:${NODERED_OUTSIDE_PORT:-1881}:1880'
+      image: nodered/node-red
+      environment:
+        NODE_RED_ENABLE_PROJECTS: "true"
+        NODE_TLS_REJECT_UNAUTHORIZED: "0"
+      networks:
+        cephalopod:
+          aliases:
+            - nodered.local
+            - nodered
+      restart: unless-stopped
+      volumes:
+        - nodered:/data
+
+  seaweedmaster:
+    image: chrislusf/seaweedfs
+    command: "master -ip=seaweedmaster -volumeSizeLimitMB=16"
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - seaweedmaster
+    environment:
+      WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
+      WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+  
+  seaweedvolume:
+    image: chrislusf/seaweedfs
+    command: "volume -mserver=seaweedmaster:9333 -port=8080 -ip=seaweedvolume -preStopSeconds=1"
+    restart: unless-stopped
+    volumes:
+      - "seaweedfs_volume:/data"
+    networks:
+      cephalopod: {}
+    depends_on:
+      - seaweedmaster
+  
+  s3:
+    image: chrislusf/seaweedfs
+    command: 'filer -master="seaweedmaster:9333" -s3 -s3.config=/etc/seaweedfs/s3.json -s3.port=8000'
+    restart: unless-stopped
+    networks:
+      cephalopod:
+        aliases:
+          - "nfcomposes3"
+    ports:
+      - "127.0.0.1:${SEAWEEDFS_DEV_OUTSIDE_PORT:-8000}:8000"
+    volumes:
+      - "./devenv/s3_config/s3.json:/etc/seaweedfs/s3.json"
+      - "seaweedfs_buckets:/data"
+    depends_on:
+      - seaweedmaster
+      - seaweedvolume 
+
+  awscli:
+    entrypoint: "tail -f /dev/null"
+    image: amazon/aws-cli
+    restart: unless-stopped
+    networks:
+      cephalopod: {}
+    depends_on:
+      - s3
+
+  jaeger:
+    environment:
+        - 'COLLECTOR_ZIPKIN_HOST_PORT=:9411'
+        - 'QUERY_BASE_PATH=/api/debug/telemetry/ui'
+    networks:
+      cephalopod:
+        aliases:
+          - "jaeger.local"
+    restart: unless-stopped
+    ports:
+        - "127.0.0.1:${JAEGER_UI_OUTSIDE_PORT:-16686}:16686"
+        # - '127.0.0.1:5775:5775/udp'
+        # - '127.0.0.1:6831:6831/udp'
+        # - '127.0.0.1:6832:6832/udp'
+        # - '127.0.0.1:5778:5778'
+        # - '127.0.0.1:14250:14250'
+        # - '127.0.0.1:14268:14268'
+        # - '127.0.0.1:14269:14269'
+        # - '127.0.0.1:9411:9411'
+    image: 'jaegertracing/all-in-one:1.29'
+
+volumes:
+  redis:
+  postgres:
+  pgadmin:
+  prometheus:
+  nodered:
+  seaweedfs_volume:
+  seaweedfs_buckets:
+
+networks:
+  cephalopod:
+    driver: bridge
+  postgres:
+    driver: bridge

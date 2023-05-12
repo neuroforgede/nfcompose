@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Restart Devenv Containers",
+            "type": "shell",
+            "command": "exec bash restart_devenv.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/skipper"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run API",
+            "type": "shell",
+            "command": "exec bash vscodeRun.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/skipper"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Celery",
+            "type": "shell",
+            "command": "exec bash vscodeCelery.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/skipper"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Everything",
+            "dependsOn": [
+                "Run API",
+                "Run Celery",
+                "Run SaaS UI"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

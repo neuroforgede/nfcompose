@@ -1,0 +1,9 @@
+{% extends "rest_framework/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if name %}{{ name }} – {% endif %}NF Compose{% endblock %}
+
+{% block bootstrap_theme %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'nf.css' %}" type="text/css">
+{% endblock %}

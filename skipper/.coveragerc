@@ -1,0 +1,20 @@
+[coverage:run]
+omit =
+   venv/*
+   .venv/*
+   skipper/core/tests/*
+   skipper/dataseries/tests/*
+   skipper/dataseries/storage/dynamic_sql/migrations/*
+   manage.py
+
+[coverage:report]
+fail_under = 85
+show_missing = True
+skip_covered = True
+omit =
+   venv/*
+   .venv/*
+   skipper/core/tests/*
+   skipper/dataseries/tests/*
+   skipper/dataseries/storage/dynamic_sql/migrations/*
+   manage.py

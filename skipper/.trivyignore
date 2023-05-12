@@ -1,0 +1,5 @@
+# just for powerpc
+# Linux kernel for powerpc 32-bit buffer overflow in
+# ptrace PEEKUSER/POKEUSER
+# https://avd.aquasec.com/nvd/cve-2022-32981
+CVE-2022-32981

@@ -1,0 +1,3 @@
+pylint-django==2.0.13
+cve-bin-tool==1.0
+pylint

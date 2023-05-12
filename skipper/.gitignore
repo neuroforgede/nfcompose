@@ -1,0 +1,14 @@
+/static/
+/media/
+/media/*
+/media/**
+.idea/
+.idea/
+/venv/
+/venv/*
+/venv/**
+/pycharm-venv/
+/pycharm-venv/*
+/pycharm-venv/**
+*.pid
+_tests_report_*.txt
