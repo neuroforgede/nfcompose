@@ -107,3 +107,9 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./client/dist/compose_client-2.0.0.tar.gz
