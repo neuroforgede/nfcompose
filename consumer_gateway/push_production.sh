@@ -14,5 +14,5 @@ check_result () {
     fi
 }
 
-docker push ghcr.io/neuroforgede/nfcompose-consumer-gatewa:${BUILD_NF_COMPOSE_DOCKER_TAG}
-check_result "failed to push ghcr.io/neuroforgede/nfcompose-consumer-gatewa:${BUILD_NF_COMPOSE_DOCKER_TAG}"
+docker push ghcr.io/neuroforgede/nfcompose-consumer-gateway:${BUILD_NF_COMPOSE_DOCKER_TAG}
+check_result "failed to push ghcr.io/neuroforgede/nfcompose-consumer-gateway:${BUILD_NF_COMPOSE_DOCKER_TAG}"
