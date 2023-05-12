@@ -9,6 +9,23 @@ A Customization Layer based around pluggable engines allows for deep customizati
 NF Compose is built with multi-tenancy in mind - A single NF Compose instance can serve many different tenants/projects
 at the same time.
 
+# Try it out
+
+To start off, clone this repository:
+
+```bash
+git clone https://github.com/neuroforgede/nfcompose
+```
+
+Switch to the `deploy` folder and setup the playground:
+
+```bash
+cd deploy
+bash setup_playground.sh
+```
+
+You can now access the playground in your browser:
+
 # Use cases
 
 ## As a data hub (export)
