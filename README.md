@@ -24,7 +24,7 @@ cd deploy
 bash setup_playground.sh
 ```
 
-You can now access the playground in your browser:
+You can now access the playground in your browser using the credentials `admin`/`admin`:
 
 # Use cases
 
