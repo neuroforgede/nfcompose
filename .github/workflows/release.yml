@@ -81,8 +81,7 @@ jobs:
           exec python3 build.py \
             build \
             --imageName ghcr.io/neuroforgede/nfcompose-skipper \
-            --buildBase \
-            --skipTests
+            --buildBase
 
       - name: "Run client Tests"
         run: |

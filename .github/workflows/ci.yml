@@ -67,8 +67,7 @@ jobs:
             build \
             --imageName ghcr.io/neuroforgede/nfcompose-skipper \
             --buildBase \
-            --skipPush \
-            --skipTests
+            --skipPush
 
       - name: "Run client Tests"
         run: |
