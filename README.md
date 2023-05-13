@@ -1,7 +1,7 @@
 # NF Compose
 
 NF Compose is a (data) integration platform that allows developers to define REST APIs in seconds instead of
-minutes. Generated REST APIs are backed by postgres and support automatic consumer notifications on data changes out
+hours. Generated REST APIs are backed by postgres and support automatic consumer notifications on data changes out
 of the box.
 
 A Customization Layer based around pluggable engines allows for deep customization behind the same integration framework.
