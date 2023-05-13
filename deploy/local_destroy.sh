@@ -14,7 +14,9 @@ check_result () {
     fi
 }
 
-export COMPOSE_PROJECT_NAME="playground"
+if [ -z "$COMPOSE_PROJECT_NAME" ]; then
+    export COMPOSE_PROJECT_NAME="playground"
+fi
 
 bash setup.sh
 check_result "failed to setup nf compose instance"
