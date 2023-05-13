@@ -11,6 +11,8 @@ at the same time.
 
 # Try it out
 
+Note: We are gathering public examples in a [separate repository](https://github.com/neuroforgede/nfcompose-examples).
+
 To start off, clone this repository:
 
 ```bash
@@ -27,8 +29,6 @@ bash setup_playground.sh
 You can now access the playground in your browser using the credentials `admin`/`admin`:
 
 ![grafik](https://github.com/neuroforgede/nfcompose/assets/719760/d4af576b-bf94-446c-8432-bb35f20aac02)
-
-We are gathering public examples in a [separate repository](https://github.com/neuroforgede/nfcompose-examples).
 
 # Use cases
 
