@@ -72,7 +72,7 @@ jobs:
           cd skipper
           exec python3 build.py setup
 
-      - name: "Run Skipper Tests"
+      - name: "Build Skipper"
         run: |
           export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.0.0"
           export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0"

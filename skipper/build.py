@@ -12,6 +12,11 @@ import datetime
 import os
 import getpass
 
+default_test_container = subprocess.check_output([
+    "bash",
+    "-c",
+    f"COMPOSE_PROJECT_NAME={getpass.getuser()}_skipper docker-compose ps -q neuroforge_skipper_base_dev"
+]).decode().strip()
 
 def log(message: str) -> None:
     print(message)
@@ -52,7 +57,7 @@ def run_unit_tests() -> None:
         'exec',
         '-u',
         f'{os.getuid()}:{os.getgid()}',
-        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', getpass.getuser() + '_skipper_neuroforge_skipper_base_dev_1'),
+        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', default_test_container),
         'bash',
         '-c',
         f'cd {os.getenv("SKIPPER_BUILD_TEST_CONTAINER_BASE_PATH", "/neuroforge/skipper")} && pwd && ls -la'
@@ -62,7 +67,7 @@ def run_unit_tests() -> None:
         'exec',
         '-u',
         f'{os.getuid()}:{os.getgid()}',
-        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', getpass.getuser() + '_skipper_neuroforge_skipper_base_dev_1'),
+        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', default_test_container),
         'bash',
         '-c',
         f'cd {os.getenv("SKIPPER_BUILD_TEST_CONTAINER_BASE_PATH", "/neuroforge/skipper")} && exec bash create_venv.sh'
@@ -72,7 +77,7 @@ def run_unit_tests() -> None:
         'exec',
         '-u',
         f'{os.getuid()}:{os.getgid()}',
-        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', getpass.getuser() + '_skipper_neuroforge_skipper_base_dev_1'),
+        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', default_test_container),
         'bash',
         '-c',
         (
@@ -86,7 +91,7 @@ def run_unit_tests() -> None:
         'exec',
         '-u',
         f'{os.getuid()}:{os.getgid()}',
-        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', getpass.getuser() + '_skipper_neuroforge_skipper_base_dev_1'),
+        os.getenv('SKIPPER_BUILD_TEST_CONTAINER', default_test_container),
         'bash',
         '-c',
         f'cd {os.getenv("SKIPPER_BUILD_TEST_CONTAINER_BASE_PATH", "/neuroforge/skipper")} && exec bash typecheck.sh'
