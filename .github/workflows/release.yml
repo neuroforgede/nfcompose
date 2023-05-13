@@ -117,4 +117,4 @@ jobs:
         with:
           files: |
             ./client/dist/compose_client-2.0.0.tar.gz
-            deploy.zip
+            deploy-2.0.0.zip
