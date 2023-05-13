@@ -5,7 +5,7 @@ Note that it does however take some shortcuts regarding configuration.
 
 # playground
 
-To setup a local instance of NF Compose to try out, run `bash setup_playground.sh`.
+To setup a local instance of NF Compose to try out, run `bash local_setup.sh`.
 
 If you want to access the frontend locally, you have to add the line
 ```
