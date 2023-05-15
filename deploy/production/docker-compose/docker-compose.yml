@@ -295,15 +295,12 @@ services:
       *minio-credentials
 
 secrets:
-  create_buckets_s3_credentials:
-    file: ./secrets/seaweedfs/s3_credentials.sh
-
   skipper_setup_sh:
     file: ./secrets/skipper/setup.sh
 
 configs:
   create_buckets_sh:
-    file: ./configs/seaweedfs/create_buckets.sh
+    file: ./configs/minio/create_buckets.sh
 
 networks:
   nfcompose_consumers:
