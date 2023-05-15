@@ -15,6 +15,6 @@ check_result () {
 }
 
 CUR_DIR=$(pwd)
-cd ../deploy/compose
+cd ../deploy/local/compose
 bash destroy.sh
 check_result "failed to run destroy.sh"
