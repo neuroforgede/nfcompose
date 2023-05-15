@@ -1,0 +1,323 @@
+# NeuroForge GmbH & Co. KG confidential
+#
+# [2019] - [2022] © NeuroForge GmbH & Co. KG
+# All rights reserved
+version: '3.8'
+
+x-minio-credentials: &minio-credentials
+  MINIO_ROOT_USER: secret
+  MINIO_ROOT_PASSWORD: verysecret
+
+x-skipper-env: &x-skipper-env
+  SKIPPER_DEBUG_LOCAL: "false"
+  SKIPPER_DJANGO_DEBUG: "false"
+  SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
+
+  SKIPPER_FLOW_DEFAULT_NODE_RED_ENABLED: "true"
+
+  SKIPPER_INSTALLATION_NAME: "skipper_compose"
+  SKIPPER_DJANGO_SECRET_KEY: "VQt5UXF3GNhf7FJdFTsumPzqamZjC824Wy9hUCBySS6xkUVTJYhLK6NKZTxRmTA5"
+
+  SKIPPER_DB: "cephalopod"
+  SKIPPER_DB_USER: "cephalopod"
+  SKIPPER_DB_PASSWD: "cephalopod"
+  SKIPPER_DB_HOSTS: "postgres.local"
+  SKIPPER_DB_PORTS: "5432"
+  SKIPPER_DB_SCHEMA: "public"
+  SKIPPER_DB_SSL_ENABLE: "false"
+  # SKIPPER_DB_SSL_MODE: "verify-ca"
+
+  SKIPPER_S3_ENDPOINT_URL: "http://minio.localhost:9000"
+  SKIPPER_S3_ACCESS_KEY_ID: "secret"
+  SKIPPER_S3_SECRET_ACCESS_KEY: "verysecret"
+  SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.local:8000"
+  SKIPPER_S3_MEDIA_BUCKET_NAME: "skipper-media"
+  SKIPPER_S3_STATIC_BUCKET_NAME: "skipper-static"
+
+  SKIPPER_DOMAIN: "skipper.localhost"
+  SKIPPER_FLOW_DEFAULT_SYSTEM_SECRET: "zGMtT3tjuaATBhf4DDrLT3fgjd8kth2FV7DHuDVHjQu9szrWAbF262pazsRdssZL"
+
+  SKIPPER_GUNICORN_WORKER_CONCURRENCY: "8"
+
+  SKIPPER_REDIS_URL: 'redis://redis.local:6379'
+  SKIPPER_CELERY_BROKER_URL: 'redis://redis.local:6379'
+
+  SKIPPER_SESSION_INSECURE: "false" 
+
+  SKIPPER_DATA_SERIES_BULK_TASK_SIZE: "5000"
+  SKIPPER_DATA_SERIES_BULK_BATCH_SIZE: "250"
+
+  SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.local"
+  SKIPPER_DJANGO_EXTRA_LOGIN_REDIRECT_ALLOWED_HOSTS: ""
+  SKIPPER_DJANGO_EXTRA_CORS_REGEX_WHITELIST: ""
+  SKIPPER_DJANGO_EXTRA_CORS_WHITELIST: ""
+  SKIPPER_EXTRA_CSRF_TRUSTED_ORIGINS: ""
+  SKIPPER_DJANGO_DSP_FRAME_ANCESTORS: ""
+
+  SKIPPER_TASK_DASHBOARD_ENABLED: "true"
+  SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.local:5555"
+
+  SKIPPER_CONSUMER_PROXY_URL: "http://skipper.consumer.gateway.local:80"
+
+  # set this to "true" to enable all feature flags
+  # caution: this will enable features that might
+  # not be ready yet
+  SKIPPER_FEATURE_FLAG_ALL: "true"
+
+x-skipper-celery-env: &x-skipper-celery-env
+  <<: *x-skipper-env
+  REMAP_SIGTERM: SIGQUIT
+
+x-skipper-django-healthcheck: &x-skipper-django-healthcheck
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8000/healthz/"]
+    interval: 10s
+    timeout: 10s
+    retries: 2
+    start_period: 1s
+
+x-skipper-celery-healthcheck: &x-skipper-celery-healthcheck
+  # TODO: fix healthcheck for celery
+  healthcheck:
+    test: ["CMD", "bash", "-c", "exit 0"]
+    interval: 10s
+    timeout: 10s
+    retries: 2
+    start_period: 1s
+
+services:
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cephalopod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cephalopod}
+      PGDATA: /data/postgres/pgdata
+    # start as root so we can get permissions correctly setup
+    user: root
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      postgres:
+        aliases:
+          - "postgres.local"
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    networks:
+      nfcompose:
+        aliases:
+          - redis.local
+    volumes:
+      - redis:/data
+      
+  nodered:
+    image: "nodered/node-red"
+    restart: unless-stopped
+    environment:
+      NODE_RED_ENABLE_PROJECTS: "true"
+      FLOWS: "flows.json"
+    # start as root so we can get permissions correctly setup
+    user: root
+    volumes:
+      - nodered:/data
+    networks:
+      nfcompose_consumers:
+        aliases:
+          - "nodered.local" 
+      nfcompose:
+        aliases:
+          - "nodered.local"
+      postgres:
+        aliases:
+          - "nodered.local"
+
+  consumer_gateway:
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-consumer-gateway:2.0.0}"
+    restart: unless-stopped
+    networks:
+      postgres:
+      nfcompose_consumers:
+        aliases:
+          - skipper.consumer.gateway.local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz/"]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+      start_period: 1s
+
+  skipper:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    restart: unless-stopped
+    networks:
+      postgres:
+      nfcompose:
+        aliases:
+          - skipper.local
+    <<: *x-skipper-django-healthcheck
+    environment:
+      <<: *x-skipper-env
+  
+  # inside facing container used for separating internal requests so that outside requests are not harmed by etl jobs
+  skipper_internal:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    restart: unless-stopped
+    networks:
+      postgres:
+      nfcompose:
+        aliases:
+          - skipper.internal.local
+    <<: *x-skipper-django-healthcheck
+    environment:
+      <<: *x-skipper-env
+      SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.internal.local"
+
+  skipper_celery:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    restart: unless-stopped
+    networks:
+      - postgres
+      - nfcompose
+      - nfcompose_consumers
+    <<: *x-skipper-celery-healthcheck
+    environment:
+      <<: *x-skipper-celery-env
+      SKIPPER_CELERY_WORKER_CONCURRENCY: "2"
+      SKIPPER_CONTAINER_TYPE: "CELERY"
+
+  skipper_celery_beat:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    restart: unless-stopped
+    networks:
+      - postgres
+      - nfcompose
+    # TODO: healthcheck for celery beat container
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+      start_period: 1s
+    environment:
+      <<: *x-skipper-celery-env
+      SKIPPER_CONTAINER_TYPE: "CELERY_BEAT"
+
+  skipper_task_dashboard:
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    restart: unless-stopped
+    networks:
+      postgres: {}
+      nfcompose:
+        aliases:
+          - skipper.task.dashboard.local
+    environment:
+      <<: *x-skipper-env
+      SKIPPER_CONTAINER_TYPE: "TASK_DASHBOARD"
+
+  skipper_proxy:
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0}"
+    environment:
+      SKIPPER_BACKEND_SERVICE: "skipper.local"
+      SKIPPER_BACKEND_SERVICE_PORT: "8000"
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    networks:
+      nfcompose:
+        aliases:
+          - "skipper.proxy.local"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz/"]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+      start_period: 1s
+
+  skipper_setup:
+    entrypoint: "bash /setup.sh"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    environment:
+      DEPLOY_DATE: "${DEPLOY_DATE}"
+      <<: *x-skipper-env
+    networks:
+      nfcompose: {}
+      postgres: {}
+    restart: on-failure
+    secrets:
+      - source: skipper_setup_sh
+        target: /setup.sh
+
+  ######################### s3 Storage ##########################
+
+  create_buckets:
+    entrypoint: "bash /create_buckets.sh"
+    image: amazon/aws-cli
+    environment:
+      DEPLOY_DATE: "${DEPLOY_DATE}"
+      AWS_ACCESS_KEY_ID: secret
+      AWS_SECRET_ACCESS_KEY: verysecret
+    networks:
+      nfcompose:
+    restart: on-failure
+    configs:
+      - source: create_buckets_sh
+        target: /create_buckets.sh
+
+  # TODO: unify this with create_buckets
+  create_buckets_post:
+    image: minio/mc:RELEASE.2023-01-11T03-14-16Z
+    entrypoint: /bin/sh
+    command: 
+      - -c
+      - |
+        mc alias set nfcomposes3 http://nfcomposes3.local:8000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD
+        exec mc anonymous set download nfcomposes3/skipper-static
+    networks:
+      nfcompose:
+    restart: on-failure
+    environment:
+      *minio-credentials
+
+  s3:
+    image: minio/minio:RELEASE.2023-01-25T00-19-54Z
+    command: server /data --console-address ":8001" --address ":8000"
+    ports:
+      - 9000:8000
+    networks:
+      nfcompose:
+        aliases:
+          - nfcomposes3.local
+    volumes:
+      - s3_volume:/data
+    environment:
+      *minio-credentials
+
+secrets:
+  create_buckets_s3_credentials:
+    file: ./secrets/seaweedfs/s3_credentials.sh
+
+  skipper_setup_sh:
+    file: ./secrets/skipper/setup.sh
+
+configs:
+  create_buckets_sh:
+    file: ./configs/seaweedfs/create_buckets.sh
+
+networks:
+  nfcompose_consumers:
+    driver: bridge
+    attachable: true
+  nfcompose:
+    driver: bridge
+    attachable: true
+  postgres:
+    driver: bridge
+    attachable: false
+
+volumes:
+  s3_volume:
+  postgres:
+  redis:
+  nodered:
