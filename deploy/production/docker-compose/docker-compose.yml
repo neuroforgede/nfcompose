@@ -236,34 +236,111 @@ services:
       start_period: 1s
 
   skipper_setup:
-    entrypoint: "bash /setup.sh"
+    entrypoint: "/bin/bash"
+    command: 
+      - -c
+      - |
+        check_result () {
+            ___RESULT=$$?
+            if [ $$___RESULT -ne 0 ]; then
+                echo $$1
+                exit 1
+            fi
+        }
+
+        NF_COMPOSE_TENANT_NAME="default"
+        NF_COMPOSE_USER="admin"
+        NF_COMPOSE_PASSWORD="admin"
+
+        cd /neuroforge/skipper
+
+        python manage.py migrate --no-input
+        check_result "failed to run migrations"
+
+        python manage.py create_tenant --name "$${NF_COMPOSE_TENANT_NAME}" --upsert
+        check_result "failed to create tenant $${NF_COMPOSE_TENANT_NAME}"
+
+        python manage.py create_user --tenant "$${NF_COMPOSE_TENANT_NAME}" --username "$${NF_COMPOSE_USER}" --password "$${NF_COMPOSE_PASSWORD}" --staff --superuser --upsert
+        check_result "failed to create user $${NF_COMPOSE_USER}"
+
+        python manage.py collectstatic --noinput
+        check_result "failed to collect static files"
     image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
     environment:
+      # force rerun everytime
       DEPLOY_DATE: "${DEPLOY_DATE}"
       <<: *x-skipper-env
     networks:
       nfcompose: {}
       postgres: {}
     restart: on-failure
-    secrets:
-      - source: skipper_setup_sh
-        target: /setup.sh
 
   ######################### s3 Storage ##########################
 
   create_buckets:
-    entrypoint: "bash /create_buckets.sh"
+    entrypoint: /bin/bash
+    command:
+      - -c 
+      - |
+        check_result () {
+            ___RESULT=$$?
+            if [ $$___RESULT -ne 0 ]; then
+                echo $$1
+                exit 1
+            fi
+        }
+
+        function retry {
+          local n=1
+          local max=10
+          local delay=15
+          while true; do
+            "$$@" && break || {
+              if [[ $$n -lt $$max ]]; then
+                ((n++))
+                echo "Command failed. Attempt $$n/$$max..."
+                sleep $$delay;
+              else
+                echo "The command has failed after $$n attempts."
+                return 1
+              fi
+            }
+          done
+        }
+
+        function _ensure_bucket {
+          BUCKET_EXISTS=$$(aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:8000 s3api head-bucket --bucket $$1 2>&1)
+
+          if [ -z "$$BUCKET_EXISTS" ]; then
+            echo "Bucket $$1 already exists"
+          else
+            echo "Bucket $$1 does not already exist."
+            aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:8000 s3 mb s3://$$1
+            if [ $$? -ne 0 ]; then
+                echo "failed to create bucket $$1"
+                return 1
+            fi
+          fi
+        }
+
+        function ensure_bucket {
+          retry _ensure_bucket $$1
+        }
+
+        ensure_bucket 'skipper-static'
+        check_result "failed to create skipper-static s3 bucket"
+
+        ensure_bucket 'skipper-media'
+        check_result "failed to create skipper-media s3 bucket"
     image: amazon/aws-cli
     environment:
+      # force rerun everytime
       DEPLOY_DATE: "${DEPLOY_DATE}"
       AWS_ACCESS_KEY_ID: secret
       AWS_SECRET_ACCESS_KEY: verysecret
     networks:
       nfcompose:
     restart: on-failure
-    configs:
-      - source: create_buckets_sh
-        target: /create_buckets.sh
 
   # TODO: unify this with create_buckets
   create_buckets_post:
@@ -293,14 +370,6 @@ services:
       - s3_volume:/data
     environment:
       *minio-credentials
-
-secrets:
-  skipper_setup_sh:
-    file: ./secrets/skipper/setup.sh
-
-configs:
-  create_buckets_sh:
-    file: ./configs/minio/create_buckets.sh
 
 networks:
   nfcompose_consumers:

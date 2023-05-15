@@ -1,7 +1,9 @@
 # deploy
 
-This folder contains a sample docker-compose that can be a basis for a production setup.
-Note that it does however take some shortcuts regarding configuration.
+This folder contains a sample docker-compose that can be used for integration tests or even
+for local development. Note that due to the fact that this takes quite some shortcuts regarding configuration, the setup in [production/docker-compose](../production/docker-compose/) is
+generally preferrable.
+
 
 # playground
 
