@@ -107,9 +107,10 @@ jobs:
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
 
-      - name: "zip deploy.zip folder"
+      - name: "zip deploy/local folder"
         run: |
-          zip -r deploy-2.0.0.zip deploy/
+          cd deploy
+          zip -r deploy-local-2.0.0.zip local/
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -117,4 +118,4 @@ jobs:
         with:
           files: |
             ./client/dist/compose_client-2.0.0.tar.gz
-            deploy-2.0.0.zip
+            deploy/deploy-local-2.0.0.zip

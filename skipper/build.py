@@ -41,7 +41,7 @@ def run_integration_tests() -> None:
     subprocess.check_call([
         'bash',
         '-c',
-        'cd ../deploy && exec bash test.sh'
+        'cd ../deploy/local && exec bash test.sh'
     ], env={
         **os.environ,
         'COMPOSE_PROJECT_NAME': os.environ.get('COMPOSE_PROJECT_NAME', '') + 'integration_test',
