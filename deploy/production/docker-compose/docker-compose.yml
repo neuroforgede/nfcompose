@@ -134,7 +134,7 @@ services:
           - "nodered.local"
 
   consumer_gateway:
-    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-consumer-gateway:2.0.0}"
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-consumer-gateway:2.0.1}"
     restart: unless-stopped
     networks:
       postgres:
@@ -149,7 +149,7 @@ services:
       start_period: 1s
 
   skipper:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     restart: unless-stopped
     networks:
       postgres:
@@ -162,7 +162,7 @@ services:
   
   # inside facing container used for separating internal requests so that outside requests are not harmed by etl jobs
   skipper_internal:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     restart: unless-stopped
     networks:
       postgres:
@@ -175,7 +175,7 @@ services:
       SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.internal.local"
 
   skipper_celery:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     restart: unless-stopped
     networks:
       - postgres
@@ -188,7 +188,7 @@ services:
       SKIPPER_CONTAINER_TYPE: "CELERY"
 
   skipper_celery_beat:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     restart: unless-stopped
     networks:
       - postgres
@@ -205,7 +205,7 @@ services:
       SKIPPER_CONTAINER_TYPE: "CELERY_BEAT"
 
   skipper_task_dashboard:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     restart: unless-stopped
     networks:
       postgres: {}
@@ -217,7 +217,7 @@ services:
       SKIPPER_CONTAINER_TYPE: "TASK_DASHBOARD"
 
   skipper_proxy:
-    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.0}"
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.1}"
     environment:
       SKIPPER_BACKEND_SERVICE: "skipper.local"
       SKIPPER_BACKEND_SERVICE_PORT: "8000"
@@ -265,7 +265,7 @@ services:
 
         python manage.py collectstatic --noinput
         check_result "failed to collect static files"
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.0}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.0.1}"
     environment:
       # force rerun everytime
       DEPLOY_DATE: "${DEPLOY_DATE}"
