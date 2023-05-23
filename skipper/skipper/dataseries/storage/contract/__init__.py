@@ -7,15 +7,15 @@
 
 from itertools import chain
 from enum import Enum, unique
-from typing import Tuple, Set, cast
+from typing import Tuple, Set
 from skipper.testing import SKIPPER_CELERY_TESTING
 
 
 class StorageBackendType(Enum):
     # default should always be the first, so DRF displays it by default in the UI
-    DYNAMIC_SQL_MATERIALIZED = "DYNAMIC_SQL_MATERIALIZED"
-    DYNAMIC_SQL_NO_HISTORY = "DYNAMIC_SQL_NO_HISTORY"
     DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY = "DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY"
+    DYNAMIC_SQL_NO_HISTORY = "DYNAMIC_SQL_NO_HISTORY"
+    DYNAMIC_SQL_MATERIALIZED = "DYNAMIC_SQL_MATERIALIZED"
     DYNAMIC_SQL_V1 = 'DYNAMIC_SQL_V1'
 
     @classmethod
@@ -55,7 +55,8 @@ class StorageBackendType(Enum):
 
 
 deprecated_backend_strings: Set[str] = {
-    StorageBackendType.DYNAMIC_SQL_V1.name
+    StorageBackendType.DYNAMIC_SQL_V1.name,
+    StorageBackendType.DYNAMIC_SQL_MATERIALIZED.name
 }
 
 # if we are testing, we should still be allowed to create the deprecated backends
@@ -70,7 +71,7 @@ def backend_is_deprecated(backend: str) -> bool:
 
 selectable_storage_backend_types: Tuple[Tuple[str, str], ...] = \
     tuple([elem for elem in StorageBackendType.choices() if not backend_is_deprecated(elem[0])])
-default_backend: StorageBackendType = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
+default_backend: StorageBackendType = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY
 
 @unique
 class FactType(Enum):
@@ -82,26 +83,6 @@ class FactType(Enum):
     JSON = "JSON_FACT"
     Boolean = "BOOLEAN_FACT"
     File = "FILE_FACT"
-
-    # @staticmethod
-    # def from_number(number: int) -> 'FactType':
-    #     if number == 1:
-    #         return FactType.Float
-    #     if number == 2:
-    #         return FactType.String
-    #     if number == 3:
-    #         return FactType.Text
-    #     if number == 4:
-    #         return FactType.Timestamp
-    #     if number == 5:
-    #         return FactType.Image
-    #     if number == 6:
-    #         return FactType.JSON
-    #     if number == 7:
-    #         return FactType.Boolean
-    #     if number == 8:
-    #         return FactType.File
-    #     raise AssertionError('unrecognized FactType ' + str(number))
 
 @unique
 class IndexableDataSeriesChildType(Enum):
