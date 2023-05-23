@@ -9,6 +9,10 @@ A Customization Layer based around pluggable engines allows for deep customizati
 NF Compose is built with multi-tenancy in mind - A single NF Compose instance can serve many different tenants/projects
 at the same time.
 
+# Showcase
+
+https://github.com/neuroforgede/nfcompose/assets/719760/fc2d01db-75b7-47ef-ba28-2364034d4051
+
 # Try it out
 
 Note: We are gathering public examples in a [separate repository](https://github.com/neuroforgede/nfcompose-examples).
