@@ -11,6 +11,8 @@ at the same time.
 
 # Showcase
 
+Below is a short video that shows how easy it is to set up and use a REST API using NF Compose. From 0 to using a REST API in under 3 minutes.
+
 https://github.com/neuroforgede/nfcompose/assets/719760/fc2d01db-75b7-47ef-ba28-2364034d4051
 
 # Try it out
