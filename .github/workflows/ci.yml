@@ -26,6 +26,19 @@ jobs:
           cd consumer_gateway
           ARGS='--no-cache' exec bash build_production.sh
 
+  skipper-proxy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build skipper_proxy
+        run: |
+          ls -la
+          export BUILD_NF_COMPOSE_DOCKER_TAG=$(bash version.sh)
+          cd skipper_proxy
+          ARGS='--no-cache' exec bash build_production.sh
+
   skipper:
     runs-on: ubuntu-latest
     steps:
