@@ -284,20 +284,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
         point_in_time: datetime.datetime = dbtime.now()
         sub_clock = dbtime.dp_sub_clock(get_current_tenant())
         instance_: DataPoint = cast(DataPoint, instance)
-        if data_series_backend != StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value and \
-            data_series_backend != StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
-            DataPoint.objects.create(
-                id=instance_.id,
-                external_id=instance_.external_id,
-                data_series_id=instance_.data_series_id,
-                point_in_time=point_in_time,
-                deleted=True,
-                user_id=user_id,
-                record_source=record_source,
-                sub_clock=sub_clock
-            )
-        if data_series_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-            data_series_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
+        if data_series_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
             data_series_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
             delete_datapoint(
                 get_current_tenant(),

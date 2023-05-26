@@ -152,25 +152,6 @@ class BaseIndexRegistryLifecycleTest(BaseViewTest):
             )
 
 
-class IndexRegistryLifecycleTestMaterializedByID(BaseIndexRegistryLifecycleTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    expected_registered_table_types = [TargetTableType.MATERIALIZED]
-    use_id = True
-
-
-class IndexRegistryLifecycleTestMaterializedByExternalID(BaseIndexRegistryLifecycleTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    expected_registered_table_types = [TargetTableType.MATERIALIZED]
-    use_external_id = True
-
-
-class IndexRegistryLifecycleTestMaterializedByBothIDs(BaseIndexRegistryLifecycleTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    expected_registered_table_types = [TargetTableType.MATERIALIZED]
-    use_id = True
-    use_external_id = True
-
-
 class IndexRegistryLifecycleTestMaterializedFlatHistByID(BaseIndexRegistryLifecycleTest):
     storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY
     expected_registered_table_types = [TargetTableType.MATERIALIZED, TargetTableType.FLAT_HISTORY]

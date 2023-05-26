@@ -190,7 +190,6 @@ def handle_create_user_defined_index_actual(
     # 2.: Create indexes
     with transaction.atomic():
         if backend in (
-            StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value,
             StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value,
             StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
         ):

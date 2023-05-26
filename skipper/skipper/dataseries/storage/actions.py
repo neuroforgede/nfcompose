@@ -27,16 +27,7 @@ def handle_migrate_data_series_backend(
         new_backend: str
 ) -> None:
     from skipper.dataseries.storage.dynamic_sql import actions as dynamic_sql_actions
-    if old_backend == StorageBackendType.DYNAMIC_SQL_V1.value and new_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-        dynamic_sql_actions.migrate_v1_to_materialized(
-            data_series=data_series
-        )
-    elif old_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value \
-            and new_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
-        dynamic_sql_actions.migrate_materialized_to_no_history(
-            data_series=data_series
-        )
-    elif old_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value \
+    if old_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value \
             and new_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
         dynamic_sql_actions.migrate_no_history_to_flat_history(
             data_series=data_series

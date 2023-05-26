@@ -20,7 +20,7 @@ class StorageBackendType(Enum):
 
     @classmethod
     def choices(cls) -> Tuple[Tuple[str, str], ...]:
-        return tuple((i.name, i.value) for i in cls)
+        return tuple((i.name, i.value) for i in [StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY, StorageBackendType.DYNAMIC_SQL_NO_HISTORY])
 
     @classmethod
     def choices_with_history(cls) -> Tuple[Tuple[str, str], ...]:

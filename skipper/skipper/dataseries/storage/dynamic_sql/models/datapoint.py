@@ -11,15 +11,6 @@ from django.db.models import Model, UUIDField, DateTimeField, QuerySet, Manager
 from skipper.core import models
 from skipper.dataseries.storage.contract.models import DisplayDataPoint
 from skipper.dataseries.models import calc_db_table
-from skipper.dataseries.storage.dynamic_sql.models.dimension import DataPoint_Dimension
-from skipper.dataseries.storage.dynamic_sql.models.facts.boolean_fact import DataPoint_BooleanFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.float_fact import DataPoint_FloatFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.image_fact import DataPoint_ImageFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.file_fact import DataPoint_FileFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.json_fact import DataPoint_JsonFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.string_fact import DataPoint_StringFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.text_fact import DataPoint_TextFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.timestamp_fact import DataPoint_TimestampFact
 
 
 class BaseDataPoint(Model):
@@ -42,17 +33,6 @@ class BaseDataPoint(Model):
     user_id = models.string_field(max_length=512, null=True)
     record_source = models.string_field(max_length=512, null=True)
     sub_clock = models.BigIntegerField(null=True, blank=False)
-
-    datapoint_floatfact_set: 'QuerySet[DataPoint_FloatFact]'
-    datapoint_imagefact_set: 'QuerySet[DataPoint_ImageFact]'
-    datapoint_stringfact_set: 'QuerySet[DataPoint_StringFact]'
-    datapoint_timestampfact_set: 'QuerySet[DataPoint_TimestampFact]'
-    datapoint_textfact_set: 'QuerySet[DataPoint_TextFact]'
-    datapoint_jsonfact_set: 'QuerySet[DataPoint_JsonFact]'
-    datapoint_booleanfact_set: 'QuerySet[DataPoint_BooleanFact]'
-    datapoint_filefact_set: 'QuerySet[DataPoint_FileFact]'
-
-    datapoint_dimension_set: 'QuerySet[DataPoint_Dimension]'
 
     objects: 'Manager[BaseDataPoint]'
 

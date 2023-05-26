@@ -461,7 +461,7 @@ class DimensionTest(Base):
             data_series_external_id=self.data_series_for_dim.external_id,
             tenant_name='hans_peter',
             external_id=self.data_series_for_dim.external_id,
-            backend=StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value,
+            backend=StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value,
             tenant_id=get_current_tenant().id
         )
         self.data_series_for_dim.save()

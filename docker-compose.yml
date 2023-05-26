@@ -175,7 +175,7 @@ services:
         aliases:
           - "nfcomposes3"
     ports:
-      - "127.0.0.1:${SEAWEEDFS_DEV_OUTSIDE_PORT:-8000}:8000"
+      - "127.0.0.1:${SEAWEEDFS_DEV_OUTSIDE_PORT:-8001}:8000"
     volumes:
       - "./devenv/s3_config/s3.json:/etc/seaweedfs/s3.json"
       - "seaweedfs_buckets:/data"

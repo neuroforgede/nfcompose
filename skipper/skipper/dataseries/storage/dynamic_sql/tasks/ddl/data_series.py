@@ -221,24 +221,7 @@ def handle_create_data_series(data_series_id: Union[str, uuid.UUID], data_series
     with transaction.atomic():
         tenant = Tenant.objects.get(id=tenant_id)
 
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value \
-            or backend == StorageBackendType.DYNAMIC_SQL_V1.value:
-            partition_name = limit.limit_length(f'_3_dp_ds_{str(data_series_id)}_{tenant_name}_{str(external_id)}')
-            partition.partition(
-                table_name='_3_data_point',
-                partition_name=partition_name,
-                partition_key=data_series_id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB,
-                tenant=Tenant.objects.get(id=tenant_id)
-            )
-            grant_permissions_for_global_analytics_users(
-                tenant=tenant,
-                schema_escaped=escaped_tenant_schema(tenant_name),
-                table=partition_name
-            )
-
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or\
-                backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
+        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
                 backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
             handle_create_data_series_materialized(
                 data_series_id=data_series_id,

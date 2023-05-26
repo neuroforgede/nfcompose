@@ -210,14 +210,6 @@ class Base(BaseViewTest):
         self.assertTrue(self.dim_2['external_id'] in error_json['payload'])
 
 
-class DynamicSQLV1DimensionValidationTest(Base):
-    backend = StorageBackendType.DYNAMIC_SQL_V1.value
-
-
-class DynamicSQLMaterializedDimensionValidationTest(Base):
-    backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value
-
-
 class DynamicSQLNoHistoryDimensionValidationTest(Base):
     backend = StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
 

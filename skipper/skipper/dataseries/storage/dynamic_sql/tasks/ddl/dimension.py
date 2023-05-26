@@ -98,29 +98,7 @@ def handle_create_dimension(data_series_id: Union[str, uuid.UUID], data_series_e
                             dimension_id: str, tenant_name: str, external_id: str, backend: str, tenant_id: str) -> None:
     with transaction.atomic():
 
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or backend == StorageBackendType.DYNAMIC_SQL_V1.name:
-            partition_name = partition.partition_name(
-                base_name='_3_dp_dim',
-                fact_or_dim_id=str(dimension_id),
-                tenant_name=tenant_name,
-                external_id=str(external_id)
-            )
-            tenant = Tenant.objects.get(id=tenant_id)
-            partition.partition(
-                table_name='_3_data_point_dimension',
-                partition_name=partition_name,
-                partition_key=dimension_id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB,
-                tenant=tenant
-            )
-            grant_permissions_for_global_analytics_users(
-                tenant=tenant,
-                schema_escaped=escaped_tenant_schema(tenant_name),
-                table=partition_name
-            )
-
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
+        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
                 backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
             handle_create_dimension_materialized(
                 data_series_id=data_series_id,

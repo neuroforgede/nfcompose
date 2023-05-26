@@ -122,9 +122,6 @@ class BaseClasses:
                 count: int,
                 fact_count: int,
         ) -> None:
-            if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-                # TODO: check in materialized table also, if it is deleted it should not be there
-                return
             if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
                 # TODO: check in materialized table also, if it is deleted it should not be there
                 return
@@ -414,12 +411,6 @@ class BaseClasses:
             self.assert_meta_model_count(data_series=data_series, fact_id=fact_id, ds_count=1, rel_count=1, fact_count=1)
             assert_dps_still_there()
 
-            if storage_backend_type == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-                self.assertIn(_materialized_table_name, get_tables_in_schema(
-                    connection=connections[DATA_SERIES_DYNAMIC_SQL_DB],
-                    schema=tenant_schema_unescaped(tenant.name)
-                ))
-
             self.client.delete(data_series['url'])
             after_data_series_delete = dbtime.now()
 
@@ -439,12 +430,6 @@ class BaseClasses:
             self.assert_meta_model_count(data_series=data_series, fact_id=fact_id, ds_count=1, rel_count=1, fact_count=1)
             assert_dps_still_there()
 
-            if storage_backend_type == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-                self.assertIn(_materialized_table_name, get_tables_in_schema(
-                    connection=connections[DATA_SERIES_DYNAMIC_SQL_DB],
-                    schema=tenant_schema_unescaped(tenant.name)
-                ))
-
             # actual prune
             self.client.post(
                 path=DATA_SERIES_BASE_URL + 'prune/dataseries/',
@@ -459,12 +444,6 @@ class BaseClasses:
             # TODO: only do this for SQL backends (and only those that have the columnar history)
             self.assert_entity_count_db(data_series=data_series, fact_id=fact_id,
                                         external_id=data_series['external_id'], count=0, fact_count=0)
-
-            if storage_backend_type == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-                self.assertNotIn(_materialized_table_name, get_tables_in_schema(
-                    connection=connections[DATA_SERIES_DYNAMIC_SQL_DB],
-                    schema=tenant_schema_unescaped(tenant.name)
-                ))
 
         def test_prune_whole_data_series_with_deleted_fact(self) -> None:
             idx = 0
@@ -801,10 +780,7 @@ class BaseClasses:
             # should not prune meta_model even if data_series itself is not deleted
             self.assert_meta_model_count(data_series=data_series, fact_id=fact_id, ds_count=1, rel_count=1, fact_count=1)
 
-            if storage_backend_type == StorageBackendType.DYNAMIC_SQL_V1.value:
-                # FIXME: add logic here
-                pass
-            elif storage_backend_type != StorageBackendType.DYNAMIC_SQL_V1.value:
+            if storage_backend_type != StorageBackendType.DYNAMIC_SQL_V1.value:
                 self.assertIn(_materialized_table_name, get_tables_in_schema(
                     connection=connections[DATA_SERIES_DYNAMIC_SQL_DB],
                     schema=tenant_schema_unescaped(tenant.name)
@@ -862,10 +838,7 @@ class BaseClasses:
 
             after_prune = dbtime.now()
 
-            if storage_backend_type == StorageBackendType.DYNAMIC_SQL_V1.value:
-                # FIXME: add logic here
-                pass
-            elif storage_backend_type != StorageBackendType.DYNAMIC_SQL_V1.value:
+            if storage_backend_type != StorageBackendType.DYNAMIC_SQL_V1.value:
                 self.assertNotIn(_materialized_table_name, get_tables_in_schema(
                     connection=connections[DATA_SERIES_DYNAMIC_SQL_DB],
                     schema=tenant_schema_unescaped(tenant.name)
@@ -1323,9 +1296,6 @@ class DimensionTest(BaseClasses.Base):
             count: int,
             fact_count: int,
     ) -> None:
-        if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-            # TODO: check in materialized table also, if it is deleted it should not be there
-            return
         if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
             # TODO: check in materialized table also, if it is deleted it should not be there
             return

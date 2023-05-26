@@ -185,15 +185,6 @@ class BaseHistoricalDataPointVersionsOrderedTest(BaseViewTest):
                 self.assertEqual(versions_fact_dim, sorted_versions_fact_dim)
 
 
-class DynamicSQLMaterializedHistoricalDataPointVersionsOrderedTest(BaseHistoricalDataPointVersionsOrderedTest):
-    backend_key: str = StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value
-
-
-# deprecated anyways and tests failed
-# class DynamicSQLV1HistoricalDataPointVersionsOrderedTest(BaseHistoricalDataPointVersionsOrderedTest):
-#    backend_key: str = StorageBackendType.DYNAMIC_SQL_V1.value
-
-
 class DynamicSQLMaterializedFlatHistoryHistoricalDataPointVersionsOrderedTest(BaseHistoricalDataPointVersionsOrderedTest):
     backend_key: str = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value
 

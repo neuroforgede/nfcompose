@@ -12,6 +12,7 @@ from rest_framework.exceptions import PermissionDenied, NotFound, ParseError
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from typing import Dict, Any, Union, cast, List, Optional, TYPE_CHECKING
+from skipper.dataseries.storage.contract import backend_is_deprecated
 
 from skipper.core.models.guardian import get_objects_for_user_custom
 from skipper.dataseries.models import get_permission_string_for_action_and_http_verb, \
@@ -163,5 +164,7 @@ def ensure_http_method_globally_allowed(
     if MAINTENANCE_MODE:
         if MAINTENANCE_USER_ID is None or request.user.id != MAINTENANCE_USER_ID:
             raise PermissionDenied('system is in maintenance mode, can\'t modify data')
+    if backend_is_deprecated(data_series.backend) in ['POST', 'PUT', 'PATCH', 'DELETE']:
+        raise PermissionDenied('dataseries backend is deprecated, can\'t modify data')
     if data_series.locked and _method in ['POST', 'PUT', 'PATCH', 'DELETE']:
         raise PermissionDenied('dataseries is locked, can\'t modify data')

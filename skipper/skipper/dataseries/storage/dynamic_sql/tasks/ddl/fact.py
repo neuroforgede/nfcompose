@@ -145,29 +145,7 @@ def handle_create_fact(data_series_id: Union[str, uuid.UUID], data_series_extern
     dp_rel_table_name, dp_rel_partition_base_name = fact_ddl_names(fact_type)
     value_column_def: str
     with transaction.atomic():
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or backend == StorageBackendType.DYNAMIC_SQL_V1.name:
-            partition_name = partition.partition_name(
-                base_name=dp_rel_partition_base_name,
-                fact_or_dim_id=str(fact_id),
-                tenant_name=tenant_name,
-                external_id=str(external_id)
-            )
-            tenant = Tenant.objects.get(id=tenant_id)
-            partition.partition(
-                table_name=dp_rel_table_name,
-                partition_name=partition_name,
-                partition_key=fact_id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB,
-                tenant=tenant
-            )
-            grant_permissions_for_global_analytics_users(
-                tenant=tenant,
-                schema_escaped=escaped_tenant_schema(tenant_name),
-                table=partition_name
-            )
-
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
+        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
                 backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
             handle_create_fact_materialized(
                 data_series_id=data_series_id,

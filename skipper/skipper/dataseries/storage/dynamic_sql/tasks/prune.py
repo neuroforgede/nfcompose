@@ -167,16 +167,7 @@ def nuke_data_series(
             older_than=older_than
         )
 
-        if _data_series_obj.backend != StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value\
-                and _data_series_obj.backend != StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
-            partition.drop_partition_by_partition_value(
-                table_name='_3_data_point',
-                partition_key=data_series_id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB
-            )
-
-        if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or\
+        if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or\
                 _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
             _materialized_table_name = materialized_table_name(
                 id=data_series_id,
@@ -240,8 +231,8 @@ def prune_meta_model(
             )
 
         if backend in (
-            StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value, 
-            StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
+            StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value,
+            StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value
         ):
             index_ddl.handle_drop_user_defined_index_materialized(
                 index_id=index_rel.user_defined_index.id, 
@@ -259,17 +250,7 @@ def prune_meta_model(
         _type_enum: FactType = FactType(cast(Any, fact_rel).type_enum)
         backend = _data_series_obj.backend
 
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_V1.value:
-            dp_rel_table_name, dp_rel_partition_base_name = fact_ddl_names(_type_enum)
-            partition.drop_partition_by_partition_value(
-                table_name=dp_rel_table_name,
-                partition_key=fact_rel.fact.id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB
-            )
-
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
+        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
                 backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
             schema_name = escaped_tenant_schema(tenant_obj.name)
             mat_table_name = materialized_table_name(data_series_id, _data_series_obj.external_id)
@@ -311,17 +292,7 @@ def prune_meta_model(
 
         backend = _data_series_obj.backend
 
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_V1.value:
-            table_name = '_3_data_point_dimension'
-            partition.drop_partition_by_partition_value(
-                table_name=table_name,
-                partition_key=dim_rel.dimension.id,
-                connection_name=DATA_SERIES_DYNAMIC_SQL_DB
-            )
-
-        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
+        if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value or \
                 backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
             schema_name = escaped_tenant_schema(tenant_obj.name)
             mat_table_name = materialized_table_name(data_series_id, _data_series_obj.external_id)
@@ -461,41 +432,7 @@ def prune_history(
     )
 
     with transaction.atomic():
-        if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value \
-                or _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_V1.value:
-            with sql_cursor(DATA_SERIES_DYNAMIC_SQL_DB) as cursor:
-                for actual_prune_query, ds_fact_dim_id in zip(prune_queries, ds_fact_dim_ids):
-                    cursor.execute(
-                        actual_prune_query, {
-                            'ds_fact_dim_id': ds_fact_dim_id,
-                            'older_than': older_than
-                        }
-                    )
-
-            for actual_minio_prune_query, ds_fact_dim_id in zip(prune_minio_queries, prune_minio_ds_fact_dim_ids):
-                with sql_cursor(DATA_SERIES_DYNAMIC_SQL_DB) as cursor:
-                    cursor.execute(
-                        actual_minio_prune_query, {
-                            'ds_fact_dim_id': ds_fact_dim_id,
-                            'older_than': older_than
-                        }
-                    )
-                    for to_delete in cursor:
-                        data_point_id, point_in_time, sub_clock = to_delete
-                        # TODO: do this in batches
-                        file_registry.delete_all_matching(
-                            tenant_id=tenant_id,
-                            data_series_id=data_series_id,
-                            fact_id=ds_fact_dim_id,
-                            history_data_point_identifiers=[HistoryDataPointIdentifier(
-                                data_point_id=data_point_id,
-                                point_in_time=point_in_time,
-                                sub_clock=sub_clock
-                            )]
-                        )
-
-        if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-                _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
+        if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
                 _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
             with sql_cursor(DATA_SERIES_DYNAMIC_SQL_DB) as cursor:
                 schema_name = escaped_tenant_schema(tenant_obj.name)
