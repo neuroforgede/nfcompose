@@ -59,12 +59,6 @@ deprecated_backend_strings: Set[str] = {
     StorageBackendType.DYNAMIC_SQL_MATERIALIZED.name
 }
 
-# if we are testing, we should still be allowed to create the deprecated backends
-# when the test requires it
-if SKIPPER_CELERY_TESTING:
-    deprecated_backend_strings = set()
-
-
 def backend_is_deprecated(backend: str) -> bool:
     return backend in deprecated_backend_strings
 

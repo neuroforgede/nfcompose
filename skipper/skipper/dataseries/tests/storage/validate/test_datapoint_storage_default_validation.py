@@ -466,7 +466,8 @@ class DimensionTest(Base):
         )
         self.data_series_for_dim.save()
 
-        self.data_point_for_dim = DataPoint.objects.create(
+        # don't persist
+        self.data_point_for_dim = DataPoint(
             id=gen_uuid(self.data_series_for_dim.id, 'some_external_id2'),
             data_series_id=self.data_series_for_dim.id,
             external_id='some_external_id2',

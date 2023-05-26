@@ -37,14 +37,6 @@ from skipper.dataseries.storage.dynamic_sql.backend_info import get_tables_in_sc
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_table_name, \
     materialized_flat_history_table_name
 from skipper.dataseries.storage.dynamic_sql.models.datapoint import WritableDataPoint, DataPoint
-from skipper.dataseries.storage.dynamic_sql.models.dimension import WritableDataPoint_Dimension
-from skipper.dataseries.storage.dynamic_sql.models.facts.boolean_fact import WritableDataPoint_BooleanFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.file_fact import WritableDataPoint_FileFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.float_fact import WritableDataPoint_FloatFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.image_fact import WritableDataPoint_ImageFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.json_fact import WritableDataPoint_JsonFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.string_fact import WritableDataPoint_StringFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.text_fact import WritableDataPoint_TextFact
 from skipper.dataseries.storage.uuid import gen_uuid
 from skipper.dataseries.tasks import file_registry
 from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
@@ -79,7 +71,6 @@ class BaseClasses:
         simulate_other_tenant = True
 
         fact_type: str
-        writable_type: Any
         data_series_relation_type: Any
         fact_model_type: Any
 
@@ -125,15 +116,6 @@ class BaseClasses:
             if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
                 # TODO: check in materialized table also, if it is deleted it should not be there
                 return
-
-            self.assertEqual(count, WritableDataPoint.objects.filter(
-                data_series_id=data_series['id'],
-                external_id=external_id
-            ).all().count())
-            self.assertEqual(fact_count, self.writable_type.objects.filter(
-                data_point_id=gen_uuid(data_series['id'], external_id),
-                fact_id=fact_id
-            ).all().count())
 
         def assert_meta_model_count(
                 self,
@@ -1201,21 +1183,18 @@ class BaseClasses:
 
 class ImageFactTest(BaseClasses.BaseFileLikeTest):
     fact_type = 'image'
-    writable_type = WritableDataPoint_ImageFact
     data_series_relation_type = DataSeries_ImageFact
     fact_model_type = ImageFact
 
 
 class FileFactTest(BaseClasses.BaseFileLikeTest):
     fact_type = 'file'
-    writable_type = WritableDataPoint_FileFact
     data_series_relation_type = DataSeries_FileFact
     fact_model_type = FileFact
 
 
 class FloatFactTest(BaseClasses.Base):
     fact_type = 'float'
-    writable_type = WritableDataPoint_FloatFact
     data_series_relation_type = DataSeries_FloatFact
     fact_model_type = FloatFact
 
@@ -1225,7 +1204,6 @@ class FloatFactTest(BaseClasses.Base):
 
 class BooleanFactTest(BaseClasses.Base):
     fact_type = 'boolean'
-    writable_type = WritableDataPoint_BooleanFact
     data_series_relation_type = DataSeries_BooleanFact
     fact_model_type = BooleanFact
 
@@ -1235,7 +1213,6 @@ class BooleanFactTest(BaseClasses.Base):
 
 class StringFactTest(BaseClasses.Base):
     fact_type = 'string'
-    writable_type = WritableDataPoint_StringFact
     data_series_relation_type = DataSeries_StringFact
     fact_model_type = StringFact
 
@@ -1245,7 +1222,6 @@ class StringFactTest(BaseClasses.Base):
 
 class TextFactTest(BaseClasses.Base):
     fact_type = 'text'
-    writable_type = WritableDataPoint_TextFact
     data_series_relation_type = DataSeries_TextFact
     fact_model_type = TextFact
 
@@ -1255,7 +1231,6 @@ class TextFactTest(BaseClasses.Base):
 
 class JSONFactTest(BaseClasses.Base):
     fact_type = 'json'
-    writable_type = WritableDataPoint_JsonFact
     data_series_relation_type = DataSeries_JsonFact
     fact_model_type = JsonFact
 
@@ -1267,7 +1242,6 @@ class JSONFactTest(BaseClasses.Base):
 # handle them a bit different
 class DimensionTest(BaseClasses.Base):
     fact_type = 'dimension'
-    writable_type = WritableDataPoint_Dimension
     data_series_relation_type = DataSeries_Dimension
     fact_model_type = Dimension
 
@@ -1299,16 +1273,6 @@ class DimensionTest(BaseClasses.Base):
         if data_series['backend'] == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
             # TODO: check in materialized table also, if it is deleted it should not be there
             return
-        # TODO: check in materialized table and also
-        # TODO: do this differently for SQL backends (and only those that have the columnar history)
-        self.assertEqual(count, WritableDataPoint.objects.filter(
-            data_series_id=data_series['id'],
-            external_id=external_id
-        ).all().count())
-        self.assertEqual(fact_count, self.writable_type.objects.filter(
-            data_point_id=gen_uuid(data_series['id'], external_id),
-            dimension_id=fact_id
-        ).all().count())
 
     idx_hack = 0
 
