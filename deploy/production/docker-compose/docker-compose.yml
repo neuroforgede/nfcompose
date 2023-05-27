@@ -6,11 +6,18 @@
 # All rights reserved
 version: '3.8'
 
-x-minio-credentials: &minio-credentials
+x-s3-settings: &x-s3-settings
+  # these should all be the same
   MINIO_ROOT_USER: secret
+  AWS_ACCESS_KEY_ID: secret
+  SKIPPER_S3_ACCESS_KEY_ID: "secret"
+  # these should all be the same
   MINIO_ROOT_PASSWORD: verysecret
+  AWS_SECRET_ACCESS_KEY: verysecret
+  SKIPPER_S3_SECRET_ACCESS_KEY: "verysecret"
 
 x-skipper-env: &x-skipper-env
+  <<: *x-s3-settings
   SKIPPER_DEBUG_LOCAL: "false"
   SKIPPER_DJANGO_DEBUG: "false"
   SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
@@ -21,8 +28,8 @@ x-skipper-env: &x-skipper-env
   SKIPPER_DJANGO_SECRET_KEY: "VQt5UXF3GNhf7FJdFTsumPzqamZjC824Wy9hUCBySS6xkUVTJYhLK6NKZTxRmTA5"
 
   SKIPPER_DB: "cephalopod"
-  SKIPPER_DB_USER: "cephalopod"
-  SKIPPER_DB_PASSWD: "cephalopod"
+  SKIPPER_DB_USER: "${POSTGRES_USER:-cephalopod}"
+  SKIPPER_DB_PASSWD: "${POSTGRES_PASSWORD:-cephalopod}"
   SKIPPER_DB_HOSTS: "postgres.local"
   SKIPPER_DB_PORTS: "5432"
   SKIPPER_DB_SCHEMA: "public"
@@ -65,6 +72,12 @@ x-skipper-env: &x-skipper-env
   # caution: this will enable features that might
   # not be ready yet
   SKIPPER_FEATURE_FLAG_ALL: "true"
+
+x-skipper-setup: &x-skipper-setup
+  <<: *x-skipper-env
+  NF_COMPOSE_TENANT_NAME: "default"
+  NF_COMPOSE_USER: "admin"
+  NF_COMPOSE_PASSWORD: "admin"
 
 x-skipper-celery-env: &x-skipper-celery-env
   <<: *x-skipper-env
@@ -250,10 +263,6 @@ services:
             fi
         }
 
-        NF_COMPOSE_TENANT_NAME="default"
-        NF_COMPOSE_USER="admin"
-        NF_COMPOSE_PASSWORD="admin"
-
         cd /neuroforge/skipper
 
         python manage.py migrate --no-input
@@ -271,7 +280,7 @@ services:
     environment:
       # force rerun everytime
       DEPLOY_DATE: "${DEPLOY_DATE}"
-      <<: *x-skipper-env
+      <<: *x-skipper-setup
     networks:
       nfcompose: {}
       postgres: {}
@@ -337,9 +346,8 @@ services:
     image: amazon/aws-cli
     environment:
       # force rerun everytime
+      <<: *x-s3-settings
       DEPLOY_DATE: "${DEPLOY_DATE}"
-      AWS_ACCESS_KEY_ID: secret
-      AWS_SECRET_ACCESS_KEY: verysecret
     networks:
       nfcompose:
     restart: on-failure
@@ -357,7 +365,7 @@ services:
       nfcompose:
     restart: on-failure
     environment:
-      *minio-credentials
+      *x-s3-settings
 
   s3:
     image: minio/minio:RELEASE.2023-01-25T00-19-54Z
@@ -371,7 +379,7 @@ services:
     volumes:
       - s3_volume:/data
     environment:
-      *minio-credentials
+      *x-s3-settings
 
 networks:
   nfcompose_consumers:
