@@ -30,8 +30,11 @@ setuptools.setup(
     package_data={ "compose_client": ["py.typed"] },
     packages=setuptools.find_packages(),
     classifiers=[
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
-        "License :: All Rights Reserved",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Operating System :: OS Independent",
     ],
     test_suite='setup.cli_test_suite',
