@@ -164,7 +164,7 @@ def ensure_http_method_globally_allowed(
     if MAINTENANCE_MODE:
         if MAINTENANCE_USER_ID is None or request.user.id != MAINTENANCE_USER_ID:
             raise PermissionDenied('system is in maintenance mode, can\'t modify data')
-    if backend_is_deprecated(data_series.backend) in ['POST', 'PUT', 'PATCH', 'DELETE']:
+    if backend_is_deprecated(data_series.backend) and _method in ['POST', 'PUT', 'PATCH', 'DELETE']:
         raise PermissionDenied('dataseries backend is deprecated, can\'t modify data')
     if data_series.locked and _method in ['POST', 'PUT', 'PATCH', 'DELETE']:
         raise PermissionDenied('dataseries is locked, can\'t modify data')
