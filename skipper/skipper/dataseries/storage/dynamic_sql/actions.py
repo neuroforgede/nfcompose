@@ -39,23 +39,6 @@ def nuke_data_series(
         older_than=older_than
     )
 
-def migrate_v1_to_materialized(
-    data_series: DataSeries
-) -> None:
-    # spawn migration task on locked data_series
-    migrate.spawn_migrate_v1_to_materialized(
-        data_series=data_series
-    )
-
-
-def migrate_materialized_to_no_history(
-    data_series: DataSeries
-) -> None:
-    # spawn migration task on locked data_series
-    migrate.spawn_migrate_materialized_to_no_history(
-        data_series=data_series
-    )
-
 
 def migrate_no_history_to_flat_history(
     data_series: DataSeries
