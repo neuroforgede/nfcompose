@@ -13,24 +13,22 @@ from django.utils import timezone
 from skipper.core.models.tenant import Tenant
 from skipper.core.tests.base import BaseDefaultTenantDBTest
 from skipper.dataseries.models.metamodel.base_fact import BaseFact, BaseDataSeriesFactRelation
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.boolean_fact import BooleanFact, DataSeries_BooleanFact
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.models.metamodel.dimension import Dimension, DataSeries_Dimension
 from skipper.dataseries.models.metamodel.file_fact import FileFact, DataSeries_FileFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.json_fact import JsonFact, DataSeries_JsonFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.text_fact import TextFact, DataSeries_TextFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.timestamp_fact import TimestampFact, DataSeries_TimestampFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.string_fact import StringFact, DataSeries_StringFact
 from skipper.dataseries.models.metamodel.image_fact import ImageFact, DataSeries_ImageFact
 from skipper.dataseries.models.metamodel.float_fact import FloatFact, DataSeries_FloatFact
-from skipper.dataseries.raw_sql import partition, limit, dbtime
-from skipper.dataseries.raw_sql.tenant import tenant_schema_unescaped
-from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.actions import handle_create_data_series
-from skipper.dataseries.storage.uuid import gen_uuid
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint, WritableDataPoint
 from skipper.modules import Module
-from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 
 T = TypeVar('T')
 

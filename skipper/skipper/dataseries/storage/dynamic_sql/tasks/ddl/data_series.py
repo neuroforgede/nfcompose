@@ -10,7 +10,7 @@ from django.db import connections, transaction
 from typing import Union
 
 from skipper.core.models.tenant import Tenant
-from skipper.dataseries.raw_sql import escape, limit, partition
+from skipper.dataseries.raw_sql import escape
 from skipper.dataseries.raw_sql.tenant import escaped_tenant_schema, ensure_schema, tenant_schema_unescaped
 from skipper.dataseries.storage.contract import StorageBackendType
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_table_name, \

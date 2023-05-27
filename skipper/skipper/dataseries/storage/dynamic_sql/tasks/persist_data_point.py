@@ -19,7 +19,7 @@ from skipper.core.models.tenant import Tenant
 from skipper.dataseries.models import BulkInsertTaskData
 from skipper.dataseries.models.event import data_point_event, ConsumerEventType
 from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import WritableDataPoint
+from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
 from skipper.dataseries.storage.dynamic_sql.queries.modification_materialized.insert import insert_or_update_data_points
 from skipper.dataseries.storage.dynamic_sql.tasks.common import get_or_fail
 from skipper.dataseries.storage.static_ds_information import DataPointSerializationKeys
@@ -67,13 +67,13 @@ def create_data_points(
     """
 
     def _create_bare_data_points(validated_datas: Iterable[Any]) -> Tuple[
-        List[WritableDataPoint], List[datetime.datetime], List[Optional[int]]]:
-        _data_points: List[WritableDataPoint] = []
+        List[DataPoint], List[datetime.datetime], List[Optional[int]]]:
+        _data_points: List[DataPoint] = []
         _point_in_time_times = []
         _sub_clocks = []
 
         for validated_data in validated_datas:
-            _data_points.append(WritableDataPoint(
+            _data_points.append(DataPoint(
                 id=validated_data['id'],
                 external_id=validated_data['external_id'],
                 data_series_id=data_series_id,

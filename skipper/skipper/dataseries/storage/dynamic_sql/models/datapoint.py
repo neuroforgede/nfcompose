@@ -15,15 +15,7 @@ from skipper.dataseries.models import calc_db_table
 
 class BaseDataPoint(Model):
     """
-    DataPoint is the only direct child of a DataSeries. This is
-    due to the following reasons:
-
-    - We want to be able to query quickly for all datapoints
-    - We have to generate a hashed id for the datapoint
-        - If we used regular relation tables, we would have to duplicate the id generation
-          that we use for DataPoints into the relation table just for the sake of
-    - If we had the relation DataSeries_DataPoint, DataVault design would be more confusing as
-      it already is
+    DEPRECATED: Don't use this for anything new
     """
     id = models.string_field(max_length=512, pk=True)
     data_series_id = UUIDField(null=False)
@@ -42,32 +34,13 @@ class BaseDataPoint(Model):
 
 class DataPoint(BaseDataPoint):
     """
-    The actual DataPoint interface we use everywhere.
-    All inserts, updates, etc are properly managed
-    by instead of triggers.
-
-    NEVER CALL save on instances of this, or this will duplicate
-    entries in the db and pollute it
+    DEPRECATED: Don't use this for anything new
     """
-    objects: 'Manager[DataPoint]'
 
     class Meta:
         managed = False
         default_permissions: List[str] = []
         db_table = calc_db_table('ViewDataPoint')
-
-
-class WritableDataPoint(BaseDataPoint):
-    """
-    should not really be used in any code, but this is
-    intended so that django properly generates the class
-    """
-    objects: 'Manager[WritableDataPoint]'
-
-    class Meta:
-        managed = False
-        default_permissions: List[str] = []
-        db_table = calc_db_table('DataPoint')
 
 # explicit reexport
 DisplayDataPoint = DisplayDataPoint

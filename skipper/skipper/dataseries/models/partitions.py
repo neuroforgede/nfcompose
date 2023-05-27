@@ -13,6 +13,9 @@ from skipper.dataseries.raw_sql import escape
 
 
 class PartitionByUUID(Model):
+    """
+    DEPRECATED
+    """
     id = models.id_field()
     base_table = models.string_field(max_length=63)
     child_table = CharField(max_length=63)

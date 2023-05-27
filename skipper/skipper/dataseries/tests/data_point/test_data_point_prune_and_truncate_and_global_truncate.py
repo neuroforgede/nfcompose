@@ -36,7 +36,6 @@ from skipper.dataseries.storage.contract import StorageBackendType
 from skipper.dataseries.storage.dynamic_sql.backend_info import get_tables_in_schema
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_table_name, \
     materialized_flat_history_table_name
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import WritableDataPoint, DataPoint
 from skipper.dataseries.storage.uuid import gen_uuid
 from skipper.dataseries.tasks import file_registry
 from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
@@ -1159,8 +1158,6 @@ class BaseClasses:
                 storage=default_media_storage,
                 older_than=before_delete
             )
-
-            self.assertEqual(0, len(DataPoint.objects.filter(id=dp_1['id'])))
 
             s3_data_dp_1_resp = requests.get(dp_1['payload']['1'])
             self.assertEquals(status.HTTP_200_OK, s3_data_dp_1_resp.status_code)

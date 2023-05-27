@@ -10,7 +10,6 @@ from typing import Tuple, List, cast
 from skipper import modules
 from skipper.core.tests.base import BaseViewTest, BASE_URL
 from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
 
 DATA_SERIES_BASE_URL = BASE_URL + modules.url_representation(modules.Module.DATA_SERIES) + '/'
 

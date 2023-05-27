@@ -9,13 +9,11 @@ from typing import Union, Tuple
 
 from django.db import connections, transaction
 
-from skipper.core.models.tenant import Tenant
-from skipper.dataseries.raw_sql import escape, limit, partition
-from skipper.dataseries.raw_sql.tenant import escaped_tenant_schema, ensure_schema, tenant_schema_unescaped
+from skipper.dataseries.raw_sql import escape
+from skipper.dataseries.raw_sql.tenant import escaped_tenant_schema, ensure_schema
 from skipper.dataseries.storage.contract import FactType, StorageBackendType
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_column_name, materialized_table_name, \
     materialized_flat_history_table_name
-from skipper.dataseries.storage.dynamic_sql.tasks.common import grant_permissions_for_global_analytics_users
 from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 from skipper.core.lint import sql_cursor
 

@@ -9,7 +9,6 @@ from django.db import connections, transaction
 from django_multitenant.utils import set_current_tenant  # type: ignore
 from typing import Type, cast, Any, List, Tuple
 
-from skipper.core.models import default_media_storage
 from skipper.core.models.tenant import Tenant
 from skipper.core.celery import task
 from skipper.dataseries.models import hard_delete_consumer, BulkInsertTaskData
@@ -26,17 +25,16 @@ from skipper.dataseries.models.metamodel.json_fact import DataSeries_JsonFact
 from skipper.dataseries.models.metamodel.string_fact import DataSeries_StringFact
 from skipper.dataseries.models.metamodel.text_fact import DataSeries_TextFact
 from skipper.dataseries.models.metamodel.timestamp_fact import DataSeries_TimestampFact
-from skipper.dataseries.raw_sql import escape, partition
+from skipper.dataseries.raw_sql import escape
 from skipper.dataseries.raw_sql.tenant import escaped_tenant_schema
 from skipper.dataseries.storage.contract import StorageBackendType, FactType, file_registry
 from skipper.dataseries.storage.contract.file_registry import HistoryDataPointIdentifier
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_table_name, \
-    materialized_flat_history_table_name, materialized_column_name
+    materialized_flat_history_table_name
 from skipper.dataseries.storage.dynamic_sql.tasks.common import get_or_fail
 from skipper.dataseries.storage.dynamic_sql.tasks.ddl import fact as fact_ddl
 from skipper.dataseries.storage.dynamic_sql.tasks.ddl import dimension as dim_ddl
 from skipper.dataseries.storage.dynamic_sql.tasks.ddl import user_defined_index as index_ddl
-from skipper.dataseries.storage.dynamic_sql.tasks.ddl.fact import fact_ddl_names
 from skipper.dataseries.storage.static_ds_information import dead_facts
 from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 from skipper.core.lint import sql_cursor

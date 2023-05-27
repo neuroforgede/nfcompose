@@ -16,7 +16,7 @@ from typing import Any
 def migrate_materialized_dataseries_drop_unique_external_id(apps: Apps, schema_editor: Any) -> Any:
     DataSeries = apps.get_model('dataseries', 'DataSeries')
     for dataseries in DataSeries.all_objects.all():
-        if dataseries.backend == 'DYNAMIC_SQL_NO_HISTORY' or dataseries.backend == 'DYNAMIC_SQL_MATERIALIZED':
+        if dataseries.backend == 'DYNAMIC_SQL_NO_HISTORY':
             if dataseries.metamodel_version <= 3:
                 from django.db import migrations, connections
 

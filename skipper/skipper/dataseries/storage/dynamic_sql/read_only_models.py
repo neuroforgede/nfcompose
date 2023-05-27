@@ -11,6 +11,8 @@ from typing import Optional, Union
 from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
 from skipper.dataseries.storage.validate.contract import ReadOnlyDataPoint
 
+# DEPRECATED, only for backends that have been deleted.
+# DELETE this in 2.2.0
 
 def data_point_accessor(
         identifier: str,
