@@ -1,6 +1,6 @@
 major_version = "2"
-minor_version = "0"
-patch_version = "2"
+minor_version = "1"
+patch_version = "0"
 suffix_version = ""
 
 major_version_string = f"{major_version}{suffix_version}"
