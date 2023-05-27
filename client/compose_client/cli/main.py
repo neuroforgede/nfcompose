@@ -29,7 +29,7 @@ if TESTING:
 @click.group()
 def cli() -> None:
     """
-    NF Compose CLI - version: 2.1.0
+    NF Compose CLI - version: 2.1.0-beta
     """
     pass
 

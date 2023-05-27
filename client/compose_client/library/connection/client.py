@@ -22,7 +22,7 @@ import functools
 import datetime
 
 
-USER_AGENT = 'compose_cli 2.1.0'
+USER_AGENT = 'compose_cli 2.1.0-beta'
 
 def credentials_cache(ttl: datetime.timedelta = datetime.timedelta(minutes=2)) -> \
     Callable[
