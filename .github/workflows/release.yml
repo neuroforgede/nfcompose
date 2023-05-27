@@ -133,6 +133,7 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
+          mv dist/compose_client-2.1.0*.tar.gz dist/compose_client-2.1.0-beta.tar.gz
 
       - name: "zip deploy/local folder"
         run: |

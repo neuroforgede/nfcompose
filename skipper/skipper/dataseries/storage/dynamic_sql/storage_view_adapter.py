@@ -234,9 +234,6 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
             data_point_id: str,
             stub_enough: bool
     ) -> Any:
-        _external_id: Optional[str] = None
-        _not_found_error: Callable[[], None]
-
         if stub_enough and \
                 (
                         view.access_data_series().backend != StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
