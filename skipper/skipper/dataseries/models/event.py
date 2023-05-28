@@ -204,6 +204,7 @@ def try_send_events(
         event: ConsumerEvent
         cnt = 0
         more_events: bool = False
+        tenant_name = str(consumer.tenant.name)
         
         _qs = ConsumerEvent.objects.filter(
             ~Q(state__in=[ConsumerEventState.FAILED.value, ConsumerEventState.SUCCESS.value]),
@@ -238,6 +239,7 @@ def try_send_events(
                 body: Dict[str, Any] = {
                     'point_in_time': event.point_in_time.isoformat(),
                     'event_type': event.event_type,
+                    'tenant': tenant_name,
                     'payload': event.payload
                 }
                 if event.sub_clock:
