@@ -137,8 +137,13 @@ jobs:
 
       - name: "zip deploy/local folder"
         run: |
-          cd deploy
-          zip -r deploy-local-2.1.0-beta.zip local/
+          cd deploy/local
+          zip -r deploy-local-2.1.0-beta.zip ./
+
+      - name: "zip deploy/production folder"
+        run: |
+          cd deploy/production/docker-compose
+          zip -r deploy-production-docker-compose-2.1.0-beta.zip ./
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -146,4 +151,5 @@ jobs:
         with:
           files: |
             ./client/dist/compose_client-2.1.0-beta.tar.gz
-            deploy/deploy-local-2.1.0-beta.zip
+            deploy/local/deploy-local-2.1.0-beta.zip
+            deploy/production/docker-compose/deploy-production-docker-compose-2.1.0-beta.zip
