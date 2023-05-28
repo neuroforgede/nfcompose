@@ -31,6 +31,12 @@ from skipper.dataseries.views.metamodel.permissions import metamodel_base_line_p
 class DataSeriesCheckExternalIdsView(CustomizableBrowsableAPIRendererObjectMixin,
                                      GenericAPIView,  # type: ignore
                                      BaseDataSeries_DataPointViewSet):
+    """
+    For application/json, accepts a list of regular external_ids in the body { "external_ids": [...] }
+
+    Returns the list of external ids already present in the dataseries out of the passed list
+    """
+
     permission_classes = [
         *metamodel_base_line_permissions,
         get_dataseries_permissions_class(DATASERIES_PERMISSION_KEY_CHECK_EXTERNAL_IDS)
