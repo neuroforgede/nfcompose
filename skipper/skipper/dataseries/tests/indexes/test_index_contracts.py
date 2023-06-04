@@ -274,38 +274,3 @@ class IndexCRUDContractTest(BaseViewTest):
                 target_type=IndexableDataSeriesChildType.FLOAT_FACT.value,
                 target_position_in_index_order=1
             )
-
-    def test_no_indexes_on_dynamic_sql_v1(self) -> None:
-        ds = self.create_payload(
-            url=DATA_SERIES_BASE_URL + 'dataseries/',
-            payload={
-                'name': 'my_data_series_2',
-                'external_id': 'external_id2',
-                'backend': 'DYNAMIC_SQL_V1'
-            }, simulate_tenant=False)
-
-        self.create_payload(
-            url=ds['float_facts'],
-            payload={
-                'external_id': 'x',
-                'name': 'x',
-                'optional': False
-            }
-        )
-
-        resp = self._client().post(
-            path=ds['indexes'],
-            format='json',
-            data={
-                'external_id': 'i',
-                'name': 'i',
-                'targets': [{
-                    'target_type': 'FLOAT_FACT',
-                    'target_external_id': 'x'
-                }]
-            }
-        )
-
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        # print('---------------------------------------------------', json.dumps(resp.json()))
-        self.assertEqual(resp.json()['non_field_errors'], ['indexes are not allowed in DYNAMIC_SQL_V1 backends'])

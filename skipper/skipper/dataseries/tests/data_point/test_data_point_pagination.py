@@ -10,7 +10,6 @@ from typing import Tuple, List, cast
 from skipper import modules
 from skipper.core.tests.base import BaseViewTest, BASE_URL
 from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
 
 DATA_SERIES_BASE_URL = BASE_URL + modules.url_representation(modules.Module.DATA_SERIES) + '/'
 
@@ -91,16 +90,6 @@ class DataPointPaginationTest(BaseViewTest):
     url_under_test = DATA_SERIES_BASE_URL + 'dataseries/'
     simulate_other_tenant = True
 
-    def test_stable_pagination_materialized(self) -> None:
-        test_pagination_is_stable(self, StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value)
-
-    def test_stable_pagination_dynamic_sql_v1(self) -> None:
-        try:
-            test_pagination_is_stable(self, StorageBackendType.DYNAMIC_SQL_V1.name)
-            self.fail('dynamic sql v1 should not be stable')
-        except:
-            pass
-
     def test_pagination(self) -> None:
         for backend_key, backend_value in StorageBackendType.choices():
             data_series = self.create_payload(DATA_SERIES_BASE_URL + 'dataseries/', payload={
@@ -159,13 +148,3 @@ class DataPointPaginationTest(BaseViewTest):
             for i in range(1, 10):
                 forwards, backwards = collect_both_directions(i)
                 self.assertEqual(forwards, backwards)
-
-                if backend_key == StorageBackendType.DYNAMIC_SQL_V1.name:
-                    from_db = [
-                        elem.external_id for elem in
-                        DataPoint.objects.filter(
-                            data_series_id=data_series['id']
-                        ).all().order_by('id')
-                    ]
-                    self.assertEqual(from_db, forwards)
-                    self.assertEqual(forwards, from_db)

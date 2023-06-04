@@ -408,14 +408,8 @@ class BaseMigrationTest(BaseViewTest):
 # if you want to add migrations that migrate the history from one format into another, the base test is not enough
 # as it only cares about the active data
 
-
-class DynamicSQLV1ToMaterializedMigrationTest(BaseMigrationTest):
-    initial_backend = StorageBackendType.DYNAMIC_SQL_V1
-    migrate_to_backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-
-
-class MaterializedToNoHistoryMigrationTest(BaseMigrationTest):
-    initial_backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
+class FlatHistoryToNoHistoryMigrationTest(BaseMigrationTest):
+    initial_backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY
     migrate_to_backend = StorageBackendType.DYNAMIC_SQL_NO_HISTORY
 
 

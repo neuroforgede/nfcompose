@@ -20,7 +20,7 @@ class StorageBackendType(Enum):
 
     @classmethod
     def choices(cls) -> Tuple[Tuple[str, str], ...]:
-        return tuple((i.name, i.value) for i in cls)
+        return tuple((i.name, i.value) for i in [StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY, StorageBackendType.DYNAMIC_SQL_NO_HISTORY])
 
     @classmethod
     def choices_with_history(cls) -> Tuple[Tuple[str, str], ...]:
@@ -58,12 +58,6 @@ deprecated_backend_strings: Set[str] = {
     StorageBackendType.DYNAMIC_SQL_V1.name,
     StorageBackendType.DYNAMIC_SQL_MATERIALIZED.name
 }
-
-# if we are testing, we should still be allowed to create the deprecated backends
-# when the test requires it
-if SKIPPER_CELERY_TESTING:
-    deprecated_backend_strings = set()
-
 
 def backend_is_deprecated(backend: str) -> bool:
     return backend in deprecated_backend_strings

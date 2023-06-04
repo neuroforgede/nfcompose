@@ -31,17 +31,7 @@ from skipper.core.tests.base import BaseViewTest, BASE_URL
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.raw_sql import dbtime
 from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.models.base_relation import BaseDataPointFactRelation
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import WritableDataPoint, DisplayDataPoint
-from skipper.dataseries.storage.dynamic_sql.models.dimension import WritableDataPoint_Dimension, BaseDataPoint_Dimension
-from skipper.dataseries.storage.dynamic_sql.models.facts.boolean_fact import WritableDataPoint_BooleanFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.file_fact import WritableDataPoint_FileFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.float_fact import WritableDataPoint_FloatFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.image_fact import WritableDataPoint_ImageFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.json_fact import WritableDataPoint_JsonFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.string_fact import WritableDataPoint_StringFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.text_fact import WritableDataPoint_TextFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.timestamp_fact import WritableDataPoint_TimestampFact
+from skipper.dataseries.storage.dynamic_sql.models.datapoint import DisplayDataPoint
 from skipper.dataseries.storage.dynamic_sql.queries.display import data_series_as_sql_table
 from skipper.dataseries.storage.dynamic_sql.queries.modification_materialized.insert import insert_or_update_data_points
 from skipper.dataseries.storage.dynamic_sql.queries.select_info import select_infos
@@ -251,23 +241,6 @@ def test_all_set(
             url=data_series['data_points'] + f'?count&{filter_query_param(fact_id, _updated_value())}')
         self.assertEqual(0, when_updated_list['count'])
         self.assertEqual(0, len(when_updated_list['data']))
-
-    if backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-        test_materialized_upsert_checks_point_in_time(
-            self=self,
-            current_data_point=initial,
-            data_series_id=data_series['id'],
-            data_series_external_id=data_series['external_id'],
-            fact=fact,
-            secondary_fact=secondary_fact,
-            partial=partial,
-            fact_value_that_should_not_be_set=_updated_value,
-            secondary_fact_value_that_should_not_be_set=_secondary_updated_value,
-            expected_to_be_found_at_all=True,
-            expected_fact_value=_initial_value,
-            fact_type=fact_type,
-            equal=equal
-        )
 
     if partial:
         updated = self.patch_payload(

@@ -60,23 +60,6 @@ class BaseIndexPruneDataseriesTest(BaseViewTest):
             }
         )
 
-
-class IndexRegistryLifecycleTestMaterializedByID(BaseIndexPruneDataseriesTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    use_id = True
-
-
-class IndexRegistryLifecycleTestMaterializedByExternalID(BaseIndexPruneDataseriesTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    use_external_id = True
-
-
-class IndexRegistryLifecycleTestMaterializedByBothIDs(BaseIndexPruneDataseriesTest):
-    storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED
-    use_id = True
-    use_external_id = True
-
-
 class IndexRegistryLifecycleTestMaterializedFlatHistByID(BaseIndexPruneDataseriesTest):
     storage_backend_type = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY
     use_id = True

@@ -107,11 +107,7 @@ class BaseChangesSinceTest(BaseViewTest):
 
 
 class MaterializedChangesSinceTest(BaseChangesSinceTest):
-    backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value
-
-
-class DynamicSQLV1ChangesSinceTest(BaseChangesSinceTest):
-    backend = StorageBackendType.DYNAMIC_SQL_V1.name
+    backend = StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value
 
 
 del BaseChangesSinceTest

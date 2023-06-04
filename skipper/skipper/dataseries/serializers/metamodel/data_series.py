@@ -257,11 +257,7 @@ class DataSeriesSerializer(DataSeriesBaseSerializer):
             original_backend = data_series.backend
 
             if original_backend != backend:
-                if (original_backend == StorageBackendType.DYNAMIC_SQL_V1.value and
-                    backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value) or \
-                    (original_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value and
-                     backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value) or \
-                    (original_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value and
+                if (original_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value and
                     backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value) or \
                     (original_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value and
                     backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value):
@@ -343,13 +339,7 @@ class DataSeriesSerializer(DataSeriesBaseSerializer):
                 DataSeries.objects.filter(id=kwargs['pk']))
             original_backend = original_db.backend
             if original_backend != backend:
-                if original_backend == StorageBackendType.DYNAMIC_SQL_V1.value and \
-                        backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value:
-                    pass
-                elif original_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value and \
-                        backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value:
-                    pass
-                elif original_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value and \
+                if original_backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value and \
                         backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
                     pass
                 elif original_backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value and \

@@ -4,7 +4,7 @@ from django.db import migrations
 from typing import List, cast
 
 from skipper.dataseries.storage.dynamic_sql.migrations.custom_v1.helpers import data_point_id_column_def, \
-    external_id_column_def, migrations_for_dataseries_child, migrations_for_datapoint_data_tables
+    external_id_column_def, migrations_for_dataseries_child
 from skipper.modules import Module
 
 
@@ -161,30 +161,5 @@ class Migration(migrations.Migration):
             migrations_for_dataseries_child(child_name='string_fact', child_foreign_key='fact_id') +
             migrations_for_dataseries_child(child_name='timestamp_fact', child_foreign_key='fact_id') +
             migrations_for_dataseries_child(child_name='text_fact', child_foreign_key='fact_id') +
-
-
-            migrations_for_datapoint_data_tables(data_name='dimension',
-                                                 data_foreign_key='dimension_id',
-                                                 value_column_def=data_point_id_column_def,
-                                                 fact_or_dim_id='dimension_id',
-                                                 value_name='value') +
-            migrations_for_datapoint_data_tables(data_name='float_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='double precision') +
-            migrations_for_datapoint_data_tables(data_name='image_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='TEXT COLLATE pg_catalog."default"') +
-            migrations_for_datapoint_data_tables(data_name='json_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='jsonb') +
-            migrations_for_datapoint_data_tables(data_name='string_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='character varying(256) COLLATE pg_catalog."default"') +
-            migrations_for_datapoint_data_tables(data_name='timestamp_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='timestamp with time zone') +
-            migrations_for_datapoint_data_tables(data_name='text_fact',
-                                                 data_foreign_key='fact_id',
-                                                 value_column_def='text') +
             []
     )

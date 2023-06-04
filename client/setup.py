@@ -20,7 +20,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="compose_client",
     scripts=['bin/compose_cli'],
-    version="2.0.2",
+    version="2.1.0-beta",
     author="NeuroForge GmbH & Co. KG",
     author_email="kontakt@neuroforge.de",
     description="NF Compose package",
@@ -30,8 +30,11 @@ setuptools.setup(
     package_data={ "compose_client": ["py.typed"] },
     packages=setuptools.find_packages(),
     classifiers=[
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
-        "License :: All Rights Reserved",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Operating System :: OS Independent",
     ],
     test_suite='setup.cli_test_suite',

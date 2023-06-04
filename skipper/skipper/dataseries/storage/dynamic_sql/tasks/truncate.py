@@ -121,8 +121,7 @@ def truncate_data_series(tenant_id: str, data_series_id: str) -> None:
         table_name='_3_data_point_file_fact'
     )
 
-    if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value or \
-        _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
+    if _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value or \
         _data_series_obj.backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
         schema_name = escaped_tenant_schema(tenant_obj.name)
         mat_table_name = materialized_table_name(data_series_id, _data_series_obj.external_id)

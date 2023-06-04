@@ -13,33 +13,22 @@ from django.utils import timezone
 from skipper.core.models.tenant import Tenant
 from skipper.core.tests.base import BaseDefaultTenantDBTest
 from skipper.dataseries.models.metamodel.base_fact import BaseFact, BaseDataSeriesFactRelation
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.boolean_fact import BooleanFact, DataSeries_BooleanFact
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.models.metamodel.dimension import Dimension, DataSeries_Dimension
 from skipper.dataseries.models.metamodel.file_fact import FileFact, DataSeries_FileFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.json_fact import JsonFact, DataSeries_JsonFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.text_fact import TextFact, DataSeries_TextFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.timestamp_fact import TimestampFact, DataSeries_TimestampFact
+# FIXME: unit tests
 from skipper.dataseries.models.metamodel.string_fact import StringFact, DataSeries_StringFact
 from skipper.dataseries.models.metamodel.image_fact import ImageFact, DataSeries_ImageFact
 from skipper.dataseries.models.metamodel.float_fact import FloatFact, DataSeries_FloatFact
-from skipper.dataseries.raw_sql import partition, limit, dbtime
-from skipper.dataseries.raw_sql.tenant import tenant_schema_unescaped
-from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.dataseries.storage.dynamic_sql.actions import handle_create_data_series
-from skipper.dataseries.storage.dynamic_sql.models.base_relation import BaseDataPointFactRelation
-from skipper.dataseries.storage.dynamic_sql.models.facts.boolean_fact import DataPoint_BooleanFact, \
-    WritableDataPoint_BooleanFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.json_fact import DataPoint_JsonFact, WritableDataPoint_JsonFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.text_fact import DataPoint_TextFact, WritableDataPoint_TextFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.timestamp_fact import DataPoint_TimestampFact, \
-    WritableDataPoint_TimestampFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.string_fact import DataPoint_StringFact, WritableDataPoint_StringFact
-from skipper.dataseries.storage.dynamic_sql.models.facts.float_fact import DataPoint_FloatFact, WritableDataPoint_FloatFact
-from skipper.dataseries.storage.uuid import gen_uuid
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint, WritableDataPoint
 from skipper.modules import Module
-from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 
 T = TypeVar('T')
 
@@ -291,241 +280,6 @@ class DataSeries_FileFactTest(Parent_ChildTest):
         return parent, child, relation
 
 
-class DataPointTest(BaseDefaultTenantDBTest):
-    data_point: DataPoint
-
-    def test_versioning_for_data_point_django_way(self) -> None:
-        tenant = Tenant.objects.create(
-            name='tenant'
-        )
-        data_series = DataSeries.objects.create(
-            tenant=tenant,
-            name="data_series",
-            external_id='1'
-        )
-
-        handle_create_data_series(data_series.id, data_series.external_id,
-                                  tenant_name='123', external_id='1',
-                                  backend=StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value,
-                                  tenant_id=str(tenant.id))
-
-        data_point_id = gen_uuid(
-            data_series_id=data_series.id,
-            external_id='1'
-        )
-
-        def assert_count(cnt: int) -> None:
-            writable_data_points = list(WritableDataPoint.objects.filter(id=data_point_id).all())
-            self.assertEqual(cnt, len(writable_data_points))
-
-        idx = 0
-
-        def create_dp() -> None:
-            nonlocal idx
-            self.data_point = DataPoint.objects.create(
-                id=data_point_id,
-                data_series_id=data_series.id,
-                external_id='1',
-                point_in_time=dbtime.now(),
-                sub_clock=idx
-            )
-            idx += 1
-            self.assertTrue(self.data_point.id.startswith(str(data_series.id)))
-            self.assertEqual(1, len(DataPoint.objects.filter(
-                id=data_point_id
-            )))
-
-        create_dp()
-        assert_count(1)
-
-        # create the data point again
-        create_dp()
-        assert_count(2)
-
-        # overwriting should always work
-        create_dp()
-        assert_count(3)
-        create_dp()
-        assert_count(4)
-
-
-class BaseDataPointFactTest(BaseDefaultTenantDBTest):
-    data_point: DataPoint
-    data_point_fact: BaseDataPointFactRelation
-
-    fact_type: Type[BaseFact]
-    data_series_fact_type: Type[BaseDataSeriesFactRelation]
-    data_point_fact_type: Type[BaseDataPointFactRelation]
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation]
-
-    dp_rel_table_name: str
-    dp_rel_partition_base_name: str
-
-    def get_value(self, idx: int) -> Any:
-        raise NotImplementedError()
-
-    def test_versioning_data_point_fact_django_way(self) -> None:
-        tenant = Tenant.objects.create(
-            name='tenant'
-        )
-        data_series = DataSeries.objects.create(
-            tenant=tenant,
-            name="data_series",
-            external_id='1'
-        )
-        handle_create_data_series(data_series.id, data_series.external_id, tenant_name='123',
-                                  external_id='1', backend=StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value,
-                                  tenant_id=str(tenant.id))
-
-        fact = self.fact_type.objects.create(
-            tenant=tenant,
-            name='fact',
-            optional=False
-        )
-
-        partition_name = limit.limit_length(f'{self.dp_rel_partition_base_name}_{str(fact.id)}')
-        partition.partition(
-            table_name=self.dp_rel_table_name,
-            partition_name=partition_name,
-            partition_key=fact.id,
-            connection_name=DATA_SERIES_DYNAMIC_SQL_DB,
-            tenant=tenant
-        )
-
-        data_series_fact = self.data_series_fact_type.objects.create(
-            tenant=tenant,
-            data_series=data_series,
-            fact=fact,
-            external_id='fact'
-        )
-
-        data_point_id = gen_uuid(
-            data_series_id=data_series.id,
-            external_id='1'
-        )
-
-        def create_dp() -> None:
-            self.data_point = DataPoint.objects.create(
-                id=data_point_id,
-                data_series_id=data_series.id,
-                external_id='1',
-                point_in_time=dbtime.now()
-            )
-            self.assertTrue(self.data_point.id.startswith(str(data_series.id)))
-
-        create_dp()
-
-        def add_fact_version(
-                idx: int
-        ) -> None:
-            value = self.get_value(idx)
-            self.data_point_fact = self.data_point_fact_type.objects.create(
-                data_point_id=data_point_id,
-                fact_id=fact.id,
-                value=value,
-                point_in_time=dbtime.now(),
-                sub_clock=idx
-            )
-            self.assertEqual(1, len(self.data_point_fact_type.objects.filter(
-                data_point_id=data_point_id,
-                fact_id=fact.id,
-                sub_clock=idx
-            )))
-
-        add_fact_version(1)
-        self.assertEqual(1, len(self.writable_data_point_fact_type.objects.filter(
-            data_point_id=data_point_id,
-            fact_id=fact.id
-        )))
-
-        add_fact_version(2)
-        self.assertEqual(2, len(self.writable_data_point_fact_type.objects.filter(
-            data_point_id=data_point_id,
-            fact_id=fact.id
-        )))
-
-
-class DataPointFloatFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = FloatFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_FloatFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_FloatFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_FloatFact
-
-    dp_rel_table_name = '_3_data_point_float_fact'
-    dp_rel_partition_base_name = '_3_dp_float_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return float(idx)
-
-
-class DataPointStringFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = StringFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_StringFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_StringFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_StringFact
-
-    dp_rel_table_name = '_3_data_point_string_fact'
-    dp_rel_partition_base_name = '_3_dp_string_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return str(idx)
-
-
-class DataPointTextFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = TextFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_TextFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_TextFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_TextFact
-
-    dp_rel_table_name = '_3_data_point_text_fact'
-    dp_rel_partition_base_name = '_3_dp_text_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return str(idx)
-
-
-class DataPointTimestampFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = TimestampFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_TimestampFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_TimestampFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_TimestampFact
-
-    dp_rel_table_name = '_3_data_point_timestamp_fact'
-    dp_rel_partition_base_name = '_3_dp_timestamp_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return dbtime.now()
-
-
-class DataPointJsonFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = JsonFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_JsonFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_JsonFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_JsonFact
-
-    dp_rel_table_name = '_3_data_point_json_fact'
-    dp_rel_partition_base_name = '_3_dp_json_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return {
-            'value': idx
-        }
-
-
-class DataPointBooleanFactTest(BaseDataPointFactTest):
-    fact_type: Type[BaseFact] = BooleanFact
-    data_series_fact_type: Type[BaseDataSeriesFactRelation] = DataSeries_BooleanFact
-    data_point_fact_type: Type[BaseDataPointFactRelation] = DataPoint_BooleanFact
-    writable_data_point_fact_type: Type[BaseDataPointFactRelation] = WritableDataPoint_BooleanFact
-
-    dp_rel_table_name = '_3_data_point_boolean_fact'
-    dp_rel_partition_base_name = '_3_dp_boolean_fact'
-
-    def get_value(self, idx: int) -> Any:
-        return True
-
-
 # TODO: test for dimension relation
 
 del Parent_ChildTest
-del BaseDataPointFactTest

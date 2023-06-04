@@ -16,7 +16,7 @@ from skipper.core.models.tenant import Tenant
 from skipper.core.celery import task
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.models.metamodel.index import IndexByUUID, IndexRegistrySourceType, TargetTableType
-from skipper.dataseries.raw_sql import escape, limit, partition
+from skipper.dataseries.raw_sql import escape, limit
 from skipper.dataseries.raw_sql.tenant import escaped_tenant_schema, ensure_schema, tenant_schema_unescaped
 from skipper.dataseries.storage.contract import IndexableDataSeriesChildType, StorageBackendType
 from skipper.dataseries.storage.dynamic_sql.materialized import materialized_table_name, materialized_flat_history_table_name
@@ -190,7 +190,6 @@ def handle_create_user_defined_index_actual(
     # 2.: Create indexes
     with transaction.atomic():
         if backend in (
-            StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value,
             StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value,
             StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
         ):

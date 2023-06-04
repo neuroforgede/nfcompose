@@ -291,8 +291,8 @@ class IndexSerializer(BaseDefaultDataSeriesChildSerializer):
         return external_id
 
     def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        if self._get_data_series().backend == StorageBackendType.DYNAMIC_SQL_V1.value:
-            raise ValidationError('indexes are not allowed in DYNAMIC_SQL_V1 backends')
+        if self._get_data_series().backend in (StorageBackendType.DYNAMIC_SQL_V1.value, StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value):
+            raise ValidationError(f'indexes are not allowed in {self._get_data_series().backend} backends')
         return super().validate(data) # type: ignore
 
     class Meta:

@@ -166,15 +166,6 @@ class BaseLargeDataSeriesDataPointFetchTest(BaseViewTest):
             self.assertEqual(self.data_points_resolved_dimension[endpoint_data['external_id']], endpoint_data)
 
 
-class DynamicSQLMaterializedLargeDataSeriesDataPointFetchTest(BaseLargeDataSeriesDataPointFetchTest):
-    backend_key: str = StorageBackendType.DYNAMIC_SQL_MATERIALIZED.value
-
-
-# if we run into performance issues with unit tests, simply remove this one, as it migh be slow
-class DynamicSQLV1LargeDataSeriesDataPointFetchTest(BaseLargeDataSeriesDataPointFetchTest):
-    backend_key: str = StorageBackendType.DYNAMIC_SQL_V1.value
-
-
 class DynamicSQLNoHistoryLargeDataSeriesDataPointFetchTest(BaseLargeDataSeriesDataPointFetchTest):
     backend_key: str = StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value
 

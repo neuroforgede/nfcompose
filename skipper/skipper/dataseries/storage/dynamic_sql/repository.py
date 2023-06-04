@@ -41,5 +41,6 @@ class DynamicSQLRepository(Repository):
                         external_id=val[1]
                     )
         else:
+            # FIXME: delete in 2.2.0
             return data_point_accessor(identifier=identifier, data_series_id=data_series_query_info.data_series_id)
 

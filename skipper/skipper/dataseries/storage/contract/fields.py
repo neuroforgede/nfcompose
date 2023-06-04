@@ -10,10 +10,10 @@ from rest_framework.request import Request
 from typing import Dict, Any, cast
 
 from skipper.core.serializers.common import MultipleParameterHyperlinkedIdentityField
-from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
+from skipper.dataseries.storage.contract.repository import ReadOnlyDataPoint
 
 
 class DataPointHyperlinkedIdentityField(MultipleParameterHyperlinkedIdentityField):
 
     def get_extra_lookup_url_kwargs(self, obj: Model, view_name: str, request: Request, format: str) -> Dict[str, Any]:
-        return {'data_series': cast(DataPoint, obj).data_series_id}
+        return {'data_series': cast(ReadOnlyDataPoint, obj).data_series_id}

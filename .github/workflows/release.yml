@@ -101,8 +101,8 @@ jobs:
 
       - name: "Build Skipper"
         run: |
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.0.2"
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.2"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.1.0-beta"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.1.0-beta"
 
           cd skipper
           exec python3 build.py \
@@ -114,8 +114,8 @@ jobs:
         run: |
           export NFCOMPOSE_SETUP_SKIP_PULL="yes"
           export COMPOSE_PROJECT_NAME="ci_test_unit_tests"
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.0.2"
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.0.2"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.1.0-beta"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.1.0-beta"
 
           cd client
           bash ci_test.sh || exit 1
@@ -133,16 +133,23 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
+          mv dist/compose_client-2.1.0*.tar.gz dist/compose_client-2.1.0-beta.tar.gz
 
       - name: "zip deploy/local folder"
         run: |
-          cd deploy
-          zip -r deploy-local-2.0.2.zip local/
+          cd deploy/local
+          zip -r deploy-local-2.1.0-beta.zip ./
+
+      - name: "zip deploy/production folder"
+        run: |
+          cd deploy/production/docker-compose
+          zip -r deploy-production-docker-compose-2.1.0-beta.zip ./
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./client/dist/compose_client-2.0.2.tar.gz
-            deploy/deploy-local-2.0.2.zip
+            ./client/dist/compose_client-2.1.0-beta.tar.gz
+            deploy/local/deploy-local-2.1.0-beta.zip
+            deploy/production/docker-compose/deploy-production-docker-compose-2.1.0-beta.zip
