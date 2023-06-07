@@ -39,8 +39,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name=constants.common_auth_user_view_set_name + '-detail')
     password = serializers.CharField(write_only=True, max_length=128)
     groups = GroupHyperlinkedRelatedField(view_name=constants.common_auth_group_view_set_name + '-detail', many=True)
-    # intentionally low length, so that we can always prefix it
-    username = serializers.CharField(max_length=40)
+    # we would have 150 - 32 = 118, but leave a bit extra room
+    username = serializers.CharField(max_length=100)
     permissions = serializers.HyperlinkedIdentityField(view_name=constants.common_auth_user_permission_view_set_name)
 
     def to_representation(self, instance: Any) -> Any:
@@ -112,8 +112,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.IntegerField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name=constants.common_auth_group_view_set_name + '-detail')
     permissions = serializers.HyperlinkedIdentityField(view_name=constants.common_auth_group_permission_view_set_name)
-    # intentionally low length, so that we can always prefix it
-    name = serializers.CharField(max_length=40)
+    # we would have 150 - 32 = 118, but leave a bit extra room
+    name = serializers.CharField(max_length=100)
 
     def to_representation(self, instance: Any) -> Any:
         representation = super().to_representation(instance)
