@@ -8,7 +8,7 @@ setuptools = "==67.3.2"
 djangorestframework = "==3.14.0"
 djangorestframework-simplejwt = { version = "==5.2.2" }
 # at least required for simplejwt crypto
-cryptography = "==39.0.1"
+cryptography = "==41.0.0"
 django-extensions = "==3.2.1"
 psycopg2 = "==2.9.5"
 pytz = "==2022.7.1"
