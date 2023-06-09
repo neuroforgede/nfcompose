@@ -39,9 +39,9 @@ class CoreUserDetailPermissionBaseTest(BaseRESTPermissionTest):
         self.user_dict = self.create_payload(
             url=USER_LIST_URL,
             payload={
-                'username': 'test_user',
+                'username': 'some_test_user',
                 'password': 'lkshdfjkghjashgoi4ewrpbn',
-                'email': 'test_user@neurofoege.de',
+                'email': 'some_test_user@neurofoege.de',
                 'groups': [],
                 'is_active': True
             },

@@ -124,9 +124,9 @@ class TenantListPOSTTest(BaseRESTPermissionTest):
         return self.user_client.post(
             path=self.url_under_test,
             data={
-                'username': 'test_user',
+                'username': 'some_test_user',
                 'password': 'lkshdfjkghjashgoi4ewrpbn',
-                'email': 'test_user@neurofoege.de',
+                'email': 'some_test_user@neurofoege.de',
                 'groups': [],
                 'is_active': True
             },

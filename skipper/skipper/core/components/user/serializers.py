@@ -20,43 +20,30 @@ from skipper.core import constants
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Tenant unspecific User serializer
+    """
     id = serializers.IntegerField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name=constants.core_user_view_set_name + '-detail')
     password = serializers.CharField(write_only=True, max_length=128)
-    username = serializers.CharField(max_length=40)
+    # we would have 150 - 32 = 118, but leave a bit extra room
+    username = serializers.CharField(max_length=150)
     permissions = serializers.HyperlinkedIdentityField(view_name=constants.core_user_permission_view_set_name)
 
-    def to_representation(self, instance: Any) -> Any:
-        representation = super().to_representation(instance)
-        split = representation['username'].split('@@')
-        _name: str
-        if len(split) == 1:
-            _name = split[0]
-        else:
-            _name = representation['username'][len(split[0]) + len('@@'):]
-        representation['username'] = _name
-        return representation
-
     def validate_username(self, username: str) -> str:
-        if '@@' in username:
-            raise ValidationError("may not contain '@@'")
-
-        tenant = get_current_tenant()
-        name_with_tenant = f'{tenant.name}@@{username}'
-
         kwargs = self.context.get('view').kwargs  # type: ignore
 
         if 'pk' not in kwargs:
-            if User.objects.all().filter(username=name_with_tenant).exists():
+            if User.objects.all().filter(username=username).exists():
                 raise ValidationError(
                     f'username \'{username}\' is already in use by another User')
         else:
             _id = kwargs['pk']
             _user: User = get_object_or_404(
                 User.objects.filter(id=_id))
-            if name_with_tenant != _user.username:
+            if username != _user.username:
                 raise ValidationError('changing of usernames is not supported!')
-        return name_with_tenant
+        return username
 
     def validate_password(self, password: str) -> str:
         password_validation.validate_password(password)
