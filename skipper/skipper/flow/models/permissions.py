@@ -81,7 +81,7 @@ def get_permissions_class(entity: str, action: str) -> Type[permissions.DjangoMo
     Example:
     
         * changing user: entity=user, action=user
-        * changing user's permission field: entity=user, action=user-permission
+        * changing user's permission field: entity=user, action=some-action
         
     """
     class Permission(permissions.DjangoModelPermissions):

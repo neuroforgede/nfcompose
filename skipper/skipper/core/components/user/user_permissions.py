@@ -28,12 +28,21 @@ from skipper.core.utils.permissions import (
     get_directly_assigned_user_permissions
 )
 from skipper.core.renderers import CustomizableBrowsableAPIRendererObjectMixin
-
-from skipper.core.models.permissions import get_permissions_class
+from skipper.core.models.permissions import get_permissions_class, get_permission_string_for_action_and_http_verb
 
 
 class CoreUserPermissionsViewMixin:
-    permission_classes: Any = (get_permissions_class('user', 'user-permission'),)
+    permission_classes: Any = (get_permissions_class('user', 'user_permission'),)
+
+
+"""
+includes also all permissions that should not be settable on tenant users
+"""
+all_generally_assignable_permissions = set([
+    get_permission_string_for_action_and_http_verb("user", action, method) 
+    for method in ["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+    for action in ["user", "user_permission"]
+]).union(generally_assignable_permissions)
 
 
 class UserPermissionsView(
@@ -59,7 +68,7 @@ class UserPermissionsView(
 
     def get_serializer_class(self) -> Any:
 
-        _assignable_permissions = get_assignable_permissions(self.request.user, generally_assignable_permissions)
+        _assignable_permissions = get_assignable_permissions(self.request.user, all_generally_assignable_permissions)
 
         class GenericUserPermissionSerializer(BaseSerializer):
             user_permissions = MultipleChoiceField(
@@ -71,7 +80,7 @@ class UserPermissionsView(
                 # only the directly assigned ones
                 representation = {
                     'user_permissions': sorted(
-                        list(get_directly_assigned_user_permissions(obj, generally_assignable_permissions))
+                        list(get_directly_assigned_user_permissions(obj, all_generally_assignable_permissions))
                     )
                 }
                 return representation
@@ -84,7 +93,7 @@ class UserPermissionsView(
                     new_permissions = set(validated_data['user_permissions'])
 
                     _directly_assigned = get_directly_assigned_user_permissions(
-                        cast(User, instance), generally_assignable_permissions
+                        cast(User, instance), all_generally_assignable_permissions
                     )
 
                     to_remove = (_directly_assigned - new_permissions)

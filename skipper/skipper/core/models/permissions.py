@@ -64,7 +64,7 @@ def get_permissions_class(entity: str, action: str) -> Type[permissions.DjangoMo
     Example:
     
         * changing core/user: entity=user, action=user
-        * changing core/user's permission field: entity=user, action=user-permission
+        * changing core/user's permission field: entity=user, action=user_permission
         
     """
     class Permission(permissions.DjangoModelPermissions):
@@ -84,7 +84,7 @@ def get_permissions_class(entity: str, action: str) -> Type[permissions.DjangoMo
 # TODO This is only a hack-solution until we have a custom user model
 class CoreUserPermissions(Model):
     """
-    global flow permissions, not really a model
+    global core permissions, not really a model
     that stores any real data
     """
     class Meta:
@@ -99,7 +99,7 @@ class CoreUserPermissions(Model):
 # TODO This is only a hack-solution until we have a custom user model
 class CoreUserPermissionsPermissions(Model):
     """
-    global flow permissions, not really a model
+    global core permissions, not really a model
     that stores any real data
     """
     class Meta:
@@ -107,5 +107,5 @@ class CoreUserPermissionsPermissions(Model):
         # operations will be performed for this model
         default_permissions: List[str] = []
         permissions = (
-            gen_permissions(entity='user', action='user-permission')
+            gen_permissions(entity='user', action='user_permission')
         )

@@ -39,9 +39,9 @@ class CoreUserPermissionPermissionBaseTest(BaseRESTPermissionTest):
         self.user_dict = self.create_payload(
             url=USER_LIST_URL,
             payload={
-                'username': 'test_user',
+                'username': 'some_test_user',
                 'password': 'lkshdfjkghjashgoi4ewrpbn',
-                'email': 'test_user@neurofoege.de',
+                'email': 'some_test_user@neurofoege.de',
                 'is_active': True
             },
             simulate_tenant=False
@@ -51,7 +51,7 @@ class CoreUserPermissionPermissionBaseTest(BaseRESTPermissionTest):
 class CoreUserPermissionPermissionGETTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'GET', 'user-permission')
+        return core_permission_for_rest_method('user', 'GET', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
@@ -71,7 +71,7 @@ class CoreUserPermissionPermissionGETTest(CoreUserPermissionPermissionBaseTest):
 class CoreUserPermissionPermissionHEADTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'HEAD', 'user-permission')
+        return core_permission_for_rest_method('user', 'HEAD', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
@@ -92,7 +92,7 @@ class CoreUserPermissionPermissionHEADTest(CoreUserPermissionPermissionBaseTest)
 class CoreUserPermissionPermissionPOSTTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'POST', 'user-permission')
+        return core_permission_for_rest_method('user', 'POST', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
@@ -116,7 +116,7 @@ class CoreUserPermissionPermissionPOSTTest(CoreUserPermissionPermissionBaseTest)
 class CoreUserPermissionPermissionOPTIONSTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'OPTIONS', 'user-permission')
+        return core_permission_for_rest_method('user', 'OPTIONS', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
@@ -136,7 +136,7 @@ class CoreUserPermissionPermissionOPTIONSTest(CoreUserPermissionPermissionBaseTe
 class CoreUserPermissionPermissionPUTTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'PUT', 'user-permission')
+        return core_permission_for_rest_method('user', 'PUT', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return self.user_client.put(
@@ -166,7 +166,7 @@ class CoreUserPermissionPermissionPUTTest(CoreUserPermissionPermissionBaseTest):
 class CoreUserPermissionPermissionPATCHTest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'PATCH', 'user-permission')
+        return core_permission_for_rest_method('user', 'PATCH', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
@@ -190,7 +190,7 @@ class CoreUserPermissionPermissionPATCHTest(CoreUserPermissionPermissionBaseTest
 class CoreUserPermissionPermissionDELETETest(CoreUserPermissionPermissionBaseTest):
 
     def permission_code_name(self) -> str:
-        return core_permission_for_rest_method('user', 'DELETE', 'user-permission')
+        return core_permission_for_rest_method('user', 'DELETE', 'user_permission')
 
     def method_under_test_malformed(self) -> Optional[Union[HttpResponse, TestHttpResponse]]:
         return None
