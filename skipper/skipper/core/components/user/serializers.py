@@ -26,7 +26,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.IntegerField(read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name=constants.core_user_view_set_name + '-detail')
     password = serializers.CharField(write_only=True, max_length=128)
-    # we would have 150 - 32 = 118, but leave a bit extra room
     username = serializers.CharField(max_length=150)
     permissions = serializers.HyperlinkedIdentityField(view_name=constants.core_user_permission_view_set_name)
 
