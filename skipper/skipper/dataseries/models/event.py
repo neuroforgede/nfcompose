@@ -251,7 +251,7 @@ def try_send_events(
                     headers['User-Agent'] = fake_agent()
                 try:
                     _resp: Optional[requests.Response] = None
-                    if proxy_url is not None or proxy_url == '':
+                    if proxy_url is not None and proxy_url != '':
                         _resp = requests.post(
                             proxy_url,
                             headers={
