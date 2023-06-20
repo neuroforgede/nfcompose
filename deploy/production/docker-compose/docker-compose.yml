@@ -147,7 +147,7 @@ services:
           - "nodered.local"
 
   consumer_gateway:
-    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-consumer-gateway:2.1.0-beta}"
+    image: "${SKIPPER_CONSUMER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-consumer-gateway:2.1.0-beta}"
     restart: unless-stopped
     networks:
       postgres:
