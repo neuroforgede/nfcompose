@@ -34,10 +34,10 @@ def cli() -> None:
     pass
 
 
-cli.add_command(diff)
-cli.add_command(dump)
-cli.add_command(apply)
-cli.add_command(push)
+cli.add_command(diff)  # type: ignore
+cli.add_command(dump)  # type: ignore
+cli.add_command(apply)  # type: ignore
+cli.add_command(push)  # type: ignore
 
 
 
