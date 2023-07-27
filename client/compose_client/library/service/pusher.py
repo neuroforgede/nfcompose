@@ -50,10 +50,10 @@ structure_type_to_path_elem: Dict[str, str] = {
 
 
 class BasePusher:
-    ''' Applies diff instructions of type `T` to a target location.
+    '''
+    Pushes to a target location.
 
-    The target location is always the base url of the APIClient passed during init. Supports pushing a list
-    of diffs. Diff instructions will always be executed in a safe order.
+    The target location is always the base url of the APIClient passed during init. Supports pushing lists.
     '''
     client: APIClient
 
