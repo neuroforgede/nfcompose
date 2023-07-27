@@ -5,7 +5,7 @@
 # [2019] - [2023] © NeuroForge GmbH & Co. KG
 
 import json
-from typing import Iterable, Any, Protocol, TypeVar, Dict, Optional, List
+from typing import Iterable, Any, Protocol, TypeVar, Dict, Optional, List, Union
 
 import click
 
@@ -14,7 +14,7 @@ from compose_client.library.connection.client import Credentials, get_client, AP
 from compose_client.library.models.domain_aliases import parse_domain_aliases, invert_dict
 from compose_client.library.service.diff import diff_all_data_series, diff_all_engine_definitions, \
     diff_all_group_definitions, diff_all_http_endpoint_definitions
-from compose_client.library.service.fetcher import ComposeDataSeriesDefinitionFetcher, Fetcher, \
+from compose_client.library.service.fetcher import ComposeDataSeriesDefinitionFetcher, \
     FileStorageDataSeriesDefinitionFetcher, FileStorageBaseFetcher, \
     ComposeBaseFetcher, URL, ComposeEngineDefinitionFetcher, FileStorageEngineDefinitionFetcher, FileStorageGroupDefinitionFetcher, \
     ComposeGroupDefinitionFetcher, FileStorageHttpEndpointDefinitionFetcher, ComposeHttpEndpointDefinitionFetcher
@@ -32,12 +32,12 @@ def diff() -> None:
 T = TypeVar('T')
 
 
-class ComposeFetcherType(Protocol[T]):
-    def __call__(self, client: APIClient) -> ComposeBaseFetcher[T]: ...
+class ComposeFetcherType(Protocol):
+    def __call__(self, client: APIClient) -> ComposeBaseFetcher: ...
 
 
-class FileFetcherType(Protocol[T]):
-    def __call__(self, storage_adapter: FileStorageAdapter, path: str) -> FileStorageBaseFetcher[T]: ...
+class FileFetcherType(Protocol):
+    def __call__(self, storage_adapter: FileStorageAdapter, path: str) -> FileStorageBaseFetcher: ...
 
 
 class DiffAlgorithm(Protocol):
@@ -56,8 +56,8 @@ def _diff(
         target_compose_password: str,
         delete_in_base: bool,
         revoke_missing_group_permissions: bool,
-        compose_fetcher_type: ComposeFetcherType[T],
-        file_fetcher_type: FileFetcherType[T],
+        compose_fetcher_type: ComposeFetcherType,
+        file_fetcher_type: FileFetcherType,
         diff_algorithm: DiffAlgorithm,
         base_kwargs: Dict[str, Any],
         target_kwargs: Dict[str, Any]
@@ -65,7 +65,7 @@ def _diff(
     """
     skeleton function that executes the diff algorithm in a standardized manner
     """
-    base_fetcher: Fetcher[Any, Any]
+    base_fetcher: Union[ComposeBaseFetcher, FileStorageBaseFetcher]
     if base_type == 'compose':
         base_fetcher = compose_fetcher_type(
             client=get_client(
@@ -84,7 +84,7 @@ def _diff(
     else:
         raise AssertionError()
 
-    target_fetcher: Fetcher[Any, Any]
+    target_fetcher: Union[ComposeBaseFetcher, FileStorageBaseFetcher]
     if target_type == 'compose':
         target_fetcher = compose_fetcher_type(
             client=get_client(
@@ -103,8 +103,8 @@ def _diff(
     else:
         raise AssertionError()
 
-    base_definitions = base_fetcher.fetch(**base_kwargs)
-    target_definitions = target_fetcher.fetch(**target_kwargs)
+    base_definitions = base_fetcher.fetch(**base_kwargs)  # type: ignore
+    target_definitions = target_fetcher.fetch(**target_kwargs)  # type: ignore
 
     _diffs = [elem for elem in diff_algorithm(base_definitions, target_definitions, delete_in_base, revoke_missing_group_permissions) if not elem.empty()]
 

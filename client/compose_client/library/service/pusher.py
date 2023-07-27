@@ -49,11 +49,7 @@ structure_type_to_path_elem: Dict[str, str] = {
 }
 
 
-class Pusher(Generic[Location, T]):
-    def push(self, data: Iterable[T], **kwargs: Any) -> None: ...
-
-
-class BasePusher(Pusher[Location, T]):
+class BasePusher:
     ''' Applies diff instructions of type `T` to a target location.
 
     The target location is always the base url of the APIClient passed during init. Supports pushing a list
@@ -64,14 +60,12 @@ class BasePusher(Pusher[Location, T]):
     def __init__(self, client: APIClient):
         self.client = client
 
-    def push(self, data: Iterable[T], **kwargs: Any) -> None: ...
-
 
 REST_URL = str
 EXTERNAL_ID = str
 
 
-class DataSeriesDefinitionDiffPusher(BasePusher[URL, DataSeriesDefinitionDiff]):
+class DataSeriesDefinitionDiffPusher(BasePusher):
     def _delete_structure_elements(
         self,
         structure_diff: DataSeriesStructureDiff,
@@ -261,7 +255,7 @@ class DataSeriesDefinitionDiffPusher(BasePusher[URL, DataSeriesDefinitionDiff]):
                 data=update_op.payload
             )
 
-    def push(self, data: Iterable[DataSeriesDefinitionDiff], **kwargs: Any) -> None:
+    def push(self, data: Iterable[DataSeriesDefinitionDiff]) -> None:
         # deletions
         for diff in data:
             # Created dataseries are not allowed to have deletions in them
@@ -338,11 +332,11 @@ class DataSeriesDefinitionDiffPusher(BasePusher[URL, DataSeriesDefinitionDiff]):
                     )
 
 
-class EngineDefinitionDiffPusher(BasePusher[URL, EngineDefinitionDiff]):
+class EngineDefinitionDiffPusher(BasePusher):
     def _get_engine(self, external_id: str) -> Dict[str, Any]:
         return cast(Dict[str, Any], self.client.get(self.client.url(path=f'/api/flow/engine/?{urlencode({"external_id": external_id})}'))['results'][0])
 
-    def push(self, data: Iterable[EngineDefinitionDiff], **kwargs: Any) -> None:
+    def push(self, data: Iterable[EngineDefinitionDiff]) -> None:
         all_groups: Iterable[RawGroup] = read_paginated_all(
             self.client,
             url=self.client.url('/api/common/auth/group/'),
@@ -403,11 +397,11 @@ class EngineDefinitionDiffPusher(BasePusher[URL, EngineDefinitionDiff]):
                         )
 
 
-class HttpEndpointDefinitionDiffPusher(BasePusher[URL, HttpEndpointDefinitionDiff]):
+class HttpEndpointDefinitionDiffPusher(BasePusher):
     def _get_http_endpoint(self, external_id: str) -> Dict[str, Any]:
         return cast(Dict[str, Any], self.client.get(self.client.url(path=f'/api/flow/httpendpoint/?{urlencode({"external_id": external_id})}'))['results'][0])
 
-    def push(self, data: Iterable[HttpEndpointDefinitionDiff], **kwargs: Any) -> None:
+    def push(self, data: Iterable[HttpEndpointDefinitionDiff]) -> None:
         all_groups: Iterable[RawGroup] = read_paginated_all(
             self.client,
             url=self.client.url('/api/common/auth/group/'),
@@ -466,11 +460,11 @@ class HttpEndpointDefinitionDiffPusher(BasePusher[URL, HttpEndpointDefinitionDif
                         )
 
 
-class GroupDefinitionDiffPusher(BasePusher[URL, GroupDefinitionDiff]):
+class GroupDefinitionDiffPusher(BasePusher):
     def _get_group(self, name: str) -> Dict[str, Any]:
         return cast(Dict[str, Any], self.client.get(self.client.url(path=f'/api/common/auth/group/?{urlencode({"name": name})}'))['results'][0])
 
-    def push(self, data: Iterable[GroupDefinitionDiff], **kwargs: Any) -> None:
+    def push(self, data: Iterable[GroupDefinitionDiff]) -> None:
         for elem in data:
             # first delete all permissions by putting the empty list
             # (not really needed as of implementation detail of the api, but better safe than sorry as it is
@@ -500,8 +494,8 @@ class GroupDefinitionDiffPusher(BasePusher[URL, GroupDefinitionDiff]):
                     self.client.put(self._get_group(elem.name)['permissions'], data=elem.group_permissions.payload)
 
 
-class DataSeriesCreateViewOperationPusher(BasePusher[URL, DataSeriesCreateViewOperation]):
-    def push(self, data: Iterable[DataSeriesCreateViewOperation], **kwargs: Any) -> None:
+class DataSeriesCreateViewOperationPusher(BasePusher):
+    def push(self, data: Iterable[DataSeriesCreateViewOperation]) -> None:
         for op in data:
             self.client.post(
                 url=self.client.url(f'{_base_path_data_series_by_external_id}{op.data_series_external_id}/createview/'),
@@ -527,7 +521,7 @@ def chunks(iterable: Iterable[__T], size: int = 10, map_fn: Callable[[__T], Any]
         yield chunk()  # in outer generator, yield next chunk
 
 
-class DataPointPusher(BasePusher[URL, DataPoint]):
+class DataPointPusher(BasePusher):
     '''Pushes DataPoints to the bulk endpoint with batch size defined in init.'''
     batch_size: int
     _dataseries_definitions: Dict[str, DataSeriesDefinition] = dict()    # {<_data_series_external_id>: {<saved_definition>}}
@@ -539,9 +533,9 @@ class DataPointPusher(BasePusher[URL, DataPoint]):
     def reset_caches(self) -> None:
         self._dataseries_definitions = dict()
 
-    def push(self, data: Iterable[DataPoint], use_dataseries_definition_cache: bool = False, **kwargs: Any) -> None:
-        _data_series_external_id = kwargs['data_series_external_id']
-        _async = kwargs.get('asynchronous', False)
+    def push(self, data: Iterable[DataPoint], *, data_series_external_id: str, asynchronous: bool = False, use_dataseries_definition_cache: bool = False) -> None:
+        _data_series_external_id = data_series_external_id
+        _async = asynchronous
 
         # domain aliases are not relevant
         if not use_dataseries_definition_cache:

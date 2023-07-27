@@ -11,7 +11,7 @@ import json
 import os
 import re
 import sys
-from typing import Any, Type, Optional, Iterable, Dict, Mapping, Callable, List
+from typing import Any, Type, Optional, Iterable, Dict, Mapping, Callable, List, Union
 from urllib.parse import urlparse
 
 import click
@@ -22,8 +22,7 @@ from compose_client.library.connection.client import Credentials, get_client, US
 from compose_client.library.models.definition.datapoint import FileTypeContent
 from compose_client.library.models.domain_aliases import parse_domain_aliases, invert_dict
 from compose_client.library.service.fetcher import ComposeDataSeriesDefinitionFetcher, ComposeEngineDefinitionFetcher, \
-    Fetcher, \
-    URL, ComposeGroupDefinitionFetcher, ComposeDataPointFetcher, ComposeHttpEndpointDefinitionFetcher
+    URL, ComposeGroupDefinitionFetcher, ComposeDataPointFetcher, ComposeBaseFetcher, FileStorageBaseFetcher, ComposeHttpEndpointDefinitionFetcher
 from compose_client.library.storage.file import LocalFileStorageAdapter, EnumEncoder
 from compose_client.library.utils.types import JSONType
 
@@ -38,12 +37,12 @@ def dump() -> None:
 
 def _dump(
         outfile: str,
-        fetcher: Fetcher[URL, Any],
+        fetcher: Union[ComposeBaseFetcher, FileStorageBaseFetcher],
         kwargs: Dict[str, Any],
         encoder: Type[json.JSONEncoder] = EnumEncoder,
         order_by: Optional[Callable[[Any], Any]] = None
 ) -> None:
-    definitions = fetcher.fetch(**kwargs)
+    definitions = fetcher.fetch(**kwargs)  # type: ignore
 
     _defs_as_dicts = list(map(lambda x: x.to_dict(), definitions))  # type: ignore
 
@@ -59,13 +58,13 @@ def _dump(
 
 def _dump_lines(
         outfile: str,
-        fetcher: Fetcher[URL, Any],
+        fetcher: Union[ComposeBaseFetcher, FileStorageBaseFetcher],
         kwargs: Dict[str, Any],
         encoder: Type[json.JSONEncoder] = EnumEncoder
 ) -> None:
 
     def _dict_gen() -> Iterable[Dict[str, Any]]:
-        definitions = fetcher.fetch(**kwargs)
+        definitions = fetcher.fetch(**kwargs)  # type: ignore
         for _def in definitions:
             as_dict = _def.to_dict()
             yield as_dict
