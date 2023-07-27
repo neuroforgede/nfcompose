@@ -2,7 +2,7 @@ import datetime
 import re
 from dataclasses import replace
 from typing import TypeVar, Generic, Iterable, Dict, Optional, Any, List
-from urllib.parse import urlencode, quote
+from urllib.parse import quote
 
 from compose_client.library.utils.exception import ComposeClientException
 from compose_client.library.service.url import replace_domain
@@ -48,12 +48,7 @@ T = TypeVar('T')
 
 URL = str
 
-
-class Fetcher(Generic[Location, T]):
-    def fetch(self, **kwargs: Any) -> Iterable[T]: ...
-
-
-class ComposeBaseFetcher(Fetcher[URL, T]):
+class ComposeBaseFetcher:
     '''Fetches definitions from a compose instance specified by a client.
 
     Args:
@@ -64,10 +59,8 @@ class ComposeBaseFetcher(Fetcher[URL, T]):
     def __init__(self, client: APIClient):
         self.client = client
 
-    def fetch(self, **kwargs: Any) -> Iterable[T]: ...
 
-
-class FileStorageBaseFetcher(Fetcher[str, T]):
+class FileStorageBaseFetcher:
     '''Fetches definitions from a file storage location specified by a path.
 
     Uses a storage adapter to abstract away the specifics of the storage type.
@@ -83,16 +76,10 @@ class FileStorageBaseFetcher(Fetcher[str, T]):
         self.storage_adapter = storage_adapter
         self.path = path
 
-    def fetch(self, **kwargs: Any) -> Iterable[T]: ...
 
-
-class FileStorageDataSeriesDefinitionFetcher(FileStorageBaseFetcher[DataSeriesDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[DataSeriesDefinition]:
+class FileStorageDataSeriesDefinitionFetcher(FileStorageBaseFetcher):
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: List[str] = []) -> Iterable[DataSeriesDefinition]:
         ret = []
-
-        domain_aliases = kwargs.get('domain_aliases', {})
-        regex_filter: Optional[str] = kwargs.get('regex_filter', None)
-        external_ids: List[str] = kwargs.get('external_ids')
 
         for elem in self.storage_adapter.read_json(self.path):
             _definition = DataSeriesDefinition.from_dict(elem)
@@ -195,13 +182,9 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
     return data_series_definition
 
 
-class ComposeDataSeriesDefinitionFetcher(ComposeBaseFetcher[DataSeriesDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[DataSeriesDefinition]:
+class ComposeDataSeriesDefinitionFetcher(ComposeBaseFetcher):
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: List[str] = []) -> Iterable[DataSeriesDefinition]:
         ret = []
-
-        domain_aliases = kwargs.get('domain_aliases', {})
-        regex_filter: Optional[str] = kwargs.get('regex_filter', None)
-        external_ids: List[str] = kwargs.get('external_ids')
 
         all_raw_data_series: Iterable[RawDataSeries]
         if len(external_ids) > 0:
@@ -234,11 +217,9 @@ class ComposeDataSeriesDefinitionFetcher(ComposeBaseFetcher[DataSeriesDefinition
         return ret
 
 
-class FileStorageEngineDefinitionFetcher(FileStorageBaseFetcher[EngineDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[EngineDefinition]:
+class FileStorageEngineDefinitionFetcher(FileStorageBaseFetcher):
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}) -> Iterable[EngineDefinition]:
         ret = []
-
-        domain_aliases = kwargs.get('domain_aliases', {})
 
         for elem in self.storage_adapter.read_json(self.path):
             _definition = EngineDefinition.from_dict(elem)
@@ -257,11 +238,9 @@ class FileStorageEngineDefinitionFetcher(FileStorageBaseFetcher[EngineDefinition
         return ret
 
 
-class ComposeEngineDefinitionFetcher(ComposeBaseFetcher[EngineDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[EngineDefinition]:
+class ComposeEngineDefinitionFetcher(ComposeBaseFetcher):
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}) -> Iterable[EngineDefinition]:
         ret = []
-
-        domain_aliases = kwargs.get('domain_aliases', {})
 
         all_raw_engines: Iterable[RawEngine] = read_paginated_all(
             self.client,
@@ -286,16 +265,16 @@ class ComposeEngineDefinitionFetcher(ComposeBaseFetcher[EngineDefinition]):
         return ret
 
 
-class FileStorageHttpEndpointDefinitionFetcher(FileStorageBaseFetcher[HttpEndpointDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[HttpEndpointDefinition]:
+class FileStorageHttpEndpointDefinitionFetcher(FileStorageBaseFetcher):
+    def fetch(self) -> Iterable[HttpEndpointDefinition]:
         ret = []
         for elem in self.storage_adapter.read_json(self.path):
             ret.append(HttpEndpointDefinition.from_dict(elem))
         return ret
 
 
-class ComposeHttpEndpointDefinitionFetcher(ComposeBaseFetcher[HttpEndpointDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[HttpEndpointDefinition]:
+class ComposeHttpEndpointDefinitionFetcher(ComposeBaseFetcher):
+    def fetch(self) -> Iterable[HttpEndpointDefinition]:
         ret = []
 
         all_raw_engines: Iterable[RawEngine] = read_paginated_all(
@@ -324,16 +303,16 @@ class ComposeHttpEndpointDefinitionFetcher(ComposeBaseFetcher[HttpEndpointDefini
         return ret
 
 
-class FileStorageGroupDefinitionFetcher(FileStorageBaseFetcher[GroupDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[GroupDefinition]:
+class FileStorageGroupDefinitionFetcher(FileStorageBaseFetcher):
+    def fetch(self) -> Iterable[GroupDefinition]:
         ret = []
         for elem in self.storage_adapter.read_json(self.path):
             ret.append(GroupDefinition.from_dict(elem))
         return ret
 
 
-class ComposeGroupDefinitionFetcher(ComposeBaseFetcher[GroupDefinition]):
-    def fetch(self, **kwargs: Any) -> Iterable[GroupDefinition]:
+class ComposeGroupDefinitionFetcher(ComposeBaseFetcher):
+    def fetch(self) -> Iterable[GroupDefinition]:
         ret = []
 
         all_raw_groups: Iterable[RawGroup] = read_paginated_all(
@@ -377,7 +356,7 @@ def get_single_data_series_definition(client: APIClient, data_series_external_id
     return definition
 
 
-class ComposeDataPointFetcher(ComposeBaseFetcher[DataPoint]):
+class ComposeDataPointFetcher(ComposeBaseFetcher):
     '''Fetches DataPoints from a single DataSeries with additional options.
 
     Args:
@@ -413,7 +392,7 @@ class ComposeDataPointFetcher(ComposeBaseFetcher[DataPoint]):
         self.external_ids = external_ids
         self.changes_since = changes_since
 
-    def fetch(self, **kwargs: Any) -> Iterable[DataPoint]:
+    def fetch(self) -> Iterable[DataPoint]:
         # domain aliases are not relevant here
         definition = get_single_data_series_definition(self.client,
                                                        data_series_external_id=self.data_series_external_id,
