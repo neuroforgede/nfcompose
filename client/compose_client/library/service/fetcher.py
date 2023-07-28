@@ -78,13 +78,13 @@ class FileStorageBaseFetcher:
 
 
 class FileStorageDataSeriesDefinitionFetcher(FileStorageBaseFetcher):
-    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: List[str] = []) -> Iterable[DataSeriesDefinition]:
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: Optional[List[str]] = None) -> Iterable[DataSeriesDefinition]:
         ret = []
 
         for elem in self.storage_adapter.read_json(self.path):
             _definition = DataSeriesDefinition.from_dict(elem)
 
-            if len(external_ids) > 0 and _definition.data_series.external_id not in external_ids:
+            if external_ids is not None and _definition.data_series.external_id not in external_ids:
                 continue
 
             if regex_filter is None or re.fullmatch(regex_filter, _definition.data_series.external_id):
@@ -183,11 +183,11 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
 
 
 class ComposeDataSeriesDefinitionFetcher(ComposeBaseFetcher):
-    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: List[str] = []) -> Iterable[DataSeriesDefinition]:
+    def fetch(self, *, domain_aliases: Dict[str, str] = {}, regex_filter: Optional[str] = None, external_ids: Optional[List[str]] = None) -> Iterable[DataSeriesDefinition]:
         ret = []
 
         all_raw_data_series: Iterable[RawDataSeries]
-        if len(external_ids) > 0:
+        if external_ids is not None:
             all_raw_data_series = []
             for external_id in external_ids:
                 if external_id != '':

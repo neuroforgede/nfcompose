@@ -118,7 +118,7 @@ def dump_data_series_definitions(
         kwargs={
             "domain_aliases": inverted_domain_aliases_obj,
             "regex_filter": regex_filter,
-            "external_ids": external_id
+            "external_ids": external_id if len(external_id) > 0 else None
         },
         order_by=lambda x: x['data_series']['external_id']
     )

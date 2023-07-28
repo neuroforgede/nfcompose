@@ -217,13 +217,13 @@ def diff_data_series_definition(
         ),
         base_kwargs={
             "regex_filter": regex_filter,
-            "external_ids": external_id
+            "external_ids": external_id if len(external_id) > 0 else None
         },
         # target is what we want to be at, so local files
         target_kwargs={
             "domain_aliases": domain_aliases_obj,
             "regex_filter": regex_filter,
-            "external_ids": external_id
+            "external_ids": external_id if len(external_id) > 0 else None
         }
     )
 
