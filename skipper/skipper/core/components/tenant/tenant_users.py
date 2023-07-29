@@ -11,6 +11,7 @@ from django.db.models import Model, QuerySet
 from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions, serializers
+from rest_framework.generics import get_object_or_404
 
 from skipper.core import constants
 from skipper.core.serializers.base import BaseSerializer
@@ -38,6 +39,7 @@ class TenantUserViewSet(
     ModelViewSet  # type: ignore
 ):
     skipper_base_name = constants.core_tenant_user_view_set_name
+    kwargs: Dict[str, Any]
 
     def get_serializer_class(self) -> Any:
 
@@ -64,6 +66,9 @@ class TenantUserViewSet(
         return GenericTenantUserSerializer
 
     def get_queryset(self) -> QuerySet[Tenant_User]:
-        return Tenant_User.objects.all()
+        tenant = get_object_or_404(Tenant.objects.filter(id=self.kwargs["tenant_id"]))
+        return Tenant_User.objects.filter(
+            tenant=tenant
+        ).all()
 
 
