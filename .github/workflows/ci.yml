@@ -73,9 +73,9 @@ jobs:
 
       - name: "Run Skipper Tests"
         run: |
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:ci"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:$(bash version.sh)"
           # skipper_proxy is still in the default place, but we dont push it in this pipeline
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:ci"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:$(bash version.sh)"
 
           cd skipper
           exec python3 build.py \
@@ -88,9 +88,9 @@ jobs:
         run: |
           export NFCOMPOSE_SETUP_SKIP_PULL="yes"
           export COMPOSE_PROJECT_NAME="ci_test_unit_tests"
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:ci"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:$(bash version.sh)"
           # skipper_proxy is still in the default place, but we dont push it in this pipeline
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:ci"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:$(bash version.sh)"
 
           cd client
           bash ci_test.sh || exit 1
