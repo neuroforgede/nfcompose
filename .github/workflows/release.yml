@@ -3,7 +3,7 @@ name: Production Build
 on:
   push:
     # Publish semver tags as releases.
-    tags: [ 'release/*' ]
+    tags: [ '*.*.*' ]
 
 jobs:
   consumer-gateway:
@@ -67,6 +67,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8' 
@@ -101,21 +104,21 @@ jobs:
 
       - name: "Build Skipper"
         run: |
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.1.0-beta"
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.1.0-beta"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper:$RELEASE_VERSION"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper-proxy:$RELEASE_VERSION"
 
           cd skipper
           exec python3 build.py \
             build \
-            --imageName ghcr.io/neuroforgede/nfcompose-skipper \
+            --imageName ghcr.io/${{ github.repository_owner }}/nfcompose-skipper \
             --buildBase
 
       - name: "Run client Tests"
         run: |
           export NFCOMPOSE_SETUP_SKIP_PULL="yes"
           export COMPOSE_PROJECT_NAME="ci_test_unit_tests"
-          export SKIPPER_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper:2.1.0-beta"
-          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.1.0-beta"
+          export SKIPPER_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper:$RELEASE_VERSION"
+          export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper-proxy:$RELEASE_VERSION"
 
           cd client
           bash ci_test.sh || exit 1
