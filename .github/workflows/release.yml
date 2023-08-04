@@ -136,23 +136,23 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
-          mv dist/compose_client-2.1.0*.tar.gz dist/compose_client-2.1.0-beta.tar.gz
+          mv dist/compose_client-2.1.0*.tar.gz dist/compose_client-$RELEASE_VERSION.tar.gz
 
       - name: "zip deploy/local folder"
         run: |
           cd deploy/local
-          zip -r deploy-local-2.1.0-beta.zip ./
+          zip -r deploy-local-$RELEASE_VERSION.zip ./
 
       - name: "zip deploy/production folder"
         run: |
           cd deploy/production/docker-compose
-          zip -r deploy-production-docker-compose-2.1.0-beta.zip ./
+          zip -r deploy-production-docker-compose-$RELEASE_VERSION.zip ./
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./client/dist/compose_client-2.1.0-beta.tar.gz
-            deploy/local/deploy-local-2.1.0-beta.zip
-            deploy/production/docker-compose/deploy-production-docker-compose-2.1.0-beta.zip
+            ./client/dist/compose_client-$RELEASE_VERSION.tar.gz
+            deploy/local/deploy-local-$RELEASE_VERSION.zip
+            deploy/production/docker-compose/deploy-production-docker-compose-$RELEASE_VERSION.zip
