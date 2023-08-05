@@ -110,6 +110,8 @@ jobs:
 
       - name: "Build Skipper"
         run: |
+          echo "will build version $(bash version.sh)"
+
           export SKIPPER_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper:$RELEASE_VERSION"
           export SKIPPER_PROXY_DOCKER_IMAGE="ghcr.io/${{ github.repository_owner }}/nfcompose-skipper-proxy:$RELEASE_VERSION"
 
