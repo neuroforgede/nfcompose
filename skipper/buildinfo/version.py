@@ -3,7 +3,7 @@ import os
 if "RELEASE_VERSION" in os.environ:
   import re
   release_version = os.environ["RELEASE_VERSION"]
-  match = re.match(r"([^\.]+)\.([^\.]+)\.([^\.\-]+)(-[^.]+)?", release_version)
+  match = re.match(r"([^\.]+)\.([^\.]+)\.([^\.\-]+)(-.+)?", release_version)
   if match is None:
     raise AssertionError(f"bad RELEASE_VERSION env var {release_version}")
   
