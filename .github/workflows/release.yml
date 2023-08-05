@@ -165,6 +165,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./client/dist/compose_client-${{ steps.get_version.outputs.version }}.tar.gz
-            deploy/local/deploy-local-${{ steps.get_version.outputs.version }}.zip
-            deploy/production/docker-compose/deploy-production-docker-compose-${{ steps.get_version.outputs.version }}.zip
+            ./client/dist/compose_client-${{ steps.get_version.outputs.RELEASE_VERSION }}.tar.gz
+            deploy/local/deploy-local-${{ steps.get_version.outputs.RELEASE_VERSION }}.zip
+            deploy/production/docker-compose/deploy-production-docker-compose-${{ steps.get_version.outputs.RELEASE_VERSION }}.zip
