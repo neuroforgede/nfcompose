@@ -6,7 +6,7 @@
 
 import itertools
 import json
-from typing import Generic, TypeVar, Iterable, List, Dict, Tuple, Any, cast, Generator, Callable
+from typing import Generic, TypeVar, Iterable, List, Dict, Tuple, Any, cast, Generator, Callable, Optional
 from urllib.parse import urlencode
 import logging
 import os
@@ -63,6 +63,15 @@ class BasePusher:
 
 REST_URL = str
 EXTERNAL_ID = str
+
+
+def guess_mime_type(path: str) -> Optional[str]:
+    try:
+        import mimetypes
+        mime_type, encoding = mimetypes.guess_type(path)
+        return mime_type
+    except:
+        return None
 
 
 class DataSeriesDefinitionDiffPusher(BasePusher):
@@ -567,7 +576,7 @@ class DataPointPusher(BasePusher):
                         _value: Any
                         if key in file_like_facts:
                             if isinstance(value, str):
-                                _value = open(value, 'rb')
+                                _value = (value, open(value, 'rb'), guess_mime_type(value))
                             else:
                                 _value = value
                         elif key in json_facts:
