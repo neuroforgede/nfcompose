@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
     "axios": "^1.4.0",
+    "form-data": "^4.0.0",
     "jest": "^29.6.2"
   }
 }
