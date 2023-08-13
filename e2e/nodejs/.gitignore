@@ -1,0 +1,8 @@
+dump/
+dist/
+dump.json
+dump_files/
+*.jsonl
+playground/
+
+node_modules

@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+
+  nodejs_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      args:
+        - CONTAINER_USER_ID=${CONTAINER_USER_ID}
+        - CONTAINER_GROUP_ID=${CONTAINER_GROUP_ID}
+    volumes:
+      - ./:/client
+    networks:
+      nfcompose:
+      cephalopod:
+    restart: unless-stopped
+
+networks:
+  nfcompose:
+    external: true
+    name: ${DEV_NETWORK_NAME}
+  cephalopod:
+    external: true
+    name: ${LOCAL_SKIPPER_DEV_NETWORK_NAME}
