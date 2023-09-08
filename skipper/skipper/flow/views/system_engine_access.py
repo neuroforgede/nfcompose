@@ -34,7 +34,7 @@ def can_use_system_flow_edit(user: Optional[User]) -> bool:
 
 
 @csrf_exempt
-@no_content_negotiation_api_view(['GET'])
+@no_content_negotiation_api_view(['GET'])  # type: ignore
 @permission_classes([AllowAny])
 def system_engine_access_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     """

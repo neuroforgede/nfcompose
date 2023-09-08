@@ -43,7 +43,7 @@ def can_use_endpoint_public_impl(tenant: Tenant, uri: str, method: str) -> Optio
 
 
 @csrf_exempt
-@no_content_negotiation_api_view(['GET'])
+@no_content_negotiation_api_view(['GET'])  # type: ignore
 @permission_classes([AllowAny])
 def flow_impl_public_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     """
