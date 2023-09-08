@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from skipper.flow.views.common import sanitize_cookies
 from skipper.settings import flow_upstream_edit
+from .content_negotiation import no_content_negotiation_api_view
 
 
 def can_use_system_flow_edit(user: Optional[User]) -> bool:
@@ -33,7 +34,7 @@ def can_use_system_flow_edit(user: Optional[User]) -> bool:
 
 
 @csrf_exempt
-@api_view(['GET'])
+@no_content_negotiation_api_view(['GET'])
 @permission_classes([AllowAny])
 def system_engine_access_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     """

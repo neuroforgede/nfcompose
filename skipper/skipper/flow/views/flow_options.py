@@ -12,10 +12,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
+from .content_negotiation import no_content_negotiation_api_view
 
 
 @csrf_exempt
-@api_view(['OPTIONS'])
+@no_content_negotiation_api_view(['OPTIONS'])
 @permission_classes([AllowAny])
 def flow_options_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     # noop view, we redirect to this for OPTIONS calls

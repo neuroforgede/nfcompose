@@ -20,6 +20,7 @@ from skipper.core.models.tenant import Tenant
 from skipper.flow.models import HttpEndpoint
 from skipper.flow.views.flow_common import flow_base_path, outside_base_path, path_from_uri
 from skipper.settings import flow_upstream_impl
+from .content_negotiation import no_content_negotiation_api_view
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def can_use_endpoint_public_impl(tenant: Tenant, uri: str, method: str) -> Optio
 
 
 @csrf_exempt
-@api_view(['GET'])
+@no_content_negotiation_api_view(['GET'])
 @permission_classes([AllowAny])
 def flow_impl_public_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     """
