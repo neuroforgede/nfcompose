@@ -16,7 +16,7 @@ from .content_negotiation import no_content_negotiation_api_view
 
 
 @csrf_exempt
-@no_content_negotiation_api_view(['OPTIONS'])
+@no_content_negotiation_api_view(['OPTIONS'])  # type: ignore
 @permission_classes([AllowAny])
 def flow_options_view(request: HttpRequest, path: Optional[str] = None) -> HttpResponse:
     # noop view, we redirect to this for OPTIONS calls
