@@ -24,6 +24,7 @@ from skipper.flow.models import Engine, get_permissions_class, \
 from skipper.flow.serializers.engine import EngineSerializer
 from skipper.flow.views.common import sanitize_cookies
 from skipper.flow.views.engine_crud import EngineViewMixin
+from .content_negotiation import IgnoreClientContentNegotiation
 
 
 class BaseEngineAccessView(
@@ -83,6 +84,8 @@ class EngineAccessView(BaseEngineAccessView):
 
 
 class NginXEngineAccessView(BaseEngineAccessView):
+    content_negotiation_class = IgnoreClientContentNegotiation
+
     def get(self, request: Request) -> Response:
         if 'X-Original-Uri' not in request.headers:
             return Response(status=status.HTTP_403_FORBIDDEN)
