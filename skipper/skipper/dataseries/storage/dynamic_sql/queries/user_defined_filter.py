@@ -29,17 +29,16 @@ def complex_filter_to_sql_filter(filter_dict, handle_column, max_depth=10, depth
     key: str
     for key, value in filter_dict.items():
         if key == "$and":
-            and_clauses = [complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) for item in value]
+            and_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " AND ".join(and_clauses) + ")"
         elif key == "$or":
-            or_clauses = [complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) for item in value]
+            or_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " OR ".join(or_clauses) + ")"
         elif key.startswith("$"):
             raise ValueError(f"Unsupported operator: {key}")
         else:
             column = key
             sql_filter += handle_column(column, value)
-        
 
         sql_filter += " AND "
 
@@ -74,7 +73,7 @@ def compute_user_defined_filter_for_raw_query(
 
     def handle_column(column, filter, operation="$eq"):
         if isinstance(filter, dict):
-            and_clauses = [handle_column(column, item[1], operation=item[0]) for item in filter.items()]
+            and_clauses = ["(" + handle_column(column, item[1], operation=item[0]) + ")" for item in filter.items()]
             sql_filter = " AND ".join(and_clauses)
             return sql_filter
         else:
@@ -96,6 +95,10 @@ def compute_user_defined_filter_for_raw_query(
         query_param_name = f'filter_{query_param_idx}'
         query_param_idx += 1
         # image and file intentionally not here
+
+        # FIXME: query_parts is stupid, we should return
+        # a string here and not return a string array that is not used
+        # for more than one call
         _handle_if_float_fact(use_materialized_table, data_series_query_info, query_parts, query_params,
                               used_data_series_children,
                               query_param_name, key, value, handled_keys)
@@ -114,7 +117,7 @@ def compute_user_defined_filter_for_raw_query(
         _handle_if_dimension(use_materialized_table, data_series_query_info, query_parts, query_params,
                              used_data_series_children,
                              query_param_name, key, value, handled_keys)
-        return '\n'.join(query_parts)
+        return ' AND '.join(query_parts)
 
     filter_query_str = complex_filter_to_sql_filter(
         filter_dict=filter_params,
@@ -126,7 +129,10 @@ def compute_user_defined_filter_for_raw_query(
         raise ValidationError(f'unrecognized fields in filter query parameter: {"{"}{",".join(not_found)}{"}"}')
 
     return UserDefinedFilter(
-        filter_query_str=filter_query_str,
+        # we need this to start with an AND
+        # as all other code expects it, maybe we could improve this in the future
+        # but meh.
+        filter_query_str=f'AND {filter_query_str}' if len(filter_query_str) > 0 else "",
         query_params=query_params,
         used_data_series_children=used_data_series_children
     )
@@ -152,11 +158,11 @@ def _handle_if_dimension(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             if not isinstance(value, str):
                 raise ValidationError(f"expected string value for field {str(key)}")
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s")
+            query_parts.append(f"{_lhs} = %({query_param_name})s")
             query_params[query_param_name] = value
 
         used_data_series_children.dimensions[key] = data_series_query_info.dimensions[key]
@@ -183,7 +189,7 @@ def _handle_if_timestamp_fact(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             try:
                 parsed_date_time = dateparse.parse_datetime(str(value))
@@ -191,7 +197,7 @@ def _handle_if_timestamp_fact(
                     raise ValidationError(f'{value} is no valid datetime')
             except ValueError:
                 raise ValidationError(f'{value} is no valid datetime')
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s")
+            query_parts.append(f"{_lhs} = %({query_param_name})s")
             query_params[query_param_name] = parsed_date_time
 
         used_data_series_children.timestamp_facts[key] = data_series_query_info.timestamp_facts[key]
@@ -218,11 +224,11 @@ def _handle_if_text_fact(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             if not isinstance(value, str):
                 raise ValidationError(f"expected string value for field {str(key)}")
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s::text")
+            query_parts.append(f"{_lhs} = %({query_param_name})s::text")
             query_params[query_param_name] = value
 
         used_data_series_children.text_facts[key] = data_series_query_info.text_facts[key]
@@ -249,11 +255,11 @@ def _handle_if_string_fact(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             if not isinstance(value, str):
                 raise ValidationError(f"expected string value for field {str(key)}")
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s")
+            query_parts.append(f"{_lhs} = %({query_param_name})s")
             query_params[query_param_name] = value
 
         used_data_series_children.string_facts[key] = data_series_query_info.string_facts[key]
@@ -280,11 +286,11 @@ def _handle_if_float_fact(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             if not isinstance(value, float) and not isinstance(value, int):
                 raise ValidationError(f"expected numeric value for field {str(key)}")
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s::double precision")
+            query_parts.append(f"{_lhs} = %({query_param_name})s::double precision")
             query_params[query_param_name] = value
 
         used_data_series_children.float_facts[key] = data_series_query_info.float_facts[key]
@@ -311,11 +317,11 @@ def _handle_if_boolean_fact(
             _tbl_name = escape(f'relation_{key}')
             _lhs = f'{_tbl_name}.value'
         if value is None:
-            query_parts.append(f"AND {_lhs} IS NULL")
+            query_parts.append(f"{_lhs} IS NULL")
         else:
             if not isinstance(value, bool):
                 raise ValidationError(f"expected boolean value for field {str(key)}")
-            query_parts.append(f"AND {_lhs} = %({query_param_name})s")
+            query_parts.append(f"{_lhs} = %({query_param_name})s")
             query_params[query_param_name] = value
 
         used_data_series_children.boolean_facts[key] = data_series_query_info.boolean_facts[key]
