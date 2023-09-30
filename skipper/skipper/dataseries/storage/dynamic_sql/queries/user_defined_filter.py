@@ -20,13 +20,38 @@ class UserDefinedFilter(NamedTuple):
     used_data_series_children: DataSeriesQueryInfo
 
 
+def complex_filter_to_sql_filter(filter_dict, handle_column, max_depth=10, depth=0):
+    if depth > max_depth:
+        raise ValueError("Maximum recursion depth exceeded")
+
+    sql_filter = ""
+
+    key: str
+    for key, value in filter_dict.items():
+        if key == "$and":
+            and_clauses = [complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) for item in value]
+            sql_filter += "(" + " AND ".join(and_clauses) + ")"
+        elif key == "$or":
+            or_clauses = [complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) for item in value]
+            sql_filter += "(" + " OR ".join(or_clauses) + ")"
+        elif key.startswith("$"):
+            raise ValueError(f"Unsupported operator: {key}")
+        else:
+            column = key
+            sql_filter += handle_column(column, value)
+        
+
+        sql_filter += " AND "
+
+    return sql_filter[:-5]  # Remove the trailing "AND"
+
+
 def compute_user_defined_filter_for_raw_query(
         data_series_query_info: DataSeriesQueryInfo,
         filter_params: Dict[str, Any],
         use_materialized_table: bool,
 ) -> UserDefinedFilter:
     query_params: Dict[str, Any] = {}
-    query_parts: List[str] = []
     used_data_series_children = DataSeriesQueryInfo(
         data_series_id=data_series_query_info.data_series_id,
         backend=data_series_query_info.backend,
@@ -47,12 +72,29 @@ def compute_user_defined_filter_for_raw_query(
         main_alive_filter='ds_dp.deleted_at IS NULL'
     )
 
-    handled_keys: Set[str] = set()
+    def handle_column(column, filter, operation="$eq"):
+        if isinstance(filter, dict):
+            and_clauses = [handle_column(column, item[1], operation=item[0]) for item in filter.items()]
+            sql_filter = " AND ".join(and_clauses)
+            return sql_filter
+        else:
+            return primitive_filter(column, filter, operation)
+        
+    query_param_idx = 0
 
-    for i, (key, value) in enumerate(filter_params.items()):
+
+    handled_keys: Set[str] = set()
+    keys_overall: Set[str] = set()
+
+    def primitive_filter(key, value, operation):
+        keys_overall.add(key)
+
+        nonlocal query_param_idx
+        query_parts: List[str] = []
         # JSON is not supported because of the added complexity
         # it would bring without a proper DSL
-        query_param_name = f'filter_{i}'
+        query_param_name = f'filter_{query_param_idx}'
+        query_param_idx += 1
         # image and file intentionally not here
         _handle_if_float_fact(use_materialized_table, data_series_query_info, query_parts, query_params,
                               used_data_series_children,
@@ -72,17 +114,19 @@ def compute_user_defined_filter_for_raw_query(
         _handle_if_dimension(use_materialized_table, data_series_query_info, query_parts, query_params,
                              used_data_series_children,
                              query_param_name, key, value, handled_keys)
+        return '\n'.join(query_parts)
 
-    filter_keys = filter_params.keys()
+    filter_query_str = complex_filter_to_sql_filter(
+        filter_dict=filter_params,
+        handle_column=handle_column
+    )
 
-    not_found = frozenset(filter_keys).difference(handled_keys)
+    not_found = frozenset(keys_overall).difference(handled_keys)
     if len(not_found) > 0:
         raise ValidationError(f'unrecognized fields in filter query parameter: {"{"}{",".join(not_found)}{"}"}')
 
-    handled_keys.intersection(filter_keys)
-
     return UserDefinedFilter(
-        filter_query_str='\n'.join(query_parts),
+        filter_query_str=filter_query_str,
         query_params=query_params,
         used_data_series_children=used_data_series_children
     )
