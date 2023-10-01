@@ -27,6 +27,11 @@ def complex_filter_to_sql_filter(filter_dict: Dict[str, Any], handle_column: Cal
     sql_filter = ""
 
     key: str
+
+    if len(filter_dict) == 0:
+        # no filter = match always
+        return "1 = 1"
+    
     for key, value in filter_dict.items():
         if key == "$and":
             if not isinstance(value, list):
