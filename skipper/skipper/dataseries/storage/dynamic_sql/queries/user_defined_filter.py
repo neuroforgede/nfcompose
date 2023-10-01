@@ -90,9 +90,6 @@ def compute_user_defined_filter_for_raw_query(
     keys_overall: Set[str] = set()
 
     def primitive_filter(key: str, value: Any, operator: str) -> str:
-        if operator not in single_valued_sql_operators and operator not in multi_valued_sql_operators:
-            raise ValidationError(f"unrecognized operator {operator}")
-
         keys_overall.add(key)
 
         nonlocal query_param_idx
@@ -288,6 +285,11 @@ def _handle_if_text_fact(
                     raise ValidationError(f"expected string value for field {str(key)}")
                 query_parts.append(f"{_lhs} {single_valued_sql_operators[operator]} %({query_param_name})s::text")
                 query_params[query_param_name] = value
+            elif operator == "$prefix":
+                if not isinstance(value, str):
+                    raise ValidationError(f"expected string value for field {str(key)}")
+                query_parts.append(f"{_lhs} LIKE (%({query_param_name})s::text) || '%%'")
+                query_params[query_param_name] = value
             elif operator in multi_valued_sql_operators:
                 if not isinstance(value, list) or not all([isinstance(elem, str) for elem in value]):
                     raise ValidationError(f"expected list of strings for operator {operator} on field {str(key)}")
@@ -329,6 +331,11 @@ def _handle_if_string_fact(
                 if not isinstance(value, str):
                     raise ValidationError(f"expected string value for field {str(key)}")
                 query_parts.append(f"{_lhs} {single_valued_sql_operators[operator]} %({query_param_name})s")
+                query_params[query_param_name] = value
+            elif operator == "$prefix":
+                if not isinstance(value, str):
+                    raise ValidationError(f"expected string value for field {str(key)}")
+                query_parts.append(f"{_lhs} LIKE %({query_param_name}) || '%%'")
                 query_params[query_param_name] = value
             elif operator in multi_valued_sql_operators:
                 if not isinstance(value, list) or not all([isinstance(elem, str) for elem in value]):
