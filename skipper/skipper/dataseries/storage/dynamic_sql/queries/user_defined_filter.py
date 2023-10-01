@@ -24,14 +24,12 @@ def complex_filter_to_sql_filter(filter_dict: Dict[str, Any], handle_column: Cal
     if depth > max_depth:
         raise ValidationError("Maximum nesting complexity of query reached")
 
-    sql_filter = ""
-
-    key: str
-
     if len(filter_dict) == 0:
         # no filter = match always
         return "1 = 1"
     
+    sql_filter = ""
+    key: str
     for key, value in filter_dict.items():
         if key == "$and":
             if not isinstance(value, list):
