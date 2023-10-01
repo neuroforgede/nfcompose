@@ -88,6 +88,7 @@ NAME_WHITELIST = {
     'current_database',
     'table_schema',
     'ANY',
+    'UNNEST',
 
     # SQL types
     'varchar',
