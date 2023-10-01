@@ -31,23 +31,30 @@ def complex_filter_to_sql_filter(filter_dict: Dict[str, Any], handle_column: Cal
         if key == "$and":
             if not isinstance(value, list):
                 raise ValidationError("$and operator requires a list as argument")
+            if len(value) == 0:
+                raise ValidationError("argument to $and must be a non empty array")
             and_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " AND ".join(and_clauses) + ")"
         elif key == "$or":
             if not isinstance(value, list):
                 raise ValidationError("$or operator requires a list as argument")
+            if len(value) == 0:
+                raise ValidationError("argument to $or must be a non empty array")
             or_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " OR ".join(or_clauses) + ")"
         elif key == "$not":
             if not isinstance(value, dict):
                 raise ValidationError("$not operator requires a dictionary as argument")
+            if len(value) == 0:
+                raise ValidationError("argument to $not must be a non empty dictionary")
             child_clause = "(" + complex_filter_to_sql_filter(value, handle_column, max_depth, depth + 1) + ")" 
             sql_filter += "(NOT " + child_clause + ")"
         elif key.startswith("$"):
             raise ValueError(f"Unsupported operator: {key}")
         else:
             column = key
-            sql_filter += handle_column(column, value)
+            column_str = handle_column(column, value)
+            sql_filter += column_str
 
         sql_filter += " AND "
 
@@ -82,6 +89,9 @@ def compute_user_defined_filter_for_raw_query(
 
     def handle_column(column: str, filter: Any, operator: str = "$eq") -> str:
         if isinstance(filter, dict):
+            if len(filter) == 0:
+                # no filter = match always
+                return "1 = 1"
             and_clauses = ["(" + handle_column(column, item[1], operator=item[0]) + ")" for item in filter.items()]
             sql_filter = " AND ".join(and_clauses)
             return sql_filter
