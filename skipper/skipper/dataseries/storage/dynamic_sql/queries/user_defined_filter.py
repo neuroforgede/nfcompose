@@ -30,14 +30,19 @@ def complex_filter_to_sql_filter(filter_dict: Dict[str, Any], handle_column: Cal
     for key, value in filter_dict.items():
         if key == "$and":
             if not isinstance(value, list):
-                raise ValidationError("$and operators require lists as arguments")
+                raise ValidationError("$and operator requires a list as argument")
             and_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " AND ".join(and_clauses) + ")"
         elif key == "$or":
             if not isinstance(value, list):
-                raise ValidationError("$or operators require lists as arguments")
+                raise ValidationError("$or operator requires a list as argument")
             or_clauses = ["(" + complex_filter_to_sql_filter(item, handle_column, max_depth, depth + 1) + ")" for item in value]
             sql_filter += "(" + " OR ".join(or_clauses) + ")"
+        elif key == "$not":
+            if not isinstance(value, dict):
+                raise ValidationError("$not operator requires a dictionary as argument")
+            child_clause = "(" + complex_filter_to_sql_filter(value, handle_column, max_depth, depth + 1) + ")" 
+            sql_filter += "(NOT " + child_clause + ")"
         elif key.startswith("$"):
             raise ValueError(f"Unsupported operator: {key}")
         else:
