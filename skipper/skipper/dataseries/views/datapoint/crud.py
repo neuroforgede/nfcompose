@@ -271,7 +271,8 @@ def gen_DataSeries_DataPointViewSet(
             <br>
             <br>
             - changes_since=&lt;timestamp&gt;<br>
-            - filter={{"&lt;dimension/fact external id&gt;": <exact value to match>, ...}}<br>
+            - filter={{"$or": [{{"&lt;dimension/fact external id&gt;": "&lt;some-value&gt;", ...}}, {{"&lt;dimension/fact external id&gt;": "&lt;some-other-value&gt;", ...}}]}}
+                (supports logical operators $or, $and, $not and primitive operators $eq, $lt, $lte, $ne, $gte, $gt, $in, $nin, $prefix)<br>
             - count[=true] <br>
             - external_id=<str> (repeatable) <br>
             - identify_dimensions_by_external_id[=true] <br>
