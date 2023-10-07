@@ -14,7 +14,7 @@ def _instrument() -> None:
     from opentelemetry.instrumentation.redis import RedisInstrumentor # type: ignore
     
     DjangoInstrumentor().instrument()
-    CeleryInstrumentor().instrument()
+    CeleryInstrumentor().instrument()  # type: ignore
     RequestsInstrumentor().instrument()
     BotocoreInstrumentor().instrument()  # type: ignore
     Psycopg2Instrumentor().instrument()
