@@ -18,7 +18,7 @@ if (
         'SKIPPER_INSTALLATION_NAME': 'localhost',
         'SKIPPER_DJANGO_SECRET_KEY': 't#oin*ss-y%q9!qh)dl#suaof2cl65e3f#q^m&rvtcznogu3ox',
         'SKIPPER_DOMAIN': 'localhost',
-        'SKIPPER_S3_ENDPOINT_URL': 'http://localhost:' + os.getenv('SEAWEEDFS_DEV_OUTSIDE_PORT', '8000'),
+        'SKIPPER_S3_ENDPOINT_URL': 'http://localhost:' + os.getenv('SEAWEEDFS_DEV_OUTSIDE_PORT', '8001'),
         'SKIPPER_TASK_DASHBOARD_ENABLED': 'true',
         'SKIPPER_OTEL_JAEGER_UI_ENABLED': 'true',
         "SKIPPER_DB_USER": 'cephalopod',

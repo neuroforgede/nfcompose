@@ -211,6 +211,8 @@ def raw_display_data_point_query(
         resolve_dimension_external_ids=external_id_as_dimension_identifier,
         data_series_query_info=data_series_query_info
     )
+
+    print(query_str)
     
     raw = DisplayDataPoint.objects\
         .raw(
