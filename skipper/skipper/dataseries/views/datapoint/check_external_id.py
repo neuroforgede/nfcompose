@@ -79,7 +79,7 @@ class DataSeriesCheckExternalIdsView(CustomizableBrowsableAPIRendererObjectMixin
 
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         if 'external_ids' not in request.data:
-            raise ValidationError('external_ids was not in result')
+            raise ValidationError('external_ids was not in request')
         return Response(
             self.storage_view_adapter().check_external_ids(self, request.data['external_ids']),
             status=status.HTTP_200_OK
