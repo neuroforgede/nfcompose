@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 RUN sudo apt-get upgrade -y
 
 RUN pip install --upgrade setuptools pip
-RUN pip install pipenv==2023.2.18
+RUN pip install pipenv==2023.10.24
 ENV PIPENV_IGNORE_VIRTUALENVS=1
 
 RUN useradd -rm -d /home/skipper -s /bin/bash -g root -G sudo -u 9999 skipper

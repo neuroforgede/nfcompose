@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-setuptools = "==67.3.2"
+setuptools = "==68.2.2"
 djangorestframework = "==3.14.0"
 djangorestframework-simplejwt = { version = "==5.2.2" }
 # at least required for simplejwt crypto
@@ -59,7 +59,7 @@ opentelemetry-instrumentation-botocore = "==0.41b0"
 opentelemetry-instrumentation-psycopg2 = "==0.41b0"
 opentelemetry-instrumentation-redis = "==0.41b0"
 sqlparse = "==0.4.4"
-Django = "==4.2.6"
+Django = "==4.2.7"
 Pillow = "==10.0.1"
 FormEncode = "==2.0.1"
 SQLAlchemy = "==1.4.41"
@@ -67,7 +67,7 @@ Deprecated = "==1.2.13"
 protobuf = "==3.20.2"
 wheel = "0.38.4"
 certifi = "==2023.7.22"
-pip = "==23.0.1"
+pip = "==23.3.1"
 
 [dev-packages]
 pylint-django = "==2.0.13"
