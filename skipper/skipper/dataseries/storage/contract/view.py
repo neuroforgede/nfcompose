@@ -53,6 +53,8 @@ class BaseDataSeries_DataPointViewSet(Protocol):
 
     def should_include_versions(self) -> bool: ...
 
+    def get_include_in_payload(self) -> Optional[List[str]]: ...
+
 
 class StorageViewAdapter(metaclass=ABCMeta):
     """

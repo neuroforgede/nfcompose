@@ -41,10 +41,10 @@ class DataPointModificationSerializer(BaseDataPointModificationSerializer):
         query_params: Dict[str, Any] = {select_info.payload_variable_name: select_info.unescaped_display_id for
                                         select_info in
                                         select_infos(self.get_data_series_children_query_info())}
-        _view = self.context.get('view')
 
         query_str = data_series_as_sql_table(
             data_series=data_series,
+            include_in_payload=None,
             payload_as_json=True,
             point_in_time=self.point_in_time is not None,
             include_versions=self.should_include_versions,

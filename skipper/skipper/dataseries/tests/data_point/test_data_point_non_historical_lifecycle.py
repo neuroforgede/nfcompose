@@ -156,6 +156,7 @@ def test_materialized_upsert_checks_point_in_time(
     )
 
     _sql = data_series_as_sql_table(
+        include_in_payload=None,
         data_series=_data_series_obj,
         payload_as_json=True,
         point_in_time=False,

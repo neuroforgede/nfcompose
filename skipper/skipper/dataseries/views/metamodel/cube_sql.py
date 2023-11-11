@@ -121,6 +121,7 @@ class DataSeriesCubeSQLView(
 
                 sql_template = data_series_as_sql_table(
                     data_series,
+                    include_in_payload=None,
                     payload_as_json=payload_as_json(request),
                     resolve_dimension_external_ids=use_external_id_as_dimension_identifier(
                         cast(Dict[str, Any], request.GET)

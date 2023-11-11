@@ -198,6 +198,17 @@ def gen_DataSeries_DataPointViewSet(
             else:
                 filter_value = {}
             return filter_value
+        
+        def get_include_in_payload(self) -> Optional[List[str]]:
+            if 'include_in_payload' in self.request.GET:
+                _include_in_payload_str = self.request.GET['include_in_payload']
+                if _include_in_payload_str != None:
+                    return list(_include_in_payload_str.split(','))
+                else:
+                    return None
+            else:
+                return None
+
 
         def get_external_ids(self) -> Optional[List[str]]:
             return self.request.GET.getlist('external_id') if 'external_id' in self.request.GET else None  # type: ignore

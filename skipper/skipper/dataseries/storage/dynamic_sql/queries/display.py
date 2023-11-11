@@ -80,6 +80,7 @@ def render_pagination_data_select(include_pagination_data: bool) -> str:
 
 
 def _data_series_as_sql_table(
+        include_in_payload: Optional[List[str]],
         payload_as_json: bool,
         point_in_time: bool,
         changes_since: bool,
@@ -101,6 +102,9 @@ def _data_series_as_sql_table(
                                                     and len(_data_series_query_info.dimensions.keys()) > 0
 
     all_select_infos = select_infos(_data_series_query_info)
+    if include_in_payload is not None:
+        all_select_infos = [select_info for select_info in all_select_infos if select_info.unescaped_display_id in include_in_payload]
+
     central_table_sql = single_data_series_as_sql_table(
         all_select_infos=all_select_infos,
         data_series_query_info=_data_series_query_info,
@@ -222,6 +226,7 @@ FROM {_central_table}
 
 def data_series_as_sql_table(
         data_series: DataSeries,
+        include_in_payload: List[str],
         payload_as_json: bool = False,
         point_in_time: bool = False,
         changes_since: bool = False,
@@ -229,7 +234,7 @@ def data_series_as_sql_table(
         filter_str: str = '',
         resolve_dimension_external_ids: bool = False,
         data_series_query_info: Optional[DataSeriesQueryInfo] = None,
-        use_materialized: Optional[bool] = None
+        use_materialized: Optional[bool] = None,
 ) -> str:
     _data_series_query_info: DataSeriesQueryInfo
     if data_series_query_info is None:
@@ -238,6 +243,7 @@ def data_series_as_sql_table(
         _data_series_query_info = data_series_query_info
 
     sql = _data_series_as_sql_table(
+        include_in_payload=include_in_payload,
         payload_as_json=payload_as_json,
         point_in_time=point_in_time,
         changes_since=changes_since,

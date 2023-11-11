@@ -86,6 +86,7 @@ def create_view_as(
 
             data_sql = data_series_as_sql_table(
                 data_series,
+                include_in_payload=None,
                 data_series_query_info=data_series_query_info,
                 resolve_dimension_external_ids=identify_dimensions_by_external_id
             )
