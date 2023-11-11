@@ -56,7 +56,7 @@ def materialize_view_as(schema_name: str, overwrite: bool, data_series_id: str, 
                 )
             if not exists_already:
                 query = f"""CREATE MATERIALIZED VIEW IF NOT EXISTS {schema_name}.{escaped_view_name}
-                    AS {data_series_as_sql_table(data_series)}"""
+                    AS {data_series_as_sql_table(data_series, include_in_payload=None)}"""
                 query_params: Dict[str, Any] = {select_info.payload_variable_name: select_info.unescaped_display_id for
                                                 select_info in select_infos(compute_data_series_query_info(data_series))}
                 cursor.execute(

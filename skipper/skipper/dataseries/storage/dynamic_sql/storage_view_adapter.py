@@ -93,6 +93,7 @@ def precompute_filter_part(
 
 
 def raw_display_data_point_query(
+        include_in_payload: Optional[List[str]],
         filter_value: Dict[str, Any],
         data_series: DataSeries,
         external_id_as_dimension_identifier: bool,
@@ -205,6 +206,7 @@ def raw_display_data_point_query(
         query_params['changes_since'] = changes_since
 
     query_str = data_series_as_sql_table(
+        include_in_payload=include_in_payload,
         data_series=data_series_obj,
         payload_as_json=True,
         point_in_time=is_point_in_time,
@@ -255,6 +257,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
             return obj
 
         raw_query = raw_display_data_point_query(
+            include_in_payload=view.get_include_in_payload(),
             data_point_id=data_point_id,
             filter_value=view.get_filter_value(),
             data_series=view.access_data_series(),
@@ -332,6 +335,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
     def get_next_page_query_for_pagination(self, view: BaseDataSeries_DataPointViewSet, last_query: str, limit: int,
                                            request: HttpRequest) -> RawQuerySet:  # type: ignore
         return raw_display_data_point_query(
+            include_in_payload=view.get_include_in_payload(), # we actually don't need anything in the payload here
             start_object=last_query,
             limit=limit,
             filter_value=view.get_filter_value(),
@@ -353,6 +357,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
     ) -> Optional[RawQuerySet]:  # type: ignore
         # FIXME: this could be a simpler query without as many joins
         return raw_display_data_point_query(
+            include_in_payload=view.get_include_in_payload(), # we actually don't need anything in the payload here
             start_object=last_query,
             reverse=True,
             limit=limit,

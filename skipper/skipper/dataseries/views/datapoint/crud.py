@@ -198,6 +198,17 @@ def gen_DataSeries_DataPointViewSet(
             else:
                 filter_value = {}
             return filter_value
+        
+        def get_include_in_payload(self) -> Optional[List[str]]:
+            if 'include_in_payload' in self.request.GET:
+                _include_in_payload_str = self.request.GET['include_in_payload']
+                if _include_in_payload_str != None:
+                    return list(_include_in_payload_str.split(','))
+                else:
+                    return None
+            else:
+                return None
+
 
         def get_external_ids(self) -> Optional[List[str]]:
             return self.request.GET.getlist('external_id') if 'external_id' in self.request.GET else None  # type: ignore
@@ -275,6 +286,7 @@ def gen_DataSeries_DataPointViewSet(
             - count[=true] <br>
             - external_id=<str> (repeatable) <br>
             - identify_dimensions_by_external_id[=true] <br>
+            - include_in_payload=<str> (comma separated list of dimension/fact external ids to include in the payload) <br>
             """
             if _history:
                 doc_string = f"""

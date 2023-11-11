@@ -16,7 +16,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
-from typing import Dict, Any, Optional, Union, Tuple
+from typing import Dict, Any, Optional, Union, Tuple, List
 from uuid import UUID
 
 from skipper.core.serializers.base import BaseSerializer
@@ -244,7 +244,7 @@ class BaseDataPointModificationSerializer(BaseDataPointSerializer, metaclass=ABC
             self,
             data_point: Any,
             data_series: DataSeries,
-            external_id_as_dimension_identifier: bool
+            external_id_as_dimension_identifier: bool,
     ) -> Dict[str, Any]:
         raise NotImplementedError()
 
