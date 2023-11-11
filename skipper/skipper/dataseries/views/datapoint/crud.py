@@ -286,6 +286,7 @@ def gen_DataSeries_DataPointViewSet(
             - count[=true] <br>
             - external_id=<str> (repeatable) <br>
             - identify_dimensions_by_external_id[=true] <br>
+            - include_in_payload=<str> (comma separated list of dimension/fact external ids to include in the payload) <br>
             """
             if _history:
                 doc_string = f"""
