@@ -24,13 +24,20 @@ class EmptySerializer(ModelSerializer[Any]):
         fields: Any = []
 
 
+class BaseDataSeries_DataPointViewSetBulk(Protocol):
+    def get_serializer_context(self) -> Dict[str, Any]: ...
+    def access_data_series(self) -> DataSeries: ...
+
+class BaseDataSeries_DataPointViewSetWithSerialization(Protocol):
+    def get_serializer(self, *args: Any, **kwargs: Any) -> Any: ...
+
+class BaseDataSeries_DataPointViewSetCheckExternalIds(Protocol):
+    def access_data_series(self) -> DataSeries: ...
+   
+# this should be a Protocol, but mypy doesn't support that yet
 class BaseDataSeries_DataPointViewSet(Protocol):
     action: str
     skipper_base_name: str
-
-    def get_serializer(self, *args: Any, **kwargs: Any) -> Any: ...
-
-    def get_serializer_context(self) -> Dict[str, Any]: ...
 
     def access_data_series(self) -> DataSeries: ...
 
@@ -181,7 +188,7 @@ class StorageViewAdapter(metaclass=ABCMeta):
     @abstractmethod
     def create_bulk(
             self,
-            view: BaseDataSeries_DataPointViewSet,
+            view: BaseDataSeries_DataPointViewSetBulk,
             point_in_time_timestamp: float,
             user_id: str,
             record_source: str,
@@ -192,10 +199,10 @@ class StorageViewAdapter(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def check_external_ids(self, view: BaseDataSeries_DataPointViewSet, external_ids: List[str]) -> List[str]:
+    def check_external_ids(self, view: BaseDataSeries_DataPointViewSetCheckExternalIds, external_ids: List[str]) -> List[str]:
         raise NotImplementedError()
 
-    def serialize_list(self, view: BaseDataSeries_DataPointViewSet, page: Any) -> List[
+    def serialize_list(self, view: BaseDataSeries_DataPointViewSetWithSerialization, page: Any) -> List[
         Dict[str, Any]]:
         """
         transforms a given page into a json compatible format

@@ -54,7 +54,6 @@ def gen_DataSeries_DataPointViewSet(
         RetrieveModelMixin,
         ListModelMixin,
         GenericViewSet,  # type: ignore
-        BaseDataSeries_DataPointViewSet
     ):
         # custom detail behaviour
         history = _history
