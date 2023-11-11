@@ -27,7 +27,10 @@ from skipper.dataseries.storage.contract import StorageBackendType
 from skipper.dataseries.storage.contract.base import BaseDataPointModificationSerializer, BaseDataPointSerializer
 from skipper.dataseries.storage.contract.factory import \
     get_data_point_serializer_for_data_series
-from skipper.dataseries.storage.contract.view import BaseDataSeries_DataPointViewSet, StorageViewAdapter
+from skipper.dataseries.storage.contract.view import BaseDataSeries_DataPointViewSetCheckExternalIds, \
+    BaseDataSeries_DataPointViewSetBulk, \
+    BaseDataSeries_DataPointViewSet, \
+    StorageViewAdapter
 from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint, DisplayDataPoint
 from skipper.dataseries.storage.dynamic_sql.queries.check_external_ids import check_external_ids
 from skipper.dataseries.storage.dynamic_sql.queries.common import can_use_materialized_table
@@ -211,8 +214,6 @@ def raw_display_data_point_query(
         resolve_dimension_external_ids=external_id_as_dimension_identifier,
         data_series_query_info=data_series_query_info
     )
-
-    print(query_str)
     
     raw = DisplayDataPoint.objects\
         .raw(
@@ -447,7 +448,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
 
     def create_bulk(
             self,
-            view: BaseDataSeries_DataPointViewSet,
+            view: BaseDataSeries_DataPointViewSetBulk,
             point_in_time_timestamp: float,
             user_id: str,
             record_source: str,
@@ -460,14 +461,12 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
 
             task_data_ids: List[int] = []
 
-            point_in_time: Optional[datetime.datetime] = view.get_point_in_time()
-
             serializer_class = get_data_point_serializer_for_data_series(
                 actual_class=DataPointModificationSerializer,
                 data_series_id=str(data_series_obj.id),
                 update=True,
-                point_in_time=point_in_time,
-                should_include_versions=view.should_include_versions(),
+                point_in_time=None,
+                should_include_versions=False,
                 data_series_query_info=self.data_series_query_info(view.access_data_series())
             )
             serializer = serializer_class(
@@ -559,7 +558,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
 
             return created_external_ids
 
-    def check_external_ids(self, view: BaseDataSeries_DataPointViewSet, external_ids: List[str]) -> List[str]:
+    def check_external_ids(self, view: BaseDataSeries_DataPointViewSetCheckExternalIds, external_ids: List[str]) -> List[str]:
         return check_external_ids(
             external_ids=external_ids,
             backend=view.access_data_series().backend,

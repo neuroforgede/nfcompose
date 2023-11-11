@@ -17,7 +17,7 @@ from typing import Any, Optional
 from skipper.core.utils.memoize import Memoize
 from skipper.dataseries.models import DATASERIES_PERMISSION_KEY_CHECK_EXTERNAL_IDS
 from skipper.dataseries.models.metamodel.data_series import DataSeries
-from skipper.dataseries.storage.contract.view import EmptySerializer, BaseDataSeries_DataPointViewSet, \
+from skipper.dataseries.storage.contract.view import EmptySerializer, \
     StorageViewAdapter
 from skipper.dataseries.storage.views import storage_view_adapter
 from skipper.dataseries.views.common import get_dataseries_permissions_class
@@ -30,7 +30,7 @@ from skipper.dataseries.views.metamodel.permissions import metamodel_base_line_p
 
 class DataSeriesCheckExternalIdsView(CustomizableBrowsableAPIRendererObjectMixin,
                                      GenericAPIView,  # type: ignore
-                                     BaseDataSeries_DataPointViewSet):
+    ):
     """
     For application/json, accepts a list of regular external_ids in the body { "external_ids": [...] }
 

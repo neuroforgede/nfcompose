@@ -24,7 +24,7 @@ from skipper.dataseries.models import DATASERIES_PERMISSION_KEY_DATA_POINT_BULK
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.parsers.multipart import DataPointMultipartFormencodeParser
 from skipper.dataseries.raw_sql import dbtime
-from skipper.dataseries.storage.contract.view import EmptySerializer, BaseDataSeries_DataPointViewSet, \
+from skipper.dataseries.storage.contract.view import EmptySerializer, \
     StorageViewAdapter
 from skipper.dataseries.storage.views import storage_view_adapter
 from skipper.dataseries.views.common import get_dataseries_permissions_class
@@ -67,7 +67,7 @@ class BatchCSVParserSemicolon(BatchCSVParser):
 
 class DataSeriesBulkCreateView(CustomizableBrowsableAPIRendererObjectMixin,
                                GenericAPIView,  # type: ignore
-                               BaseDataSeries_DataPointViewSet):
+    ):
     """
     For application/json, accepts a list of regular data points wrapped in an object { "batch": [...] }
 
