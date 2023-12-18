@@ -101,7 +101,7 @@ class FileStorageDataSeriesDefinitionFetcher(FileStorageBaseFetcher):
 
 
 def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str, str]], raw_data_series: RawDataSeries,
-                            domain_aliases: Dict[str, str]) -> DataSeriesDefinition:
+                            domain_aliases: Dict[str, str], only_structure: bool=False) -> DataSeriesDefinition:
     raw_float_facts = read_list(client, raw_data_series.float_facts,
                                 converter=raw_fact_api_converter(RawFloatFact))
     raw_string_facts = read_list(client, raw_data_series.string_facts,
@@ -120,15 +120,17 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
                                   converter=raw_fact_api_converter(RawBooleanFact))
     raw_dimensions = read_list(client, raw_data_series.dimensions,
                                converter=DimensionConverter())
-                               
-    raw_consumers = read_list(client, raw_data_series.consumers,
-                              ConsumerConverter())
+    
+    if only_structure:
+        raw_consumers = []
+    else:
+        raw_consumers = read_list(client, raw_data_series.consumers,
+                                ConsumerConverter())
 
     raw_indexes: Iterable[RawIndex] = []
     if raw_data_series.indexes is not None:
         raw_indexes = read_list(client, raw_data_series.indexes,
                                 converter=IndexConverter())
-
 
     data_series = DataSeries.from_raw(raw_data_series)
 
@@ -157,8 +159,11 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
     consumers = map(lambda x: Consumer.from_raw(x, domain_aliases=domain_aliases), raw_consumers)
     indexes = map(Index.from_raw, raw_indexes)
 
-    raw_group_permissions = read_paginated_all(client, raw_data_series.permission_group,
-                                               converter=RawDataSeriesPermissionsAPIConverter())
+    if only_structure:
+        raw_group_permissions = []
+    else:
+        raw_group_permissions = read_paginated_all(client, raw_data_series.permission_group,
+                                                converter=RawDataSeriesPermissionsAPIConverter())
 
     group_permissions = map(lambda x: DataSeriesGroupPermissions.from_raw(x), raw_group_permissions)
 
@@ -336,7 +341,7 @@ class ComposeGroupDefinitionFetcher(ComposeBaseFetcher):
 
 
 def get_single_data_series_definition(client: APIClient, data_series_external_id: str,
-                                      domain_aliases: Dict[str, str]) -> DataSeriesDefinition:
+                                      domain_aliases: Dict[str, str], only_structure: bool=False) -> DataSeriesDefinition:
     all_raw_data_series: Iterable[RawDataSeries] = read_paginated_all(
         client,
         url=client.url(f'/api/dataseries/dataseries/?external_id={data_series_external_id}'),
@@ -351,7 +356,7 @@ def get_single_data_series_definition(client: APIClient, data_series_external_id
     if raw_ds is None:
         raise ComposeClientException(f'did not find DataSeries with external_id {data_series_external_id}')
 
-    definition = _data_series_definition(client, None, raw_ds, domain_aliases)
+    definition = _data_series_definition(client, None, raw_ds, domain_aliases, only_structure=only_structure)
 
     return definition
 
@@ -396,7 +401,8 @@ class ComposeDataPointFetcher(ComposeBaseFetcher):
         # domain aliases are not relevant here
         definition = get_single_data_series_definition(self.client,
                                                        data_series_external_id=self.data_series_external_id,
-                                                       domain_aliases={})
+                                                       domain_aliases={},
+                                                       only_structure=True)
 
         _extra_query_params_str = ''
         if self.filter is not None:
