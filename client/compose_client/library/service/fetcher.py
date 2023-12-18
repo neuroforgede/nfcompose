@@ -24,10 +24,10 @@ from compose_client.library.models.definition.facts import FloatFact, StringFact
 from compose_client.library.models.definition.group import GroupDefinition, Group, GroupPermissions
 from compose_client.library.models.definition.http_endpoint import HttpEndpointDefinition, HttpEndpoint, \
     HttpEndpointGroupPermissions
-from compose_client.library.models.raw.consumer import ConsumerConverter
+from compose_client.library.models.raw.consumer import ConsumerConverter, RawConsumer
 from compose_client.library.models.raw.index import IndexConverter, RawIndex
 from compose_client.library.models.raw.data_series import RawDataSeriesAPIConverter, RawDataSeries, \
-    RawDataSeriesPermissionsAPIConverter
+    RawDataSeriesPermissionsAPIConverter, RawDataSeriesGroupPermissions
 from compose_client.library.models.raw.datapoint import RawDataPointAPIConverter, RawDataPoint
 from compose_client.library.models.raw.dimension import DimensionConverter, RawDimension
 from compose_client.library.models.raw.engine import RawEngineAPIConverter, RawEngine, RawEngineSecretAPIConverter, \
@@ -121,6 +121,7 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
     raw_dimensions = read_list(client, raw_data_series.dimensions,
                                converter=DimensionConverter())
     
+    raw_consumers: Iterable[RawConsumer] = []
     if only_structure:
         raw_consumers = []
     else:
@@ -159,6 +160,7 @@ def _data_series_definition(client: APIClient, raw_ds_by_url: Optional[Dict[str,
     consumers = map(lambda x: Consumer.from_raw(x, domain_aliases=domain_aliases), raw_consumers)
     indexes = map(Index.from_raw, raw_indexes)
 
+    raw_group_permissions: Iterable[RawDataSeriesGroupPermissions] = []
     if only_structure:
         raw_group_permissions = []
     else:

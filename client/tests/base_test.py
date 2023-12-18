@@ -23,6 +23,26 @@ class BaseIntegrationTest(unittest.TestCase):
         )
         for data_series in all_data_series:
             self.client.delete(data_series['url'])
+
+    def _clear_all_groups(self) -> None:
+        all_groups = read_paginated_generator(
+            client=self.client,
+            url=self.client.url('/api/common/auth/group/'),
+            converter=lambda x: x
+        )
+        for group in all_groups:
+            self.client.delete(group['url'])
+
+    def _clear_all_users(self) -> None:
+        all_users = read_paginated_generator(
+            client=self.client,
+            url=self.client.url('/api/common/auth/user/'),
+            converter=lambda x: x
+        )
+        for user in all_users:
+            if user['username'] == self.client.credentials.user:
+                continue
+            self.client.delete(user['url'])
     
     def _create_data_series(self, external_id: str, name: str, backend: Optional[str] = 'DYNAMIC_SQL_NO_HISTORY', allow_extra_fields: bool = False) -> Dict[str, Any]:
         return cast(Dict[str, Any], self.client.post(
@@ -48,10 +68,14 @@ class BaseIntegrationTest(unittest.TestCase):
             )
         )
         self._clear_all_data_series()
+        self._clear_all_groups()
+        self._clear_all_users()
         return super().setUp()
 
     def tearDown(self) -> None:
         self._clear_all_data_series()
+        self._clear_all_groups()
+        self._clear_all_users()
         
         self.client.post(
             url=self.client.url('/api/dataseries/prune/dataseries/'),

@@ -24,25 +24,6 @@ import datetime
 
 USER_AGENT = 'compose_cli 2.1.0-beta'
 
-def credentials_cache(ttl: datetime.timedelta = datetime.timedelta(minutes=2)) -> \
-    Callable[
-        [Callable[[Any], Dict[str, str]]],
-        Callable[[Any], Dict[str, str]]
-    ]:
-    def wrap(func: Callable[[Any], Dict[str, str]]) -> Any:
-        time, value = None, None
-        @functools.wraps(func)
-        def wrapped(*args: Any) -> Dict[str, str]:
-            nonlocal time
-            nonlocal value
-            now = datetime.datetime.now()
-            if not time or now - time > ttl:
-                value = func(*args)
-                time = now
-            return value
-        return wrapped
-    return wrap
-
 
 class APIClient(abc.ABC):
     """
@@ -111,6 +92,8 @@ class RequestsRestClient(APIClient):
     '''
     credentials: Credentials
     verify: bool
+    _headers_cache_timestamp: Optional[datetime.datetime] = None
+    _headers_cache: Dict[str, str] = None
 
     def __init__(self, credentials: Credentials):
         self.credentials = credentials
@@ -120,8 +103,10 @@ class RequestsRestClient(APIClient):
     def headers(self) -> Dict[str, str]:
         return self._headers_accessor()
 
-    @credentials_cache()
     def _headers_accessor(self) -> Dict[str, str]:
+        if self._headers_cache_timestamp is not None and (datetime.datetime.now() - self._headers_cache_timestamp).total_seconds() < 120:
+            return self._headers_cache
+        
         logging.debug(f"refreshing auth token for {self.credentials.base_url}")
         _resp = requests.post(
             url=f'{self.credentials.base_url}/api/common/auth/authtoken/',
@@ -140,10 +125,12 @@ class RequestsRestClient(APIClient):
             print(_resp.content, file=sys.stderr)
             raise http_err
         token = _resp.json()['token']
-        return {
+        self._headers_cache = {
             'Authorization': f'Token {token}',
             'User-Agent': USER_AGENT
         }
+        self._headers_cache_timestamp = datetime.datetime.now()
+        return self._headers_cache
 
     def get(self, url: str) -> JSONType:
         verify = not env.TESTING
@@ -320,6 +307,8 @@ class RequestsSessionRestClient(APIClient):
     session: Session
     credentials: Credentials
     verify: bool
+    _headers_cache_timestamp: Optional[datetime.datetime] = None
+    _headers_cache: Dict[str, str] = None
 
     def __init__(self, session: Session, credentials: Credentials):
         self.credentials = credentials
@@ -330,8 +319,10 @@ class RequestsSessionRestClient(APIClient):
     def headers(self) -> Dict[str, str]:
         return self._headers_accessor()
 
-    @credentials_cache()
     def _headers_accessor(self) -> Dict[str, str]:
+        if self._headers_cache_timestamp is not None and (datetime.datetime.now() - self._headers_cache_timestamp).total_seconds() < 120:
+            return self._headers_cache
+        
         logging.debug(f"refreshing auth token for {self.credentials.base_url}")
         _resp = self.session.post(
             url=f'{self.credentials.base_url}/api/common/auth/authtoken/',
@@ -350,10 +341,12 @@ class RequestsSessionRestClient(APIClient):
             print(_resp.content, file=sys.stderr)
             raise http_err
         token = _resp.json()['token']
-        return {
+        self._headers_cache = {
             'Authorization': f'Token {token}',
             'User-Agent': USER_AGENT
         }
+        self._headers_cache_timestamp = datetime.datetime.now()
+        return self._headers_cache
 
     def get(self, url: str) -> JSONType:
         verify = not env.TESTING
