@@ -548,12 +548,22 @@ class DataPointPusher(BasePusher):
 
         # domain aliases are not relevant
         if not use_dataseries_definition_cache:
-            definition = get_single_data_series_definition(self.client, data_series_external_id=_data_series_external_id, domain_aliases={})
+            definition = get_single_data_series_definition(
+                self.client,
+                data_series_external_id=_data_series_external_id,
+                domain_aliases={},
+                only_structure=True
+            )
         else:
             # local copy of the dict to not have race conditions with reset_caches
             __dataseries_definitions = self._dataseries_definitions
             if not _data_series_external_id in __dataseries_definitions:
-                __dataseries_definitions[_data_series_external_id] = get_single_data_series_definition(self.client, data_series_external_id=_data_series_external_id, domain_aliases={})
+                __dataseries_definitions[_data_series_external_id] = get_single_data_series_definition(
+                    self.client,
+                    data_series_external_id=_data_series_external_id,
+                    domain_aliases={},
+                    only_structure=True
+                )
                 definition = __dataseries_definitions[_data_series_external_id]
             else:
                 definition = __dataseries_definitions[_data_series_external_id]
