@@ -21,7 +21,7 @@ Explore NF Compose with our public examples repository:
 
 📂 [NF Compose Examples](https://github.com/neuroforgede/nfcompose-examples)
 
-# Getting Started (dev environment):
+## Getting Started (dev environment):
 
 To start off, clone this repository:
 
