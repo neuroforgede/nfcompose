@@ -1,23 +1,27 @@
-# NF Compose
+# NF Compose 🌐
 
-NF Compose is a (data) integration platform that allows developers to define REST APIs in seconds instead of
-hours. Generated REST APIs are backed by postgres and support automatic consumer notifications on data changes out
-of the box.
+NF Compose is a dynamic data integration platform designed to streamline the development process. It empowers developers to define REST APIs quickly, transitioning from hours to mere seconds. 🚀
 
-A Customization Layer based around pluggable engines allows for deep customization behind the same integration framework.
+## Key Features:
 
-NF Compose is built with multi-tenancy in mind - A single NF Compose instance can serve many different tenants/projects
-at the same time.
+- **Rapid REST API Generation**: APIs are backed by PostgreSQL, ensuring robust and scalable solutions.
+- **Real-time Notifications**: Automatic consumer notifications for data updates, keeping users informed on the fly. 🔔
+- **Customization Layer**: Offers deep customization with pluggable engines, adapting to diverse integration needs.
+- **Multi-Tenancy Architecture**: A single instance can efficiently serve multiple tenants or projects, maximizing resource utilization. 🌟
 
-# Showcase
+# Showcase 🎥
 
-Below is a short video that shows how easy it is to set up and use a REST API using NF Compose. From 0 to using a REST API in under 3 minutes.
+Discover how NF Compose simplifies REST API setup. Watch our short video demonstrating the ease of going from zero to a fully functional REST API in under 3 minutes!
 
 https://github.com/neuroforgede/nfcompose/assets/719760/fc2d01db-75b7-47ef-ba28-2364034d4051
 
-# Try it out
+# Try It Out 🛠️
 
-Note: We are gathering public examples in a [separate repository](https://github.com/neuroforgede/nfcompose-examples).
+Explore NF Compose with our public examples repository:
+
+📂 [NF Compose Examples](https://github.com/neuroforgede/nfcompose-examples)
+
+# Getting Started (dev environment):
 
 To start off, clone this repository:
 
