@@ -5,7 +5,7 @@ NF Compose is a dynamic data integration platform designed to streamline the dev
 ## Key Features:
 
 - **Rapid REST API Generation**: APIs are backed by PostgreSQL, ensuring robust and scalable solutions.
-- **Real-time Notifications**: Automatic consumer notifications for data updates, keeping users informed on the fly. 🔔
+- **Real-time Notifications**: Automatic consumer notifications for data updates, keeping users informed on the fly via webhooks. 🔔
 - **Customization Layer**: Offers deep customization with pluggable engines, adapting to diverse integration needs.
 - **Multi-Tenancy Architecture**: A single instance can efficiently serve multiple tenants or projects, maximizing resource utilization. 🌟
 
