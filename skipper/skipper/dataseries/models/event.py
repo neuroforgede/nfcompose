@@ -24,7 +24,7 @@ from typing import Iterable, Tuple, Dict, Any, Union, Optional, cast, Pattern, C
 from skipper.core.models import fields
 from skipper.core.models.tenant import get_tenant_model, Tenant
 from skipper.core.validators import json_dict_str_str, json_dict
-from skipper.dataseries.models.metamodel.consumer import Consumer, ConsumerHealthState
+from skipper.dataseries.models.metamodel.consumer import Consumer, ConsumerMode, ConsumerHealthState
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class ConsumerEvent(TenantModelMixin, Model):  # type: ignore
     # smarter-ish implementation, use FIRST_VALUE query
     handle_at = DateTimeField(null=True, blank=True)
 
-    retries = IntegerField(null=False, default=0)
+    retries = IntegerField(null=False, default=0, db_index=True)
 
     # TODO: we should partition on the consumer, then we can simply drop a partition when we want to bulk deletion
     # we dont want to cascade as that is a costly operation, regular cleanup will do the job just fine
@@ -206,10 +206,16 @@ def try_send_events(
         more_events: bool = False
         tenant_name = str(consumer.tenant.name)
         
-        _qs = ConsumerEvent.objects.filter(
-            ~Q(state__in=[ConsumerEventState.FAILED.value, ConsumerEventState.SUCCESS.value]),
-            consumer=consumer
-        ).select_for_update().order_by('point_in_time', 'id', 'sub_clock').all()
+        if consumer.mode == ConsumerMode.IN_ORDER.value:
+            _qs = ConsumerEvent.objects.filter(
+                ~Q(state__in=[ConsumerEventState.FAILED.value, ConsumerEventState.SUCCESS.value]),
+                consumer=consumer
+            ).select_for_update().order_by('point_in_time', 'id', 'sub_clock').all()
+        elif consumer.mode == ConsumerMode.IN_ORDER_NON_BLOCKING.value:
+            _qs = ConsumerEvent.objects.filter(
+                ~Q(state__in=[ConsumerEventState.FAILED.value, ConsumerEventState.SUCCESS.value]),
+                consumer=consumer
+            ).select_for_update().order_by('retries', 'point_in_time', 'id', 'sub_clock').all()
         _iterable: Iterable[ConsumerEvent]
 
         if max_events is None:

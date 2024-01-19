@@ -35,13 +35,13 @@ function retry {
 }
 
 function _ensure_bucket {
-  BUCKET_EXISTS=$(docker-compose exec -T awscli bash -c "AWS_ACCESS_KEY_ID=skipper-test AWS_SECRET_ACCESS_KEY=WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C aws --region eu-west-1 --endpoint-url http://nfcomposes3:8000 s3api head-bucket --bucket $1 2>&1")
+  BUCKET_EXISTS=$(docker-compose exec -T awscli bash -c "AWS_ACCESS_KEY_ID=skipper-test AWS_SECRET_ACCESS_KEY=WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C aws --region eu-west-1 --endpoint-url http://nfcomposes3:6044 s3api head-bucket --bucket $1 2>&1")
 
   if [ -z "$BUCKET_EXISTS" ]; then
     echo "Bucket $1 already exists"
   else
     echo "$bucket does not already exist."
-    docker-compose exec -T awscli bash -c "AWS_ACCESS_KEY_ID=skipper-test AWS_SECRET_ACCESS_KEY=WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C aws --region eu-west-1 --endpoint-url http://nfcomposes3:8000 s3 mb s3://$1"
+    docker-compose exec -T awscli bash -c "AWS_ACCESS_KEY_ID=skipper-test AWS_SECRET_ACCESS_KEY=WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C aws --region eu-west-1 --endpoint-url http://nfcomposes3:6044 s3 mb s3://$1"
     if [ $? -ne 0 ]; then
         echo "failed to create bucket $1"
         return 1

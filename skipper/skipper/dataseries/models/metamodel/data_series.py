@@ -94,7 +94,7 @@ class DataSeries(SoftDeleteTenantValidateExternalIdMixin, DataSeriesMetaModel): 
     name = fields.string_field(max_length=256)
     allow_extra_fields = BooleanField(null=False, default=False)
     backend = CharField(max_length=255, choices=StorageBackendType.choices(),
-                        default=default_backend.name)
+                        default=default_backend.value)
     extra_config = fields.json_field(validators=extra_config_validators)
     locked = BooleanField(null=False, default=False)
 

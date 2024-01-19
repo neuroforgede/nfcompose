@@ -21,6 +21,7 @@ REST_URL = str
 class Consumer(Identifiable):
     target: REST_URL
     name: str
+    mode: str
     headers: Dict[str, Any]
     timeout: float
     retry_backoff_every: int
@@ -33,6 +34,7 @@ class Consumer(Identifiable):
             external_id=raw.external_id,
             target=replace_domain(raw.target, domain_aliases),
             name=raw.name,
+            mode=raw.mode,
             headers=raw.headers,
             timeout=raw.timeout,
             retry_backoff_delay=raw.retry_backoff_delay,

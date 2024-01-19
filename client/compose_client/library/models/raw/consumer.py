@@ -25,6 +25,7 @@ class RawConsumer:
     retry_backoff_every: int
     retry_backoff_delay: str
     retry_max: int
+    mode: str
 
     url: REST_URL
     id: str

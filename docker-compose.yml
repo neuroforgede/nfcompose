@@ -168,14 +168,14 @@ services:
   
   s3:
     image: chrislusf/seaweedfs
-    command: 'filer -master="seaweedmaster:9333" -s3 -s3.config=/etc/seaweedfs/s3.json -s3.port=8000'
+    command: 'filer -master="seaweedmaster:9333" -s3 -s3.config=/etc/seaweedfs/s3.json -s3.port=6044'
     restart: unless-stopped
     networks:
       cephalopod:
         aliases:
           - "nfcomposes3"
     ports:
-      - "127.0.0.1:${SEAWEEDFS_DEV_OUTSIDE_PORT:-8000}:8000"
+      - "127.0.0.1:${SEAWEEDFS_DEV_OUTSIDE_PORT:-6044}:6044"
     volumes:
       - "./devenv/s3_config/s3.json:/etc/seaweedfs/s3.json"
       - "seaweedfs_buckets:/data"

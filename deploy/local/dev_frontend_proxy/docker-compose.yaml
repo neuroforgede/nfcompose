@@ -24,10 +24,10 @@ services:
     networks:
       - nfcompose_test
     environment:
-      TCP_PROXY_LISTEN_PORT: "8000"
-      TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
+      TCP_PROXY_LISTEN_PORT: "6044"
+      TCP_UPSTREAM: "nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
     ports:
-     - "127.0.0.1:8000:8000"
+     - "127.0.0.1:6044:6044"
 
   minio_console_forward:
     image: neuroforgede/nginx-tcp-forward
