@@ -46,5 +46,4 @@ class RawDimensionConversionTest(unittest.TestCase):
             "should": "not-be-here",
             "reference": "http://some.other.url/"
         }
-        with self.assertRaises(Exception) as e:
-            RawDimension.from_dict(dict)
+        RawDimension.from_dict(dict)

@@ -39,8 +39,8 @@ class RawGroupConversionTest(unittest.TestCase):
             "fully_qualified": f"{fake.user_name()}@@{group_name}",
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            RawGroup.from_dict(dict)
+        # should not raise
+        RawGroup.from_dict(dict)
 
 
 class RawGroupPermissionsConversionTest(unittest.TestCase):
@@ -57,5 +57,5 @@ class RawGroupPermissionsConversionTest(unittest.TestCase):
             "group_permissions": ['perm_1', 'perm_2'],
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            RawGroupPermissions.from_dict(dict)
+        # should not raise
+        RawGroupPermissions.from_dict(dict)

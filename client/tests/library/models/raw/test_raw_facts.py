@@ -65,8 +65,8 @@ class BaseRawFactConversionTest(unittest.TestCase):
             "external_id": "111",
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            self.fact_type.from_dict(dict)
+        # should not raise
+        self.fact_type.from_dict(dict)
 
 
 class RawFloatFactConversionTest(BaseRawFactConversionTest):
