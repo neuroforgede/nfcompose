@@ -31,7 +31,7 @@ class RawHttpEndpointGroupPermissionsAPIConverter(APIConverter[RawHttpEndpointGr
         return RawHttpEndpointGroupPermissions.from_dict(json)
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawHttpEndpoint:
     url: REST_URL

@@ -16,7 +16,7 @@ REST_URL = str
 DATA_SERIES_EXTERNAL_ID = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Dimension(Identifiable):
     name: str

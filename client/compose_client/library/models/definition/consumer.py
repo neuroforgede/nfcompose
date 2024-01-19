@@ -5,7 +5,7 @@
 # [2019] - [2023] © NeuroForge GmbH & Co. KG
 
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from dataclasses_json import dataclass_json, Undefined
 
@@ -16,12 +16,12 @@ from compose_client.library.service.url import replace_domain
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Consumer(Identifiable):
     target: REST_URL
     name: str
-    mode: str
+    mode: Optional[str]
     headers: Dict[str, Any]
     timeout: float
     retry_backoff_every: int

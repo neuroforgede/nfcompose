@@ -31,6 +31,7 @@ class DataSeriesDefinitionDiffTest(unittest.TestCase):
                 external_id='consumer',
                 target='http://my.nodered.local/',
                 name='consumer',
+                mode='IN_ORDER',
                 headers={},
                 timeout=10,
                 retry_backoff_every=1,

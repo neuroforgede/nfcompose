@@ -22,7 +22,7 @@ class BaseFact(Identifiable):
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class FloatFact(BaseFact):
 
@@ -35,7 +35,7 @@ class FloatFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class StringFact(BaseFact):
 
@@ -48,7 +48,7 @@ class StringFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class TextFact(BaseFact):
 
@@ -61,7 +61,7 @@ class TextFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class TimestampFact(BaseFact):
 
@@ -74,7 +74,7 @@ class TimestampFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ImageFact(BaseFact):
 
@@ -87,7 +87,7 @@ class ImageFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class FileFact(BaseFact):
 
@@ -100,7 +100,7 @@ class FileFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class JsonFact(BaseFact):
 
@@ -113,7 +113,7 @@ class JsonFact(BaseFact):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class BooleanFact(BaseFact):
 

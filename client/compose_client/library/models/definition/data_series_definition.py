@@ -19,7 +19,7 @@ from compose_client.library.models.identifiable import IdentifiableByName
 from compose_client.library.models.raw.data_series import RawDataSeriesGroupPermissions
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 # not frozen to be not annoying to write tests for
 @dataclass
 class DataSeriesStructure:
@@ -34,7 +34,7 @@ class DataSeriesStructure:
     dimensions: List[Dimension] = field(default_factory=list)
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesGroupPermissions(IdentifiableByName):
     name: str
@@ -48,7 +48,7 @@ class DataSeriesGroupPermissions(IdentifiableByName):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesDefinition:
     """

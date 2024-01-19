@@ -10,7 +10,7 @@ from typing import Any, Dict
 from dataclasses_json import dataclass_json, Undefined
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesCreateViewSettings:
     view_name: str
@@ -24,7 +24,7 @@ class DataSeriesCreateViewSettings:
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesCreateViewOperation:
     data_series_external_id: str

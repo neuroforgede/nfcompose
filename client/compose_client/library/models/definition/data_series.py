@@ -14,7 +14,7 @@ from compose_client.library.models.identifiable import Identifiable
 from compose_client.library.models.raw.data_series import RawDataSeries
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeries(Identifiable):
     name: str

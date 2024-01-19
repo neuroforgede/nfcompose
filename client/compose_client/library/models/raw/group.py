@@ -14,7 +14,7 @@ from compose_client.library.connection.read import APIConverter
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawGroupPermissions:
     group_permissions: List[str]
@@ -28,7 +28,7 @@ class RawGroupPermissionsAPIConverter(APIConverter[RawGroupPermissions]):
         return RawGroupPermissions.from_dict(json)
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawGroup:
     url: REST_URL
