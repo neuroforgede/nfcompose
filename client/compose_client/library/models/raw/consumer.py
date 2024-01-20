@@ -14,7 +14,7 @@ from compose_client.library.connection.read import APIConverter
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawConsumer:
     external_id: str
@@ -25,6 +25,7 @@ class RawConsumer:
     retry_backoff_every: int
     retry_backoff_delay: str
     retry_max: int
+    mode: str
 
     url: REST_URL
     id: str

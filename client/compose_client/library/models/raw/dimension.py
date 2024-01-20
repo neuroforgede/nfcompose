@@ -14,7 +14,7 @@ from compose_client.library.connection.read import APIConverter
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawDimension:
     url: REST_URL

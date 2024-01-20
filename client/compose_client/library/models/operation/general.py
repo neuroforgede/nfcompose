@@ -17,7 +17,7 @@ class OperationType(enum.Enum):
     UPDATE = "UPDATE"
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Operation:
     operation_type: OperationType
@@ -28,7 +28,7 @@ class Operation:
         return False
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class ExternalIdOperation:
     operation_type: OperationType
@@ -41,7 +41,7 @@ class ExternalIdOperation:
         return False
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class NameOperation:
     operation_type: OperationType

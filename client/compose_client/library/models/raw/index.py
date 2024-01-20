@@ -14,7 +14,7 @@ from compose_client.library.connection.read import APIConverter
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawIndexTarget:
     target_id: str
@@ -24,7 +24,7 @@ class RawIndexTarget:
     @staticmethod
     def from_dict(dict: Dict[str, Any]) -> 'RawIndexTarget': ...
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawIndex:
     external_id: str

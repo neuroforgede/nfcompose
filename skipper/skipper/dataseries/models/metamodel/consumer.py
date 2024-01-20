@@ -26,6 +26,17 @@ class ConsumerHealthState(Enum):
     @classmethod
     def choices(cls) -> Tuple[Tuple[str, str], ...]:
         return tuple((i.name, i.value) for i in cls)
+    
+
+class ConsumerMode(Enum):
+    # default should always be the first, so DRF displays it by default in the UI
+    IN_ORDER = 'IN_ORDER'
+    # in order, but dont block if the first element in the list fails
+    IN_ORDER_NON_BLOCKING = 'IN_ORDER_NON_BLOCKING'
+
+    @classmethod
+    def choices(cls) -> Tuple[Tuple[str, str], ...]:
+        return tuple((i.name, i.value) for i in cls)
 
 
 class Consumer(DataSeriesMetaModel):  # type: ignore
@@ -38,6 +49,8 @@ class Consumer(DataSeriesMetaModel):  # type: ignore
     timeout = FloatField(null=False, default=60, validators=[MinValueValidator(0.1)])
 
     health = CharField(max_length=100, null=False, default=ConsumerHealthState.UNKNOWN.value, choices=ConsumerHealthState.choices(), db_index=False)
+
+    mode = CharField(max_length=100, null=False, default=ConsumerMode.IN_ORDER.value, choices=ConsumerMode.choices(), db_index=False)
 
     # by default backoff every 1
     retry_backoff_every = IntegerField(null=False, default=1)

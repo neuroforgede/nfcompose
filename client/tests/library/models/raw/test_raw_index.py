@@ -70,5 +70,5 @@ class RawDimensionConversionTest(unittest.TestCase):
                 }
             ]
         }
-        with self.assertRaises(Exception) as e:
-            RawIndex.from_dict(dict)
+        # should not raise
+        RawIndex.from_dict(dict)

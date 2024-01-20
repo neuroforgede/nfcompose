@@ -37,7 +37,7 @@ x-skipper-env: &x-skipper-env
   # SKIPPER_DB_SSL_MODE: "verify-ca"
 
   SKIPPER_S3_ENDPOINT_URL: "http://minio.localhost:9000"
-  SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.local:8000"
+  SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.local:6044"
   SKIPPER_S3_MEDIA_BUCKET_NAME: "skipper-media"
   SKIPPER_S3_STATIC_BUCKET_NAME: "skipper-static"
 
@@ -318,13 +318,13 @@ services:
         }
 
         function _ensure_bucket {
-          BUCKET_EXISTS=$$(aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:8000 s3api head-bucket --bucket $$1 2>&1)
+          BUCKET_EXISTS=$$(aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:6044 s3api head-bucket --bucket $$1 2>&1)
 
           if [ -z "$$BUCKET_EXISTS" ]; then
             echo "Bucket $$1 already exists"
           else
             echo "Bucket $$1 does not already exist."
-            aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:8000 s3 mb s3://$$1
+            aws --region eu-west-1 --endpoint-url http://nfcomposes3.local:6044 s3 mb s3://$$1
             if [ $$? -ne 0 ]; then
                 echo "failed to create bucket $$1"
                 return 1
@@ -357,7 +357,7 @@ services:
     command: 
       - -c
       - |
-        mc alias set nfcomposes3 http://nfcomposes3.local:8000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD
+        mc alias set nfcomposes3 http://nfcomposes3.local:6044 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD
         exec mc anonymous set download nfcomposes3/skipper-static
     networks:
       nfcompose:
@@ -367,9 +367,9 @@ services:
 
   s3:
     image: minio/minio:RELEASE.2023-01-25T00-19-54Z
-    command: server /data --console-address ":8001" --address ":8000"
+    command: server /data --console-address ":8001" --address ":6044"
     ports:
-      - 9000:8000
+      - 9000:6044
     networks:
       nfcompose:
         aliases:

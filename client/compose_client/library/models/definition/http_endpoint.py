@@ -18,7 +18,7 @@ REST_URL = str
 EXTERNAL_ID = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class HttpEndpoint:
     engine: EXTERNAL_ID
@@ -43,7 +43,7 @@ class HttpEndpoint:
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class HttpEndpointGroupPermissions(IdentifiableByName):
     name: str
@@ -57,7 +57,7 @@ class HttpEndpointGroupPermissions(IdentifiableByName):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class HttpEndpointDefinition:
     http_endpoint: HttpEndpoint

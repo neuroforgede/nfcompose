@@ -25,7 +25,7 @@ class FileTypeContent:
 Primitive = Union[str, float, int, bool]
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataPoint(Identifiable):
     external_id: str

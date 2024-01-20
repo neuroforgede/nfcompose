@@ -52,5 +52,5 @@ class RawHttpEndpointConversionTest(unittest.TestCase):
             "permission_group": f"https://localhost:6043/api/flow/httpendpoint/{_id}/permission/group/",
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            RawHttpEndpoint.from_dict(dict)
+        # should not raise
+        RawHttpEndpoint.from_dict(dict)

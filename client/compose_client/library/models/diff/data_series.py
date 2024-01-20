@@ -13,7 +13,7 @@ from compose_client.library.models.diff.mixin import EmptyMixin
 from compose_client.library.models.operation.general import ExternalIdOperation, NameOperation
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesStructureDiff:
     float_facts: List[ExternalIdOperation] = field(default_factory=list)
@@ -36,7 +36,7 @@ class DataSeriesStructureDiff:
         return True
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataSeriesDefinitionDiff(EmptyMixin):
     """

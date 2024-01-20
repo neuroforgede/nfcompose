@@ -13,7 +13,7 @@ from compose_client.library.models.diff.mixin import list_empty
 from compose_client.library.models.operation.general import NameOperation, Operation
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class GroupDefinitionDiff:
     """

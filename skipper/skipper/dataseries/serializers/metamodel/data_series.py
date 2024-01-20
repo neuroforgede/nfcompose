@@ -197,7 +197,7 @@ class DataSeriesTruncateSerializer(BaseSerializer):
 
 class DataSeriesSerializer(DataSeriesBaseSerializer):
     name = serializers.CharField(max_length=256)
-    backend = serializers.ChoiceField(choices=selectable_storage_backend_types, default=default_backend.name)
+    backend = serializers.ChoiceField(choices=selectable_storage_backend_types, default=default_backend.value)
     url = serializers.HyperlinkedIdentityField(view_name=constants.data_series_base_name + '-detail')
     extra_config = serializers.JSONField(
         initial=lambda: default_extra_config(),

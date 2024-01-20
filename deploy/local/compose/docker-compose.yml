@@ -53,8 +53,8 @@ services:
     restart: unless-stopped
     environment:
         SKIPPER_DEBUG_LOCAL: "true"
-        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
-        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:6044}"
         SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
         SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
         SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
@@ -75,8 +75,8 @@ services:
     restart: unless-stopped
     environment:
         SKIPPER_DEBUG_LOCAL: "true"
-        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
-        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:6044}"
         SKIPPER_GUNICORN_LIMIT_REQUEST_LINE: "0"
         SKIPPER_WORKER_TIMEOUT: "120"
         SKIPPER_DJANGO_EXTRA_ALLOWED_HOSTS: "skipper.internal.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
@@ -93,8 +93,8 @@ services:
       - nfcompose_test
     environment:
         SKIPPER_DEBUG_LOCAL: "true"
-        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
-        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:6044}"
         SKIPPER_CELERY_WORKER_CONCURRENCY: "2"
         SKIPPER_CONTAINER_TYPE: "CELERY"
         SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
@@ -110,8 +110,8 @@ services:
       - nfcompose
     environment:
         SKIPPER_DEBUG_LOCAL: "true"
-        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
-        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:6044}"
         SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
         SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
         SKIPPER_DB_HOSTS: "postgres.${INTERNAL_DOMAIN_SUFFIX:-test.local}"
@@ -134,8 +134,8 @@ services:
           - skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}
     environment:
         SKIPPER_DEBUG_LOCAL: "true"
-        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:8000"
-        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:8000}"
+        SKIPPER_S3_INTERNAL_ENDPOINT_URL: "http://nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6044"
+        SKIPPER_S3_ENDPOINT_URL: "${SKIPPER_S3_ENDPOINT_URL:-http://nfcomposes3.test.local:6044}"
         SKIPPER_CONTAINER_TYPE: "TASK_DASHBOARD"
         SKIPPER_REDIS_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
         SKIPPER_CELERY_BROKER_URL: 'redis://redis.${INTERNAL_DOMAIN_SUFFIX:-test.local}:6379'
@@ -164,7 +164,7 @@ services:
 
   s3:
     image: minio/minio:RELEASE.2023-01-25T00-19-54Z
-    command: server /data --console-address ":8001" --address ":8000"
+    command: server /data --console-address ":8001" --address ":6044"
     networks:
       nfcompose:
         aliases:

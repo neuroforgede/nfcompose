@@ -14,7 +14,7 @@ from typing import Dict, Any, cast
 
 from skipper.core.validators import json_dict_str_str
 from skipper.dataseries import constants
-from skipper.dataseries.models.metamodel.consumer import Consumer, DataSeries_Consumer
+from skipper.dataseries.models.metamodel.consumer import Consumer, ConsumerMode, DataSeries_Consumer
 from skipper.dataseries.models.metamodel.data_series import DataSeries
 from skipper.dataseries.models.metamodel.django_base import DataSeriesMetaModel
 from skipper.core.models.validation import validate_external_id_url_safe
@@ -34,6 +34,7 @@ class ConsumerSerializer(BaseDefaultDataSeriesChildSerializer):
     url = ConsumerHyperlinkedIdentityField(view_name=constants.data_series_consumer_base_name + '-detail')
     headers = serializers.JSONField(allow_null=False, validators=[json_dict_str_str])
     health = serializers.CharField(read_only=True)
+    mode = serializers.ChoiceField(choices=ConsumerMode.choices(), default=ConsumerMode.IN_ORDER.value)
 
     child_column_name = 'consumer'
     consumer_model = Consumer
@@ -92,6 +93,7 @@ class ConsumerSerializer(BaseDefaultDataSeriesChildSerializer):
         model = Consumer
         fields = _named_serializer_fields((
             'target',
+            'mode',
             'headers',
             'timeout',
             'retry_backoff_every',

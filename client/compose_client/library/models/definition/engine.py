@@ -16,7 +16,7 @@ from compose_client.library.service.url import replace_domain
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Engine(Identifiable):
     upstream: REST_URL
@@ -31,7 +31,7 @@ class Engine(Identifiable):
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class EngineSecret:
     secret: str
@@ -45,7 +45,7 @@ class EngineSecret:
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class EngineGroupPermissions(IdentifiableByName):
     name: str
@@ -59,7 +59,7 @@ class EngineGroupPermissions(IdentifiableByName):
         )
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class EngineDefinition:
     engine: Engine

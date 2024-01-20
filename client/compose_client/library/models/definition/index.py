@@ -17,7 +17,7 @@ from compose_client.library.service.url import replace_domain
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class IndexTarget:
     target_external_id: str
@@ -26,7 +26,7 @@ class IndexTarget:
     @staticmethod
     def from_dict(dict: Dict[str, Any]) -> 'IndexTarget': ...
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Index(Identifiable):
     name: str

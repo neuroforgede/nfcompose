@@ -27,8 +27,8 @@ class RawEngineSecretConversionTest(unittest.TestCase):
             "secret": fake.password(),
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            RawEngineSecret.from_dict(dict)
+        # should not raise
+        RawEngineSecret.from_dict(dict)
 
 
 class RawEngineConversionTest(unittest.TestCase):
@@ -65,5 +65,5 @@ class RawEngineConversionTest(unittest.TestCase):
             "secret": "http://localhost:7044/api/flow/engine/5d71d940-ca3f-408b-8f50-920cc68974ed/secret/",
             "should": "not-be-here"
         }
-        with self.assertRaises(Exception) as e:
-            RawEngine.from_dict(dict)
+        # should not raise
+        RawEngine.from_dict(dict)

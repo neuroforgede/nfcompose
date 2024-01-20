@@ -14,7 +14,7 @@ from compose_client.library.models.raw.group import RawGroupPermissions, RawGrou
 REST_URL = str
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class GroupPermissions:
     group_permissions: List[str]
@@ -28,7 +28,7 @@ class GroupPermissions:
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Group:
     name: str
@@ -42,7 +42,7 @@ class Group:
     def to_dict(self) -> Any: ...
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class GroupDefinition:
     group: Group

@@ -31,7 +31,7 @@ class RawEngineGroupPermissionsAPIConverter(APIConverter[RawEngineGroupPermissio
         return RawEngineGroupPermissions.from_dict(json)
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawEngineSecret:
     secret: str
@@ -45,7 +45,7 @@ class RawEngineSecretAPIConverter(APIConverter[RawEngineSecret]):
         return RawEngineSecret.from_dict(json)
 
 
-@dataclass_json(undefined=Undefined.RAISE)
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RawEngine:
     url: REST_URL
