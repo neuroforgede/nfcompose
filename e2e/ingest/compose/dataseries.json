@@ -1,0 +1,46 @@
+[
+    {
+        "consumers": [
+            {
+                "external_id": "consumer",
+                "headers": {},
+                "mode": "IN_ORDER",
+                "name": "consumer",
+                "retry_backoff_delay": "00:00:30",
+                "retry_backoff_every": 1,
+                "retry_max": 0,
+                "target": "http://localhost",
+                "timeout": 60.0
+            }
+        ],
+        "data_series": {
+            "allow_extra_fields": false,
+            "backend": "DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY",
+            "external_id": "in_order",
+            "extra_config": {
+                "auto_clean_history_after_days": -1,
+                "auto_clean_meta_model_after_days": -1
+            },
+            "name": "in_order"
+        },
+        "group_permissions": [],
+        "indexes": [],
+        "structure": {
+            "boolean_facts": [],
+            "dimensions": [],
+            "file_facts": [],
+            "float_facts": [],
+            "image_facts": [],
+            "json_facts": [],
+            "string_facts": [],
+            "text_facts": [
+                {
+                    "external_id": "some_data",
+                    "name": "some_data",
+                    "optional": false
+                }
+            ],
+            "timestamp_facts": []
+        }
+    }
+]

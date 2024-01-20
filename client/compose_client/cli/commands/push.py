@@ -28,6 +28,7 @@ def push() -> None:
 @click.option('--compose-user', type=click.STRING, required=True)
 @click.option('--compose-password', type=click.STRING, required=True)
 @click.option('--lines', type=click.BOOL, required=False, is_flag=True, help='whether to interpret the input as being in jsonlines format')
+@click.option('--asynchronous', '--async', type=click.BOOL, required=False, is_flag=True, help='whether to instruct NF Compose to store the data asynchronously')
 @click.option('--batchsize', type=click.INT, default=100)
 @click.option(
     '--file',
@@ -44,6 +45,7 @@ def push_datapoint_definitions(
         compose_user: str,
         compose_password: str,
         lines: bool,
+        asynchronous: bool,
         batchsize: int
 ) -> None:
     """
@@ -78,4 +80,4 @@ def push_datapoint_definitions(
         ),
         batch_size=batchsize
     )
-    pusher.push(_dps, data_series_external_id=data_series_external_id)
+    pusher.push(_dps, data_series_external_id=data_series_external_id, asynchronous=asynchronous)
