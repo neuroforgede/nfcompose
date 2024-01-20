@@ -87,7 +87,7 @@ def actual_run_heartbeat_consumers(tenant_id: str, consumer_id: str) -> None:
         queue.enqueue(
             'consumer_heartbeat',
             {
-                'consumer_id': consumer_id
+                'consumer_id': str(consumer_id)
             }
         )
     try_run_all(queue)
