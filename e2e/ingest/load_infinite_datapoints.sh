@@ -14,6 +14,4 @@ check_result () {
 
 source .env
 
-for i in {1..10}; do
-    python3 generate_data.py | compose_cli push datapoints ${NF_COMPOSE_URL} in_order --compose-user ${NF_COMPOSE_USER} --compose-password ${NF_COMPOSE_PASSWORD} --lines --batchsize 1 &
-done
+python3 generate_data.py | compose_cli push datapoints ${NF_COMPOSE_URL} in_order --compose-user ${NF_COMPOSE_USER} --compose-password ${NF_COMPOSE_PASSWORD} --lines --batchsize 1
