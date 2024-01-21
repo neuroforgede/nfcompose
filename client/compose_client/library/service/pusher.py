@@ -328,13 +328,13 @@ class DataSeriesDefinitionDiffPusher(BasePusher):
                     pass
                 if permission_change.operation_type == OperationType.CREATE:
                     # we cant really create, but the dataseries was not there to begin with
-                    self.client.patch(
+                    self.client.put(
                         url=self.client.url(
                             f'{_base_path_data_series_by_external_id}{diff.external_id}/permission/group/{group_id_by_name[permission_change.name]}/'),
                         data=permission_change.payload
                     )
                 if permission_change.operation_type == OperationType.UPDATE:
-                    self.client.patch(
+                    self.client.put(
                         url=self.client.url(
                             f'{_base_path_data_series_by_external_id}{diff.external_id}/permission/group/{group_id_by_name[permission_change.name]}/'),
                         data=permission_change.payload
@@ -381,10 +381,10 @@ class EngineDefinitionDiffPusher(BasePusher):
             if elem.secret is not None:
                 if elem.secret.operation_type == OperationType.CREATE:
                     # secret endpoint only supports put, because there will always be a secret
-                    self.client.patch(self._get_engine(elem.external_id)['secret'], data=elem.secret.payload)
+                    self.client.put(self._get_engine(elem.external_id)['secret'], data=elem.secret.payload)
 
                 if elem.secret.operation_type == OperationType.UPDATE:
-                    self.client.patch(self._get_engine(elem.external_id)['secret'], data=elem.secret.payload)
+                    self.client.put(self._get_engine(elem.external_id)['secret'], data=elem.secret.payload)
 
             if not _engine_deleted:
                 _url = self._get_engine(elem.external_id)['url']
@@ -395,12 +395,12 @@ class EngineDefinitionDiffPusher(BasePusher):
                         pass
                     if permission_change.operation_type == OperationType.CREATE:
                         # we cant really create, but the engine was not there to begin with
-                        self.client.patch(
+                        self.client.put(
                             url=f'{_url}permission/group/{group_id_by_name[permission_change.name]}/',
                             data=permission_change.payload
                         )
                     if permission_change.operation_type == OperationType.UPDATE:
-                        self.client.patch(
+                        self.client.put(
                             url=f'{_url}permission/group/{group_id_by_name[permission_change.name]}/',
                             data=permission_change.payload
                         )
@@ -458,12 +458,12 @@ class HttpEndpointDefinitionDiffPusher(BasePusher):
                         pass
                     if permission_change.operation_type == OperationType.CREATE:
                         # we cant really create, but the httpendpoint was not there to begin with
-                        self.client.patch(
+                        self.client.put(
                             url=f'{_url}permission/group/{group_id_by_name[permission_change.name]}/',
                             data=permission_change.payload
                         )
                     if permission_change.operation_type == OperationType.UPDATE:
-                        self.client.patch(
+                        self.client.put(
                             url=f'{_url}permission/group/{group_id_by_name[permission_change.name]}/',
                             data=permission_change.payload
                         )
@@ -480,7 +480,7 @@ class GroupDefinitionDiffPusher(BasePusher):
             # a different REST resource from the API standpoint)
             if elem.group_permissions is not None:
                 if elem.group_permissions.operation_type == OperationType.DELETE:
-                    self.client.patch(self._get_group(elem.name)['permissions'], data={
+                    self.client.put(self._get_group(elem.name)['permissions'], data={
                         "group_permissions": []
                     })
 
@@ -493,14 +493,14 @@ class GroupDefinitionDiffPusher(BasePusher):
                     self.client.post(url=self.client.url('/api/common/auth/group/'), data=elem.group.payload)
 
                 if elem.group.operation_type == OperationType.UPDATE:
-                    self.client.patch(url=self._get_group(elem.name)['url'], data=elem.group.payload)
+                    self.client.put(url=self._get_group(elem.name)['url'], data=elem.group.payload)
 
             if elem.group_permissions is not None:
                 if elem.group_permissions.operation_type == OperationType.CREATE:
-                    self.client.patch(self._get_group(elem.name)['permissions'], data=elem.group_permissions.payload)
+                    self.client.put(self._get_group(elem.name)['permissions'], data=elem.group_permissions.payload)
 
                 if elem.group_permissions.operation_type == OperationType.UPDATE:
-                    self.client.patch(self._get_group(elem.name)['permissions'], data=elem.group_permissions.payload)
+                    self.client.put(self._get_group(elem.name)['permissions'], data=elem.group_permissions.payload)
 
 
 class DataSeriesCreateViewOperationPusher(BasePusher):
