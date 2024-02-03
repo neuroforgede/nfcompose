@@ -11,6 +11,8 @@ if "RELEASE_VERSION" in os.environ:
   minor_version = match.group(2)
   patch_version = match.group(3)
   suffix_version = match.group(4)
+  if suffix_version is None:
+    suffix_version = ""
 else:
   major_version = "2"
   minor_version = "1"
