@@ -40,7 +40,7 @@ def check_cors(
     original_method_of_request = request.method
     try:
         request.method = original_method
-        middleware_result = middleware.process_request(
+        middleware_result = middleware.__call__(
             request
         )
         return middleware_result is not None
