@@ -4,7 +4,7 @@
 # This file is part of NF Compose
 # [2019] - [2023] © NeuroForge GmbH & Co. KG
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from typing import List, Any
 
 from rest_framework import status
@@ -28,19 +28,28 @@ def get_sub_url_view(view_name: str, request: Request, args: List[Any] = []) -> 
         return request.build_absolute_uri(url) + '?' + request.GET.urlencode()
 
 
+def check_preflight(self, request: HttpRequest) -> HttpResponse | None:
+    """
+    Generate a response for CORS preflight requests.
+    """
+    if (
+        request.method == "OPTIONS"
+        and "access-control-request-method" in request.headers
+    ):
+        return HttpResponse(headers={"content-length": "0"})
+    return None
+
+
 def check_cors(
     request: HttpRequest,
     original_method: str
 ) -> bool:
     if original_method != 'OPTIONS':
         return False
-    # check if it is a preflight options call by using our usual middleware
-    from corsheaders.middleware import CorsMiddleware  # type: ignore
-    middleware = CorsMiddleware()
     original_method_of_request = request.method
     try:
         request.method = original_method
-        middleware_result = middleware.check_preflight(
+        middleware_result = check_preflight(
             request
         )
         return middleware_result is not None
