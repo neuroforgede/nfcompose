@@ -3336,13 +3336,6 @@ http://github.com/korfuri/django-prometheus
 
 
 
-django-rest-swagger
-2.2.0
-BSD License
-Marc Gibbons
-https://github.com/marcgibbons/django-rest-swagger
-UNKNOWN
-
 django-slowtests
 1.1.1
 MIT License
