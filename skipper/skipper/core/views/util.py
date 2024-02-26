@@ -28,7 +28,7 @@ def get_sub_url_view(view_name: str, request: Request, args: List[Any] = []) -> 
         return request.build_absolute_uri(url) + '?' + request.GET.urlencode()
 
 
-def check_preflight(self, request: HttpRequest) -> HttpResponse | None:
+def check_preflight(request: HttpRequest) -> HttpResponse | None:
     """
     Generate a response for CORS preflight requests.
     """
