@@ -22,6 +22,7 @@ class ConsumerHealthState(Enum):
     UNKNOWN = 'UNKNOWN'
     UNHEALTHY = 'UNHEALTHY'
     HEALTHY = 'HEALTHY'
+    RATE_LIMIT = 'RATE_LIMIT'
 
     @classmethod
     def choices(cls) -> Tuple[Tuple[str, str], ...]:
