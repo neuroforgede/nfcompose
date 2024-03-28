@@ -34,6 +34,7 @@ if (
         "SKIPPER_S3_STATIC_BUCKET_NAME": 'skipper-static',
         "SKIPPER_SESSION_INSECURE": "true",
         "SKIPPER_FLOW_DEFAULT_SYSTEM_SECRET": 'QAeV8ESByNqyXNA4bUNMqEVvbhR7B4ftCEWTGM2ujbVtMfuHL7YnjhWUzEaUWDW9',
+        "SKIPPER_FEATURE_FLAG_ALL": "true",
         # keep anything that was overridden
         **os.environ
     })
