@@ -8,10 +8,12 @@ from typing import Any, Dict, List, Sequence, Set, Type, cast
 
 from django.contrib.auth.models import User
 from django.db.models import Model, QuerySet
+from django_filters.rest_framework import FilterSet, CharFilter  # type: ignore
 from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions, serializers
 from rest_framework.generics import get_object_or_404
+from rest_framework.serializers import ValidationError
 
 from skipper.core import constants
 from skipper.core.serializers.base import BaseSerializer
@@ -31,6 +33,15 @@ class GenericTenantUsertHyperlinkedIdentityField(MultipleParameterHyperlinkedIde
     def get_extra_lookup_url_kwargs(self, obj: Model, view_name: str, request: Request, format: str) -> Dict[str, Any]:
         tenant_user = cast(Tenant_User, obj)
         return {'tenant_id': tenant_user.tenant.id}
+    
+
+class UserFilterSet(FilterSet):  # type: ignore
+    username = CharFilter(
+        field_name="username", method='username_equal', label='Username'
+    )
+
+    def username_equal(self, qs: 'QuerySet[Any]', name: str, value: str) -> 'QuerySet[Any]':
+        return qs.filter(user__username=value)
 
 
 class TenantUserViewSet(
@@ -41,10 +52,11 @@ class TenantUserViewSet(
     skipper_base_name = constants.core_tenant_user_view_set_name
     kwargs: Dict[str, Any]
 
+    filterset_class = UserFilterSet
+
     def get_serializer_class(self) -> Any:
 
         class GenericTenantUserSerializer(BaseSerializer):
-
             url = GenericTenantUsertHyperlinkedIdentityField(view_name=constants.core_tenant_user_view_set_name + '-detail')
             user = serializers.HyperlinkedRelatedField(
                 view_name=constants.core_user_view_set_name + '-detail', 
@@ -52,6 +64,15 @@ class TenantUserViewSet(
             )
             tenant_manager = serializers.BooleanField()
             system = serializers.BooleanField()
+
+            def to_representation(self, obj: Any) -> Any:
+                repr = super().to_representation(obj)
+                repr['username'] = obj.user.username
+                return repr
+
+            def validate_user(self, value: User) -> User:
+                if Tenant_User.objects.filter(user=value).exists():
+                    raise ValidationError("User is already assigned to a tenant")
 
             def create(self, validated_data: Any) -> Any:
                 kwargs = self.context.get('view').kwargs  # type: ignore
