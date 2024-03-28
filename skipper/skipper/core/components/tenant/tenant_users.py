@@ -12,6 +12,7 @@ from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions, serializers
 from rest_framework.generics import get_object_or_404
+from rest_framework.serializers import ValidationError
 
 from skipper.core import constants
 from skipper.core.serializers.base import BaseSerializer
@@ -52,6 +53,10 @@ class TenantUserViewSet(
             )
             tenant_manager = serializers.BooleanField()
             system = serializers.BooleanField()
+
+            def validate_user(self, value: User) -> User:
+                if Tenant_User.objects.filter(user=value).exists():
+                    raise ValidationError("User is already assigned to a tenant")
 
             def create(self, validated_data: Any) -> Any:
                 kwargs = self.context.get('view').kwargs  # type: ignore
