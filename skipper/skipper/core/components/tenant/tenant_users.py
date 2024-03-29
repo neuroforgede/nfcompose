@@ -73,6 +73,7 @@ class TenantUserViewSet(
             def validate_user(self, value: User) -> User:
                 if Tenant_User.objects.filter(user=value).exists():
                     raise ValidationError("User is already assigned to a tenant")
+                return value
 
             def create(self, validated_data: Any) -> Any:
                 kwargs = self.context.get('view').kwargs  # type: ignore
