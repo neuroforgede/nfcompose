@@ -2,7 +2,7 @@
 # If a copy of the MPL was not distributed with this file, 
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 # This file is part of NF Compose
-# [2019] - [2023] © NeuroForge GmbH & Co. KG
+# [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 from compose_client.library.service.diff import diff_datapoint, diff_datapoint_list
 from compose_client.library.models.operation.general import OperationType
