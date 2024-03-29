@@ -310,7 +310,7 @@
         <footer class="footer">
            <div class="container">
             {% block footer %}
-             Copyright © 2019-2022 <a href="https://neuroforge.de"><i class="fa fa-link">NeuroForge GmbH & Co. KG</i></a> <br/>
+             Copyright © 2019-2024 <a href="https://neuroforge.de"><i class="fa fa-link">NeuroForge GmbH & Co. KG</i></a> <br/>
              <a href="{% url 'skipper-licensing-view' %}">Licensing & Version Information</a>
             {% endblock %}
            </div>
@@ -323,23 +323,19 @@
     {% endif %}
 
     {% block script %}
-      <script>
-        window.drf = {
-          csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-          csrfToken: "{% if request %}{{ csrf_token }}{% endif %}"
-        };
+      <script type="application/json" id="drf_csrf">
+        {
+          "csrfHeaderName": "{{ csrf_header_name|default:'X-CSRFToken' }}",
+          "csrfToken": "{% if request %}{{ csrf_token }}{% endif %}"
+        }
       </script>
-      <script src="{% static "rest_framework/js/jquery-3.5.1.min.js" %}"></script>
+      <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
       <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
       <script src="{% static "rest_framework/js/csrf.js" %}"></script>
       <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
       <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
       <script src="{% static "rest_framework/js/default.js" %}"></script>
-      <script>
-        $(document).ready(function() {
-          $('form').ajaxForm();
-        });
-      </script>
+      <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
     {% endblock %}
 
   </body>

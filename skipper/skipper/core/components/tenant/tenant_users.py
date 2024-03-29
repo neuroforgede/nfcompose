@@ -2,7 +2,7 @@
 # If a copy of the MPL was not distributed with this file, 
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 # This file is part of NF Compose
-# [2019] - [2023] © NeuroForge GmbH & Co. KG
+# [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 from typing import Any, Dict, List, Sequence, Set, Type, cast
 
@@ -73,6 +73,7 @@ class TenantUserViewSet(
             def validate_user(self, value: User) -> User:
                 if Tenant_User.objects.filter(user=value).exists():
                     raise ValidationError("User is already assigned to a tenant")
+                return value
 
             def create(self, validated_data: Any) -> Any:
                 kwargs = self.context.get('view').kwargs  # type: ignore
