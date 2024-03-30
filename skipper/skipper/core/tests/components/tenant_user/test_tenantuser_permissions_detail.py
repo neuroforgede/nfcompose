@@ -69,7 +69,7 @@ class CoreTenantUserDetailPermissionBaseTest(BaseRESTPermissionTest):
         )
 
 
-class CoreTenantUserListPermissionGETTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionGETTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'GET', 'tenant-user')
@@ -89,7 +89,7 @@ class CoreTenantUserListPermissionGETTest(CoreTenantUserDetailPermissionBaseTest
         ))
 
 
-class CoreTenantUserListPermissionHEADTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionHEADTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'HEAD', 'tenant-user')
@@ -110,7 +110,7 @@ class CoreTenantUserListPermissionHEADTest(CoreTenantUserDetailPermissionBaseTes
         )
 
 
-class CoreTenantUserListPermissionPOSTTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionPOSTTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'POST', 'tenant-user')
@@ -136,7 +136,7 @@ class CoreTenantUserListPermissionPOSTTest(CoreTenantUserDetailPermissionBaseTes
         )
 
 
-class CoreTenantUserListPermissionOPTIONSTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionOPTIONSTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'OPTIONS', 'tenant-user')
@@ -156,7 +156,7 @@ class CoreTenantUserListPermissionOPTIONSTest(CoreTenantUserDetailPermissionBase
         )
 
 
-class CoreTenantUserListPermissionPUTTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionPUTTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'PUT', 'tenant-user')
@@ -182,7 +182,7 @@ class CoreTenantUserListPermissionPUTTest(CoreTenantUserDetailPermissionBaseTest
         )
 
 
-class CoreTenantUserListPermissionPATCHTest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionPATCHTest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'PATCH', 'tenant-user')
@@ -208,7 +208,7 @@ class CoreTenantUserListPermissionPATCHTest(CoreTenantUserDetailPermissionBaseTe
         )
 
 
-class CoreTenantUserListPermissionDELETETest(CoreTenantUserDetailPermissionBaseTest):
+class CoreTenantUserDetailPermissionDELETETest(CoreTenantUserDetailPermissionBaseTest):
 
     def permission_code_name(self) -> str:
         return core_permission_for_rest_method('tenant', 'DELETE', 'tenant-user')
