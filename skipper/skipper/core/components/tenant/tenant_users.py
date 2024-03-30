@@ -71,8 +71,16 @@ class TenantUserViewSet(
                 return repr
 
             def validate_user(self, value: User) -> User:
-                if Tenant_User.objects.filter(user=value).exists():
+                test_qs = Tenant_User.objects.filter(user=value)
+                if 'pk' in self.context['view'].kwargs:
+                    test_qs = test_qs.exclude(id=self.context['view'].kwargs['pk'])
+                if test_qs.exists():
                     raise ValidationError("User is already assigned to a tenant")
+                
+                if 'pk' in self.context['view'].kwargs:
+                    tenant_user: Tenant_User = get_object_or_404(Tenant_User.objects.filter(id=self.context['view'].kwargs['pk']))
+                    if tenant_user.user.username != value.username:
+                        raise ValidationError("Changing User is not allowed for a Tenant_User object. Instead, simply delete the assignment.")
                 return value
 
             def create(self, validated_data: Any) -> Any:
