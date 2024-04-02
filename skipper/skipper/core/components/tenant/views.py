@@ -35,7 +35,7 @@ class TenantFilterSet(FilterSet):  # type: ignore
     )
 
     def name_equal(self, qs: 'QuerySet[Any]', name: str, value: str) -> 'QuerySet[Any]':
-        return qs.filter(name=name)
+        return qs.filter(name=value)
 
 
 class TenantViewSet(
