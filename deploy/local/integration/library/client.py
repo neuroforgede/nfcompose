@@ -17,7 +17,7 @@ from library import env
 from library.types import JSONType
 
 
-USER_AGENT = 'integration_test compose 2.2.0'
+USER_AGENT = 'integration_test compose 2.2.3'
 
 
 class APIClient(abc.ABC):
