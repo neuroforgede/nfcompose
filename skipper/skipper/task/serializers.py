@@ -9,7 +9,7 @@ from rest_framework import serializers
 from rest_framework.fields import CharField, JSONField
 
 
-class BulkInsertTaskDataSerializer(serializers.Serializer[Any]):
+class TaskDataSerializer(serializers.Serializer[Any]):
     id = CharField(read_only=True)
     payload = JSONField(read_only=True)
 

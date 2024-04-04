@@ -28,7 +28,7 @@ from skipper.core.renderers import CustomizableBrowsableAPIRenderer
 from skipper.core.views.util import check_cors
 from skipper.settings import task_upstream_dashboard
 from skipper.task.models import get_task_data, get_task_data_count
-from skipper.task.serializers import BulkInsertTaskDataSerializer
+from skipper.task.serializers import TaskDataSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def task_queue_list(request: Request, queue_name: str) -> Response:
 
     queryset = get_task_data(page=page, pagesize=pagesize, queue_name=queue_name)
 
-    serializer_class = BulkInsertTaskDataSerializer
+    serializer_class = TaskDataSerializer
     serializer = serializer_class(queryset, many=True, context={'request': request})
 
     total_count = get_task_data_count(queue_name=queue_name)

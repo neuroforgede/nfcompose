@@ -5,6 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 import datetime
+from django.utils import timezone
 import itertools
 import uuid
 from typing import Iterable, Dict, Any, List, Tuple, Type, TypeVar, Callable, Generator, Union, cast, Optional
@@ -23,6 +24,7 @@ from skipper.dataseries.storage.dynamic_sql.models.datapoint import DataPoint
 from skipper.dataseries.storage.dynamic_sql.queries.modification_materialized.insert import insert_or_update_data_points
 from skipper.dataseries.storage.dynamic_sql.tasks.common import get_or_fail
 from skipper.dataseries.storage.static_ds_information import DataPointSerializationKeys
+from skipper.dataseries.raw_sql import dbtime
 
 logger = get_task_logger(__name__)
 
@@ -135,6 +137,34 @@ class RetryException(Exception):
     pass
 
 # acks late to automatically retry here? or should we keep track differently?
+
+@task(
+    name="_3_wake_up_requeue_persist_data_point_chunk",
+    queue='requeue_persist_data'
+)
+def wake_up_requeue_persist_data_point_chunk() -> None:
+    import base64
+    import json
+    from skipper.celery import app as celery_app
+
+    for elem in BulkInsertTaskData.objects.filter(
+        point_in_time__lt=dbtime.now() - timezone.timedelta(minutes=30)
+    ).order_by('id'):
+        found = False
+        # we need to check if the task is still in the queue
+        with celery_app.pool.acquire(block=True) as conn:
+            cursor = conn.default_channel.client.scan_iter('persist_data:*')
+            for key in cursor:
+                task = conn.default_channel.client.get(key)
+                if task is not None:
+                    j = json.loads(task)
+                    j['body'] = json.loads(base64.b64decode(j['body']))
+                    if elem.id == j['body']['task_data_reference_id']:
+                        found = True
+                        break
+
+        if not found:
+            async_persist_data_point_chunk.delay(elem.id)
 
 
 # to prevent weird race conditions under heavy load, we retry if the data is not there yet
