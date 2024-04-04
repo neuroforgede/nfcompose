@@ -141,7 +141,7 @@ class RetryException(Exception):
 @task(
     name="_3_wake_up_requeue_persist_data_point_chunk",
     queue='requeue_persist_data'
-)
+)  # type: ignore
 def wake_up_requeue_persist_data_point_chunk() -> None:
     import base64
     import json
