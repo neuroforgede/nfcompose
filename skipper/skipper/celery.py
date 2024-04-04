@@ -62,10 +62,10 @@ app.conf.beat_schedule = {
     },
     'data_series-requeue-persist-data-point-chunk-heartbeat': {
         'task': '_3_wake_up_requeue_persist_data_point_chunk',
-        'schedule': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60*30),
+        'schedule': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60 * 30),
         'options': {
             'queue': 'requeue_persist_data',
-            'expires': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60*30)
+            'expires': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60 * 30)
         }
     },
     'health-check-heartbeat': {
