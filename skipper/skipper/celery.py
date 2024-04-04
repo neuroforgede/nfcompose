@@ -35,32 +35,54 @@ app.conf.beat_schedule = {
     'event-cleanup-heartbeat': {
         'task': '_3_wake_up_consumer_cleanup',
         'schedule': getattr(settings, 'SKIPPER_CELERY_EVENT_QUEUE_CLEANUP_SCHEDULE', crontab(hour=1)),
-        'options': {'queue': 'event_cleanup'}
+        'options': {
+            'queue': 'event_cleanup'
+        }
     },
     'data_series-history-cleanup-heartbeat': {
         'task': '_3_wake_up_data_series_history_cleanup',
         'schedule': getattr(settings, 'SKIPPER_CELERY_DATA_SERIES_HISTORY_CLEANUP_SCHEDULE', crontab(hour=1)),
-        'options': {'queue': 'data_series_cleanup'}
+        'options': {
+            'queue': 'data_series_cleanup'
+        }
     },
     'file-registry-cleanup-heartbeat': {
         'task': '_3_wake_up_file_registry_cleanup',
         'schedule': getattr(settings, 'SKIPPER_CELERY_FILE_REGISTRY_CLEANUP_SCHEDULE', crontab(hour=1)),
-        'options': {'queue': 'file_registry_cleanup'}
+        'options': {
+            'queue': 'file_registry_cleanup'
+        }
     },
     'data_series-meta-model-cleanup-heartbeat': {
         'task': '_3_wake_up_data_series_meta_model_cleanup',
         'schedule': getattr(settings, 'SKIPPER_CELERY_DATA_SERIES_META_MODEL_CLEANUP_SCHEDULE', crontab(hour=1)),
-        'options': {'queue': 'data_series_cleanup'}
+        'options': {
+            'queue': 'data_series_cleanup'
+        }
+    },
+    'data_series-requeue-persist-data-point-chunk-heartbeat': {
+        'task': '_3_wake_up_requeue_persist_data_point_chunk',
+        'schedule': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60 * 30),
+        'options': {
+            'queue': 'requeue_persist_data',
+            'expires': getattr(settings, 'SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_SCHEDULE', 60 * 30)
+        }
     },
     'health-check-heartbeat': {
         'task': '_5_run_health_checks',
         'schedule': getattr(settings, 'SKIPPER_CELERY_HEALTH_CHECK_HEARTBEAT_SCHEDULE', 30),
-        'options': {'queue': 'health_check'}
+        'options': {
+            'queue': 'health_check',
+            'expires': getattr(settings, 'SKIPPER_CELERY_HEALTH_CHECK_HEARTBEAT_SCHEDULE', 30),
+        }
     },
     'common-cleanup-outstanding-tokens-heartbeat': {
         'task': '_common_cleanup_outstanding_tokens',
         # every hour
         'schedule': getattr(settings, 'SKIPPER_CELERY_OUTSTANDING_TOKENS_CLEANUP_SCHEDULE', 60 * 60),
-        'options': {'queue': 'event_cleanup'}
+        'options': {
+            'queue': 'event_cleanup',
+            'expires': getattr(settings, 'SKIPPER_CELERY_OUTSTANDING_TOKENS_CLEANUP_SCHEDULE', 60 * 60)
+        }
     },
 }

@@ -22,7 +22,7 @@ class TaskPermissions(Model):
         )
 
 
-class BulkInsertTaskData:
+class TaskData:
     id: str
     payload: Dict[str, Any]
 
@@ -53,6 +53,6 @@ def get_task_data(page: int, pagesize: int, queue_name: str) -> List[Any]:
     for task in tasks:
         j = json.loads(task)
         j['body'] = json.loads(base64.b64decode(j['body']))
-        decoded_tasks.append(BulkInsertTaskData(id=j['headers']['id'], payload=j))
+        decoded_tasks.append(TaskData(id=j['headers']['id'], payload=j))
 
     return decoded_tasks

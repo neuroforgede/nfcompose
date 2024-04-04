@@ -60,7 +60,7 @@ if [ -z "$celery_worker_concurrency" ]; then
 fi
 
 if [ -z "$celery_worker_queues" ]; then
-    celery_worker_queues="celery,event_queue,event_cleanup,health_check,data_series_cleanup,persist_data,file_registry_cleanup,index_creation"
+    celery_worker_queues="celery,event_queue,event_cleanup,health_check,data_series_cleanup,persist_data,file_registry_cleanup,index_creation,requeue_persist_data"
 fi
 
 if [ -z "$log_level" ]; then
