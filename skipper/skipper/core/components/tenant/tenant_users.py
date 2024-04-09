@@ -99,6 +99,6 @@ class TenantUserViewSet(
         tenant = get_object_or_404(Tenant.objects.filter(id=self.kwargs["tenant_id"]))
         return Tenant_User.objects.filter(
             tenant=tenant
-        ).all()
+        ).order_by('id').all()
 
 
