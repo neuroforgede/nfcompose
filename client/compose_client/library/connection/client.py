@@ -22,7 +22,7 @@ import functools
 import datetime
 
 
-USER_AGENT = 'compose_cli 2.2.4'
+USER_AGENT = 'compose_cli 2.2.5'
 
 
 class APIClient(abc.ABC):
