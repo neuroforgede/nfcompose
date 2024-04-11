@@ -49,7 +49,8 @@ x-skipper-env: &x-skipper-env
   SKIPPER_REDIS_URL: 'redis://redis.local:6379'
   SKIPPER_CELERY_BROKER_URL: 'redis://redis.local:6379'
 
-  SKIPPER_SESSION_INSECURE: "false" 
+  # if you run this in production behind SSL, you might want to set this to "false"
+  SKIPPER_SESSION_INSECURE: "true" 
 
   SKIPPER_DATA_SERIES_BULK_TASK_SIZE: "5000"
   SKIPPER_DATA_SERIES_BULK_BATCH_SIZE: "250"
