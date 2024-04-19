@@ -25,7 +25,6 @@ class RawConsumer:
     retry_backoff_every: int
     retry_backoff_delay: str
     retry_max: int
-    mode: str
 
     url: REST_URL
     id: str
@@ -33,6 +32,8 @@ class RawConsumer:
     last_modified_at: str
     health: str
     events: REST_URL
+
+    mode: str = "IN_ORDER"
 
     @staticmethod
     def from_dict(dict: Dict[str, Any]) -> 'RawConsumer': ...
