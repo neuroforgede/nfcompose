@@ -21,12 +21,12 @@ REST_URL = str
 class Consumer(Identifiable):
     target: REST_URL
     name: str
-    mode: Optional[str]
     headers: Dict[str, Any]
     timeout: float
     retry_backoff_every: int
     retry_backoff_delay: str
     retry_max: int
+    mode: str = "IN_ORDER"
 
     @staticmethod
     def from_raw(raw: RawConsumer, domain_aliases: Dict[str, str]) -> 'Consumer':
