@@ -145,7 +145,7 @@ jobs:
           source venv/bin/activate
           (bash install_dev_dependencies.sh && python3 setup.py sdist) || exit 1
           # copy into separate file to prevent issues where the source and target are the same
-          mv dist/compose_client-2.2.5*.tar.gz dist/release.tar.gz
+          mv dist/compose_client-2.2.6*.tar.gz dist/release.tar.gz
           mv dist/release.tar.gz dist/compose_client-$RELEASE_VERSION.tar.gz
 
       - name: "zip deploy/local folder"
