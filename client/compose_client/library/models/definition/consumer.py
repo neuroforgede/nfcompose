@@ -26,7 +26,7 @@ class Consumer(Identifiable):
     retry_backoff_every: int
     retry_backoff_delay: str
     retry_max: int
-    mode: Optional[str] = None
+    mode: str = "IN_ORDER"
 
     @staticmethod
     def from_raw(raw: RawConsumer, domain_aliases: Dict[str, str]) -> 'Consumer':
