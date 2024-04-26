@@ -54,7 +54,7 @@ def read_paginated_generator(client: APIClient, url: str, converter: APIConverte
         for elem in parsed_data:
             yield elem
 
-    return ret
+    yield ret
 
 
 def read_list(client: APIClient, url: str, converter: APIConverter[T]) -> Iterable[T]:
