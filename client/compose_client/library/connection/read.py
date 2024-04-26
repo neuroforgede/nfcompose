@@ -43,8 +43,6 @@ def read_paginated_all(client: APIClient, url: str, converter: APIConverter[T], 
 
 
 def read_paginated_generator(client: APIClient, url: str, converter: APIConverter[T], data_key: str = 'results') -> Iterable[T]:
-    ret: List[T] = []
-
     _url = url
 
     while _url is not None:
@@ -53,8 +51,6 @@ def read_paginated_generator(client: APIClient, url: str, converter: APIConverte
         parsed_data, _url = parse_page(page_data, converter, data_key)
         for elem in parsed_data:
             yield elem
-
-    yield ret
 
 
 def read_list(client: APIClient, url: str, converter: APIConverter[T]) -> Iterable[T]:
