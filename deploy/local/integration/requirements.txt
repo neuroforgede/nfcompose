@@ -1,5 +1,5 @@
 mypy==1.0.1
-requests==2.31.0
+requests==2.32.2
 types-requests==2.28.11.13
 pytest==6.2.5
 liccheck==0.8.3
