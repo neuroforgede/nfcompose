@@ -13,7 +13,7 @@ django-extensions = "==3.2.3"
 psycopg2 = "==2.9.9"
 pytz = "==2024.1"
 django-enumchoicefield = "==1.1.0"
-requests = "==2.31.0"
+requests = "==2.32.2"
 django-filter = "==23.5"
 gunicorn = {version = "==22.0.0", extras = ["gevent"]}
 django-storages = "==1.12.3"
