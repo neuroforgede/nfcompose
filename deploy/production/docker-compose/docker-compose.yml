@@ -359,7 +359,7 @@ services:
 
   # TODO: unify this with create_buckets
   create_buckets_post:
-    image: minio/mc:RELEASE.2023-01-11T03-14-16Z
+    image: minio/mc:RELEASE.2024-04-29T09-56-05Z
     entrypoint: /bin/sh
     command: 
       - -c
@@ -373,7 +373,8 @@ services:
       *x-s3-settings
 
   s3:
-    image: minio/minio:RELEASE.2023-01-25T00-19-54Z
+    image: minio/minio:RELEASE.2024-04-28T17-53-50Z
+    restart: unless-stopped
     command: server /data --console-address ":8001" --address ":6044"
     ports:
       - 9000:6044
