@@ -22,7 +22,7 @@ class FileTypeContent:
         self.url = url
 
 
-Primitive = Union[str, float, int, bool]
+Primitive = Union[str, float, int, bool, Dict[str, Any]]
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
