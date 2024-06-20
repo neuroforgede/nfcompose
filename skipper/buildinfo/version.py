@@ -15,9 +15,9 @@ if "RELEASE_VERSION" in os.environ:
     suffix_version = ""
 else:
   major_version = "2"
-  minor_version = "1"
-  patch_version = "0"
-  suffix_version = "-beta"
+  minor_version = "2"
+  patch_version = "10"
+  suffix_version = ""
 
 
 major_version_string = f"{major_version}{suffix_version}"
