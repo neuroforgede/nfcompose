@@ -5,7 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Union, BinaryIO
+from typing import Any, List, Dict, Union, BinaryIO
 
 from dataclasses_json import dataclass_json, Undefined
 
@@ -22,7 +22,8 @@ class FileTypeContent:
         self.url = url
 
 
-Primitive = Union[str, float, int, bool]
+# typing below the first level is subpar, but this is the best we can do for now
+Primitive = Union[str, float, int, bool, Dict[str, Any], List[Any]]
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
