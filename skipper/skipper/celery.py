@@ -19,14 +19,14 @@ app = Celery('skipper', result_backend=settings.CELERY_RESULT_BACKEND)
 
 
 def int_or_crontab(input: Any, key: str) -> Union[int, crontab]:
-    try: 
+    try:  # attempt to interpret input as positive int
         out = int(input)
         if out <= 0:
-            raise ValueError()
+            raise ValueError()  # not positive, break out of try block
         return out
     except BaseException:
-        pass
-    try:
+        pass  # try the next option
+    try:  # attempt to interpret input as crontab
         if isinstance(input, str) and len(input.split()) >= 5:
             parts = input.split()
         
@@ -39,8 +39,10 @@ def int_or_crontab(input: Any, key: str) -> Union[int, crontab]:
                 day_of_month=day_of_month,
                 month_of_year=month
             )
-        raise ValueError()
+        else:
+            raise ValueError()  # not a crontab, break out of try block
     except BaseException:
+        # both failed, now raise
         raise ValueError(f'{key} was passed in a bad format. '
                          'Either pass a positive integer or a string '
                          f'in crontab(5) format. The passed value was {input}')
