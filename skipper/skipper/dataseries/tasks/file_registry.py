@@ -4,11 +4,11 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
-from typing import Optional
 import datetime
 from django.utils import timezone
 from django_multitenant.utils import set_current_tenant  # type: ignore
 
+from skipper.environment import SKIPPER_CELERY_FILE_REGISTRY_CLEANUP_MAX_AGE_HOURS
 from skipper.core.celery import task
 from skipper.core.models import default_media_storage
 from skipper.core.models.tenant import Tenant
@@ -19,7 +19,7 @@ from skipper.dataseries.storage.contract import file_registry
 def actual_file_registry_cleanup() -> None:
     file_registry.garbage_collect(
         storage=default_media_storage,
-        older_than=datetime.datetime.now() - timezone.timedelta(days=7)
+        older_than=datetime.datetime.now() - timezone.timedelta(hours=SKIPPER_CELERY_FILE_REGISTRY_CLEANUP_MAX_AGE_HOURS)
     )
 
 
