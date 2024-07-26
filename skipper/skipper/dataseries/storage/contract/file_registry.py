@@ -11,6 +11,8 @@ any files they have stored. Any files they store should be registered
 import uuid
 from opentelemetry import trace  # type: ignore
 
+import logging
+
 import datetime
 from dataclasses import dataclass
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -26,6 +28,7 @@ from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 from skipper.testing import SKIPPER_CELERY_TESTING
 from skipper.core.lint import sql_cursor
 
+logger = logging.getLogger(__name__)
 
 class DeleteStorage(Protocol):
     def delete(self, name: str) -> Any: ...
@@ -317,6 +320,8 @@ def garbage_collect(
     storage: DeleteStorage,
     older_than: datetime.datetime
 ) -> None:
+    logger.info(f"Garbage collecting files older than {older_than}")
+    
     query_str = f"""
         DELETE 
         FROM "_3_file_lookup"
@@ -339,15 +344,12 @@ def garbage_collect(
             # TODO: do this in chunks this might be slow otherwise
             # the file is not used by anyone else, we can delete it
             if not file_exists(tenant_id=None, file_name=deleted_file[0]):
+                logger.debug(f"Deleting file {deleted_file[0]}")
                 garbage_files.add(deleted_file[0])
 
-    if SKIPPER_CELERY_TESTING:
-        for __file in garbage_files:
-            storage.delete(__file)
-    else:
-        # only delete if the commit went through, anything else
-        # would mean lost data
-        transaction.on_commit(lambda: [storage.delete(
-            _file
-        ) for _file in garbage_files])
+    logger.info(f"Garbage collecting {len(garbage_files)} files.")
 
+    # we always delete, not only on transaction commit
+    # there is no risk of dataloss, only risk of orphaned data
+    for __file in garbage_files:
+        storage.delete(__file)
