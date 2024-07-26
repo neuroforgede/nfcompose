@@ -7,7 +7,7 @@
 
 
 if [ "${SKIPPER_CONTAINER_TYPE}" == "CELERY" ]; then
-  exit 0
+  celery -A skipper inspect ping -d celery@$HOSTNAME || exit 1
 elif [ "${SKIPPER_CONTAINER_TYPE}" == "DJANGO" ]; then
   [ $(curl -A 'docker-healthcheck DJANGO' -fail -H 'Host: skipper.local' http://localhost:8000/api/ -o /dev/stderr -w '%{http_code}') -eq 403 ] || exit 1
 elif [ "${SKIPPER_CONTAINER_TYPE}" == "DJANGO_INTERNAL" ]; then
