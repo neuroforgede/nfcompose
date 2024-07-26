@@ -91,7 +91,15 @@ x-skipper-django-healthcheck: &x-skipper-django-healthcheck
     start_period: 1s
 
 x-skipper-celery-healthcheck: &x-skipper-celery-healthcheck
-  # TODO: fix healthcheck for celery
+  healthcheck:
+    test: ["CMD", "bash", "-c", "cd /neuroforge/skipper && exec celery -A skipper inspect ping -d celery@$$HOSTNAME"]
+    interval: 10s
+    timeout: 10s
+    retries: 2
+    start_period: 1s
+
+x-skipper-celery-beat-healthcheck: &x-skipper-celery-beat-healthcheck
+  # TODO: healthcheck for celery beat container
   healthcheck:
     test: ["CMD", "bash", "-c", "exit 0"]
     interval: 10s
@@ -213,13 +221,7 @@ services:
     networks:
       - postgres
       - nfcompose
-    # TODO: healthcheck for celery beat container
-    healthcheck:
-      test: ["CMD", "bash", "-c", "exit 0"]
-      interval: 10s
-      timeout: 10s
-      retries: 2
-      start_period: 1s
+    <<: *x-skipper-celery-beat-healthcheck
     environment:
       <<: *x-skipper-celery-env
       SKIPPER_CONTAINER_TYPE: "CELERY_BEAT"
