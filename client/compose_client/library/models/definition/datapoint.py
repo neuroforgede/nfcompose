@@ -5,7 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 from dataclasses import dataclass, field
-from typing import Any, List, Dict, Union, BinaryIO
+from typing import Any, List, Dict, Union, BinaryIO, TYPE_CHECKING
 
 from dataclasses_json import dataclass_json, Undefined
 
@@ -25,12 +25,17 @@ class FileTypeContent:
 # typing below the first level is subpar, but this is the best we can do for now
 Primitive = Union[str, float, int, bool, Dict[str, Any], List[Any]]
 
+if TYPE_CHECKING:
+    PayloadType = Dict[str, Union[Primitive, FileTypeContent, BinaryIO]]
+else:
+    PayloadType = dict
+
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class DataPoint(Identifiable):
     external_id: str
-    payload: Dict[str, Union[Primitive, FileTypeContent, BinaryIO]]
+    payload: PayloadType = field(default_factory=dict)
     identify_dimensions_by_external_id: bool = field(default=True)
 
     @staticmethod
