@@ -6,4 +6,4 @@ if [ -z "$COMPOSE_PROJECT_NAME" ]; then
 fi  
 
 set -a
-docker-compose down
+docker compose down

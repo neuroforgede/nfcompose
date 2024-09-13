@@ -7,7 +7,7 @@ if [ -z "$COMPOSE_PROJECT_NAME" ]; then
         exit 1
 fi  
 
-docker-compose up -d || exit 1 && echo "error setting up containers"
+docker compose up -d || exit 1 && echo "error setting up containers"
 
 echo "containers are running, it could take a while until they are properly set up"
 echo "Don't forget to add the line '127.0.0.1 nfcompose.test.local' to /etc/hosts"

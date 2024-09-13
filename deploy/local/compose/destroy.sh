@@ -15,9 +15,9 @@ check_result () {
 }
 
 if [ "$DELETE_ORPHANS" == "yes" ]; then
-    docker-compose down -v --remove-orphans
-    check_result "failed to run docker-compose down --remove-orphans"
+    docker compose down -v --remove-orphans
+    check_result "failed to run docker compose down --remove-orphans"
 else
-    docker-compose down -v
-    check_result "failed to run docker-compose down"
+    docker compose down -v
+    check_result "failed to run docker compose down"
 fi

@@ -17,5 +17,5 @@ else
     echo "no .env found, using default"
 fi
 
-COMPOSE_PROJECT_NAME=$(whoami)_skipper CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker-compose restart
-check_result "failed to run docker-compose restart"
+COMPOSE_PROJECT_NAME=$(whoami)_skipper CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker compose restart
+check_result "failed to run docker compose restart"

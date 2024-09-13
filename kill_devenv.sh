@@ -14,12 +14,12 @@ if [ -f ".env" ]; then
 else
     echo "no .env found, using default"
 fi
-COMPOSE_PROJECT_NAME=$(whoami)_skipper CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker-compose down --volumes
+COMPOSE_PROJECT_NAME=$(whoami)_skipper CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker compose down --volumes
 FAILED_DOCKER_COMPOSE_DOWN=$?
 
 rm -rf skipper/venv
 
 if [ $FAILED_DOCKER_COMPOSE_DOWN -ne 0 ]; then
-    echo "failed to run docker-compose down"
+    echo "failed to run docker compose down"
     exit 1
 fi

@@ -15,5 +15,5 @@ COMPOSE_PROJECT_NAME=$(whoami)_integration_dev CONTAINER_USER_ID=$(id -u) CONTAI
 check_result "failed to run setup.sh"
 
 cd $CUR_DIR
-DEV_NETWORK_NAME=$(whoami)_integration_dev_nfcompose COMPOSE_PROJECT_NAME=$(whoami)_integration_dev CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker-compose up -d --build
+DEV_NETWORK_NAME=$(whoami)_integration_dev_nfcompose COMPOSE_PROJECT_NAME=$(whoami)_integration_dev CONTAINER_USER_ID=$(id -u) CONTAINER_GROUP_ID=$(id -g) docker compose up -d --build
 check_result "failed to run docker setup"

@@ -15,7 +15,7 @@ import getpass
 default_test_container = subprocess.check_output([
     "bash",
     "-c",
-    f"COMPOSE_PROJECT_NAME={getpass.getuser()}_skipper docker-compose ps -q neuroforge_skipper_base_dev"
+    f"COMPOSE_PROJECT_NAME={getpass.getuser()}_skipper docker compose ps -q neuroforge_skipper_base_dev"
 ]).decode().strip()
 
 def log(message: str) -> None:
