@@ -54,11 +54,11 @@ function ensure_bucket {
 if [ "$NFCOMPOSE_SETUP_SKIP_PULL" == "yes" ]; then
     echo "skipping nfcompose image pull."
 else
-    docker compose -f docker compose.yml pull
+    docker compose -f docker-compose.yml pull
     check_result "failed to pull docker images"
 fi
 
-docker compose -f docker compose.yml up -d
+docker compose -f docker-compose.yml up -d
 check_result "failed to create docker compose services"
 
 USER_STRING='"admin"'
