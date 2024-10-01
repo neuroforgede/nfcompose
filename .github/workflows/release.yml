@@ -155,8 +155,8 @@ jobs:
 
       - name: "zip deploy/production folder"
         run: |
-          cd deploy/production/docker compose
-          zip -r deploy-production-docker compose-$RELEASE_VERSION.zip ./
+          cd deploy/production/docker-compose
+          zip -r deploy-production-docker-compose-$RELEASE_VERSION.zip ./
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -165,4 +165,4 @@ jobs:
           files: |
             ./client/dist/compose_client-*.tar.gz
             deploy/local/deploy-local-*.zip
-            deploy/production/docker compose/deploy-production-docker compose-*.zip
+            deploy/production/docker-compose/deploy-production-docker-compose-*.zip
