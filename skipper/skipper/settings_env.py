@@ -314,7 +314,7 @@ _db_ssl_settings = (
     } if environment.SKIPPER_DB_SSL_ENABLE else {}
 )
 _db_engine = (
-    'django_db_geventpool.backends.postgresql_psycopg2'
+    'skipper.core.db_backends.gevent'
     if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true')
     else 'django.db.backends.postgresql_psycopg2'
 )
