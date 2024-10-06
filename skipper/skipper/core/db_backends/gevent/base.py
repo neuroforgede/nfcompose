@@ -1,3 +1,4 @@
+# type: ignore
 # customized version from original file at:
 # https://github.com/jneight/django-db-geventpool/blob/master/django_db_geventpool/backends/postgresql_psycopg2/base.py
 # This adds gevent Timeout logic to the health check of the connection
