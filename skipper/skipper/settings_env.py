@@ -207,36 +207,36 @@ SIMPLE_JWT = {
 
 SITE_ID = 1
 INSTALLED_APPS = [
-                     'django.contrib.admin',
-                     'django.contrib.auth',
-                     'django.contrib.contenttypes',
-                     'django.contrib.sessions',
-                     'django.contrib.messages',
-                     'django.contrib.staticfiles',
-                     'rest_framework',
-                     'django_extensions',
-                     'django_filters',
-                     'storages',
-                     'guardian',
-                     'django_multitenant',
-                     'pgq',
-                     'corsheaders',
-                     'rest_framework.authtoken',
-                     'django_prometheus',
-                     'rest_framework_simplejwt',
-                     'rest_framework_simplejwt.token_blacklist',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'django_extensions',
+    'django_filters',
+    'storages',
+    'guardian',
+    'django_multitenant',
+    'pgq',
+    'corsheaders',
+    'rest_framework.authtoken',
+    'django_prometheus',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
-                     'health_check',  # required
-                     'health_check.db',  # stock Django health checkers
-                     'health_check.cache',
-                     'health_check.storage',
-                     'health_check.contrib.celery',  # requires celery
-                     'health_check.contrib.s3boto3_storage',  # requires boto and S3BotoStorage backend
-                     'health_check.contrib.redis',  # required Redis broker
-                     'django_celery_results',
-                 ] + SKIPPER_MODULES + SKIPPER_SUB_MODULES + [
-                    'skipper.main',
-                 ]
+    'health_check',  # required
+    'health_check.db',  # stock Django health checkers
+    'health_check.cache',
+    'health_check.storage',
+    'health_check.contrib.celery',  # requires celery
+    'health_check.contrib.s3boto3_storage',  # requires boto and S3BotoStorage backend
+    'health_check.contrib.redis',  # required Redis broker
+    'django_celery_results',
+] + SKIPPER_MODULES + SKIPPER_SUB_MODULES + [
+    'skipper.main',
+]
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend', # this is default
@@ -342,9 +342,10 @@ else:
                 'application_name': f'skipper_{environment.SKIPPER_INSTALLATION_NAME}_{skipper_container_type}',
                 'options': f'-c search_path={environment.SKIPPER_DB_SCHEMA}',
                 'target_session_attrs': 'read-write',
-                'connect_timeout': '30',
-                'keepalives_idle': '300',
-                'keepalives_interval': '75',
+                'connect_timeout': environment.SKIPPER_DB_TCP_CONNECT_TIMEOUT,
+                'keepalives': environment.SKIPPER_DB_TCP_KEEPALIVES,
+                'keepalives_idle': environment.SKIPPER_DB_TCP_KEEPALIVE_IDLE,
+                'keepalives_interval': environment.SKIPPER_DB_TCP_KEEPALIVE_INTERVAL,
                 **_db_options, # type: ignore
                 **_db_ssl_settings,
             },
