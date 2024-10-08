@@ -19,6 +19,10 @@ app = Celery('skipper', result_backend=settings.CELERY_RESULT_BACKEND)
 
 
 def int_or_crontab(input: Any, key: str) -> Union[int, crontab]:
+    if isinstance(input, int):
+        return input
+    if isinstance(input, crontab):
+        return input
     try:  # attempt to interpret input as positive int
         out = int(input)
         if out <= 0:
