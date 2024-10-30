@@ -15,8 +15,8 @@ if "RELEASE_VERSION" in os.environ:
     suffix_version = ""
 else:
   major_version = "2"
-  minor_version = "2"
-  patch_version = "10"
+  minor_version = "3"
+  patch_version = "0"
   suffix_version = ""
 
 

@@ -12,10 +12,8 @@ if os.environ.get('SKIPPER_GUNICORN', 'false') == 'true':
     # python 3.9 and python 3.10 need this to be done as soon as possible
     # also, only do this for gunicorn. Celery workers are still
     # using the sync workers since its simpler
-    from psycogreen.gevent import patch_psycopg  # type: ignore
     from gevent import monkey  # type: ignore
     monkey.patch_all()
-    patch_psycopg()
 
 
 # This will make sure the app is always imported when

@@ -27,7 +27,6 @@ pip-licenses = "==4.3.4"
 django-prometheus = "==2.3.1"
 tblib = "==3.0.0"
 jsonschema = {version = "==4.21.0"}
-psycogreen = "==1.0.2"
 gevent = "==24.2.1"
 greenlet = "==3.0.3"
 "zope.event" = "==5.0"
