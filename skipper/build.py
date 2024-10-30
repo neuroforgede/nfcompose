@@ -112,7 +112,8 @@ def trivy_check(image: str) -> None:
         image
     ], env={
         **os.environ,
-        'PATH': os.environ['PATH'] + ':./build'
+        'PATH': os.environ['PATH'] + ':./build',
+        'TRIVY_DB_REPOSITORY': 'ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db'
     })
     log('finished checking image with trivy.')
 

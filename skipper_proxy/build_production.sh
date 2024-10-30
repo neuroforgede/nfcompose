@@ -22,6 +22,7 @@ check_result "failed build"
 docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $(pwd)/.trivyignore:/.trivyignore \
+    -e TRIVY_DB_REPOSITORY=ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db \
     aquasec/trivy \
     image \
     --scanners vuln \
