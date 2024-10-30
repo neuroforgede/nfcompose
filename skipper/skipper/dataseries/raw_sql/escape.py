@@ -9,7 +9,6 @@ from typing import cast
 
 from django.db import connections
 from psycopg import sql
-from psycopg2.extensions import quote_ident  # type: ignore
 from rest_framework.exceptions import APIException
 
 from skipper.dataseries.raw_sql.validate import validate_sql_string
