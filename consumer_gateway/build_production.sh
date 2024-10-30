@@ -30,5 +30,6 @@ docker run \
     --scanners vuln \
     --ignore-unfixed \
     --exit-code 1 \
+    --java-db-repository ghcr.io/aquasecurity/trivy-java-db public.ecr.aws/aquasecurity/trivy-java-db \
     ghcr.io/neuroforgede/nfcompose-consumer-gateway:${BUILD_NF_COMPOSE_DOCKER_TAG}
 check_result "failed trivy check"

@@ -104,6 +104,9 @@ def trivy_check(image: str) -> None:
     subprocess.check_call([
         'trivy',
         'image',
+        '--java-db-repository',
+        'ghcr.io/aquasecurity/trivy-java-db',
+        'public.ecr.aws/aquasecurity/trivy-java-db',
         '--ignore-unfixed',
         '--skip-files',
         '/neuroforge/skipper/skipper/environment_local.py',
