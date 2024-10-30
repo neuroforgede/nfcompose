@@ -8,7 +8,6 @@
 import uuid
 from django.db import transaction
 from django_multitenant.utils import set_current_tenant  # type: ignore
-from psycopg2 import errors  # type: ignore
 from typing import List, Tuple, Dict, Union, Callable, Dict
 
 from skipper.core.celery import task

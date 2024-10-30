@@ -17,7 +17,6 @@ def _instrument() -> None:
     CeleryInstrumentor().instrument()  # type: ignore
     RequestsInstrumentor().instrument()
     BotocoreInstrumentor().instrument()  # type: ignore
-    Psycopg2Instrumentor().instrument()
     RedisInstrumentor().instrument()
 
 

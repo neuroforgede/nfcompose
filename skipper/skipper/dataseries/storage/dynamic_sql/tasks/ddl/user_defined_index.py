@@ -9,7 +9,7 @@ import uuid
 
 from django.db import connections, transaction
 from typing import Any, Dict, List, Mapping, Union
-from psycopg2 import errors # type: ignore
+from psycopg import errors # type: ignore
 from skipper.core.lint import sql_cursor  # type: ignore
 
 from skipper.core.models.tenant import Tenant

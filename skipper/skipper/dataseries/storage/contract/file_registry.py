@@ -20,7 +20,7 @@ from django.db import transaction, connections
 from django_multitenant.fields import TenantForeignKey  # type: ignore
 from django_multitenant.mixins import TenantModelMixin  # type: ignore
 from django_multitenant.models import TenantManager  # type: ignore
-from typing import List, Optional, Union, Protocol, Any
+from typing import List, Optional, Union, Protocol, Any, Dict
 
 from skipper.dataseries.models import FileLookup
 from skipper.dataseries.raw_sql import dbtime
@@ -288,29 +288,44 @@ def delete_all_matching(
         fact_id: Union[str, uuid.UUID],
         history_data_point_identifiers: List[HistoryDataPointIdentifier],
 ) -> None:
-    query_str = f"""
-        UPDATE "_3_file_lookup"
-        SET "deleted_at" = %(deleted_at)s
-        WHERE
-            "tenant_id" = %(tenant_id)s AND
-            "data_series_id" = %(data_series_id)s AND
-            "fact_id" = %(fact_id)s AND
-            ("data_point_id", "point_in_time", "sub_clock") IN %(data_point_identifiers)s AND
-            "deleted_at" IS NULL
-    """
-
     with sql_cursor(DATA_SERIES_DYNAMIC_SQL_DB) as cursor:
+        data_point_placeholders = []
+        params: Dict[str, Any] = {
+            'tenant_id': tenant_id,
+            'data_series_id': data_series_id,
+            'fact_id': fact_id,
+            'deleted_at': dbtime.now()
+        }
+
+        # Dynamically create named placeholders and add each to params
+        for i, elem in enumerate(history_data_point_identifiers):
+            dp_id_key = f"dp_id_{i}"
+            pt_key = f"pt_{i}"
+            sub_clock_key = f"sub_clock_{i}"
+
+            data_point_placeholders.append(f"(%({dp_id_key})s, %({pt_key})s, %({sub_clock_key})s)")
+
+            # Add each component to params with unique keys
+            params[dp_id_key] = elem.data_point_id
+            params[pt_key] = elem.point_in_time
+            params[sub_clock_key] = elem.sub_clock
+
+        # Join placeholders to create the final SQL IN clause
+        data_point_in_clause = ', '.join(data_point_placeholders)
+
+        query_str = f"""
+            UPDATE "_3_file_lookup"
+            SET "deleted_at" = %(deleted_at)s
+            WHERE
+                "tenant_id" = %(tenant_id)s AND
+                "data_series_id" = %(data_series_id)s AND
+                "fact_id" = %(fact_id)s AND
+                ("data_point_id", "point_in_time", "sub_clock") IN ({data_point_in_clause}) AND
+                "deleted_at" IS NULL
+        """
         cursor.execute(
             query_str,
-            {
-                'tenant_id': tenant_id,
-                'data_series_id': data_series_id,
-                'fact_id': fact_id,
-                'data_point_identifiers': tuple(
-                    (elem.data_point_id, elem.point_in_time, elem.sub_clock) for elem in history_data_point_identifiers
-                ),
-                'deleted_at': dbtime.now()
-            }
+            params
         )
 
 

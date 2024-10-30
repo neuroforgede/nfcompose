@@ -15,7 +15,7 @@ services:
       
   postgres:
     #command: "-c log_statement=all -c log_destination=stderr -c fsync=off -c synchronous_commit=off -c full_page_writes=off"
-    image: postgres:12
+    image: postgres:17
     shm_size: '2gb'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cephalopod}

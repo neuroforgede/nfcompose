@@ -8,6 +8,7 @@
 from typing import cast
 
 from django.db import connections
+from psycopg import sql
 from psycopg2.extensions import quote_ident  # type: ignore
 from rest_framework.exceptions import APIException
 
@@ -18,4 +19,4 @@ def escape(string: str, connection_name: str = 'default') -> str:
     if not validate_sql_string(string):
         raise APIException('SQL may only contain a-zA-Z0-9_%\'()-" .')
     with connections[connection_name].cursor() as cursor:
-        return cast(str, quote_ident(string, cursor.cursor))
+        return sql.Identifier(string).as_string(cursor.cursor)

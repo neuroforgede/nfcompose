@@ -314,13 +314,17 @@ _db_ssl_settings = (
     } if environment.SKIPPER_DB_SSL_ENABLE else {}
 )
 _db_engine = (
-    'skipper.core.db_backends.gevent'
+    'django.db.backends.postgresql'
     if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true')
-    else 'django.db.backends.postgresql_psycopg2'
+    else 'django.db.backends.postgresql'
 )
 _db_options = (
     {
-        'MAX_CONNS': max(2, environment.SKIPPER_GUNICORN_WORKER_CONCURRENCY)
+        'pool': {
+            'min_size': max(2, environment.SKIPPER_GUNICORN_WORKER_CONCURRENCY),
+            'max_size': max(2, environment.SKIPPER_GUNICORN_WORKER_CONCURRENCY),
+            'timeout': 10
+        }
     }
     if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true')
     else {}
@@ -434,13 +438,19 @@ AWS_S3_URL_TRANSLATE_TO_OUTSIDE_URL = [
 AWS_S3_ENDPOINT_URL = environment.SKIPPER_S3_INTERNAL_ENDPOINT_URL
 AWS_S3_REGION_NAME = 'eu-west-1'
 
-STATICFILES_STORAGE = 'skipper.core.storage.static.S3Boto3StaticStorage'
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'skipper.core.storage.static.S3Boto3StaticStorage'
+    },
+    'default': {
+        'BACKEND': 'skipper.core.storage.media.S3Boto3MediaStorage'
+    }
+}
 # by default use the authenticated one
 AWS_STORAGE_BUCKET_NAME = environment.SKIPPER_S3_MEDIA_BUCKET_NAME
 NF_AWS_STORAGE_BUCKET_NAME_STATIC = environment.SKIPPER_S3_STATIC_BUCKET_NAME
 NF_AWS_QUERYSTRING_AUTH_STATIC = False
 
-DEFAULT_FILE_STORAGE = 'skipper.core.storage.media.S3Boto3MediaStorage'
 NF_AWS_STORAGE_BUCKET_NAME_MEDIA = environment.SKIPPER_S3_MEDIA_BUCKET_NAME
 
 

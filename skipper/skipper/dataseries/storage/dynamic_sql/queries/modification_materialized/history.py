@@ -5,7 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-from psycopg2 import sql  # type: ignore
+from psycopg import sql  # type: ignore
 from typing import Any, List, Optional
 
 from skipper.dataseries.raw_sql import escape
@@ -30,7 +30,7 @@ def insert_to_flat_history_query(
     :param data_series_external_id: The external id of the dataseries the flat history belongs to
     :param user_id: the optional user id that wrote the data.
     :param record_source: a string identifying where the data is coming from. Examples "REST PUT", "REST DELETE"
-    :param cursor: the psycopg2 cursor to use for this query
+    :param cursor: the psycopg cursor to use for this query
 
     :param source_query: the query to use to fill the history table from. This may be an INSERT ... RETURNING * query or a simple SELECT
     as long as the table has all the necessary columns.

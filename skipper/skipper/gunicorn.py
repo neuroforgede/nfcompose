@@ -5,7 +5,6 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-from psycogreen.gevent import patch_psycopg  # type: ignore
 from gevent import monkey  # type: ignore
 import logging
 from typing import Any
@@ -22,9 +21,6 @@ def post_fork(server: Any, worker: Any) -> None:
 
     monkey.patch_all()
     server.log.info('gunicorn post_fork: successfully used gevent patch call')
-    patch_psycopg()
-    server.log.info('gunicorn post_fork: successfully patched psycopg2 to be compatible with gevent')
-
     from skipper import telemetry
 
     telemetry.setup_telemetry_django()

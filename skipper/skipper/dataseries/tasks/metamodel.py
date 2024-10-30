@@ -1,5 +1,5 @@
 import uuid
-from psycopg2 import errors  # type: ignore
+from psycopg import errors  # type: ignore
 from typing import Dict, Callable, Union
 from skipper.core.celery import task
 from skipper.dataseries.models.task_data import MetaModelTaskData

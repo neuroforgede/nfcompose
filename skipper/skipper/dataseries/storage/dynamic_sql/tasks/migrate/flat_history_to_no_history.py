@@ -8,7 +8,6 @@
 import datetime
 from django.db import transaction
 from django_multitenant.utils import set_current_tenant  # type: ignore
-from psycopg2 import errors  # type: ignore
 from typing import Dict, Callable
 
 from skipper.core.celery import task

@@ -10,7 +10,6 @@ import uuid
 
 import datetime
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from psycopg2.extras import execute_values  # type: ignore
 from typing import Iterable, Dict, Any, List, Tuple, Optional, Union, Sequence
 
 from skipper.core.models.fields import default_media_storage
@@ -273,7 +272,7 @@ def _insert_or_update_data_points_impl(
         with_statement = f"""
         WITH "values_to_insert" AS (
             SELECT {','.join(map(lambda x: f'{x[0]}::{x[1]}', zip(columns, column_types)))} FROM (
-                VALUES %s
+                VALUES ({', '.join(['%s'] * len(columns))})
             ) AS "t" ({','.join(columns)})
         )
         """
@@ -344,9 +343,7 @@ def _insert_or_update_data_points_impl(
             {central_insert}
             """
 
-        execute_values(
-            cursor,
+        cursor.executemany(
             final_insert_sql,
             all_values
         )
-

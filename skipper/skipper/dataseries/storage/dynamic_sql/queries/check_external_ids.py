@@ -28,16 +28,18 @@ def check_external_ids(
         for chunk in chunks(external_ids, size=250):
             if backend == StorageBackendType.DYNAMIC_SQL_NO_HISTORY.value\
                     or backend == StorageBackendType.DYNAMIC_SQL_MATERIALIZED_FLAT_HISTORY.value:
+                chunk = list(chunk)
                 with sql_cursor(DATA_SERIES_DYNAMIC_SQL_DB) as cursor:
+                    placeholders = ', '.join(['%s'] * len(chunk))
                     sql = f"""
                         SELECT ds_dp.external_id
                         FROM {data_series_query_info.schema_name}.{data_series_query_info.main_query_table_name} ds_dp
-                        WHERE ds_dp.external_id IN %s
+                        WHERE ds_dp.external_id IN ({placeholders})
                         AND ds_dp.deleted_at IS NULL
                     """
                     cursor.execute(
                         sql,
-                        (tuple(chunk),)
+                        chunk
                     )
                     external_ids_in_use.extend([{'external_id': x[0]} for x in cursor.fetchall()])
             else:

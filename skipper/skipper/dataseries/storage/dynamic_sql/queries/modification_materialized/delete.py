@@ -10,7 +10,6 @@ from typing import List, Tuple, Dict, Any
 
 import datetime
 from django.db import connections, transaction
-from psycopg2 import sql  # type: ignore
 
 from skipper.core.models.tenant import Tenant
 from skipper.dataseries.raw_sql import escape
