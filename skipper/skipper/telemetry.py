@@ -10,13 +10,14 @@ def _instrument() -> None:
     from opentelemetry.instrumentation.celery import CeleryInstrumentor  # type: ignore
     from opentelemetry.instrumentation.requests import RequestsInstrumentor  # type: ignore
     from opentelemetry.instrumentation.botocore import BotocoreInstrumentor # type: ignore
-    from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor # type: ignore
+    from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor # type: ignore
     from opentelemetry.instrumentation.redis import RedisInstrumentor # type: ignore
     
     DjangoInstrumentor().instrument()
     CeleryInstrumentor().instrument()  # type: ignore
     RequestsInstrumentor().instrument()
     BotocoreInstrumentor().instrument()  # type: ignore
+    PsycopgInstrumentor().instrument()
     RedisInstrumentor().instrument()
 
 
