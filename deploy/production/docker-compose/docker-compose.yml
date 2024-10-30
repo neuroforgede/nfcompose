@@ -109,7 +109,7 @@ x-skipper-celery-beat-healthcheck: &x-skipper-celery-beat-healthcheck
 
 services:
   postgres:
-    image: postgres:14
+    image: postgres:17
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cephalopod}

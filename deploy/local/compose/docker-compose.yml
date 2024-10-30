@@ -29,7 +29,7 @@ services:
       - redis:/data
       
   postgres:
-    image: postgres:12
+    image: postgres:17
     shm_size: '2gb'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cephalopod}
