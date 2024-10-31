@@ -341,6 +341,7 @@ else:
             'PASSWORD': environment.SKIPPER_DB_PASSWD,
             'HOST': environment.SKIPPER_DB_HOSTS,
             'CONN_MAX_AGE': 0,
+            'CONN_HEALTH_CHECKS': True,
             'PORT': environment.SKIPPER_DB_PORTS,
             'OPTIONS': {
                 'application_name': f'skipper_{environment.SKIPPER_INSTALLATION_NAME}_{skipper_container_type}',
