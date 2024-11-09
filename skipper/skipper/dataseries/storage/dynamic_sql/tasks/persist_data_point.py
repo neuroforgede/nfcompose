@@ -164,19 +164,17 @@ def wake_up_requeue_persist_data_point_chunk() -> None:
                         break
 
 
-# Set a limit for concurrent workers per table_key
-CONCURRENCY_LIMIT = 1
 LOCK_TIMEOUT = 60  # seconds; set how long a task can hold the permit
 MAX_RETRY_DELAY = 60  # seconds; set the maximum delay for retries
 
-def acquire_semaphore(table_key):
-    """Attempt to acquire a semaphore for the given table_key."""
+def acquire_semaphore(semaphore_key: str, concurrency_limit: int) -> bool:
+    """Attempt to acquire a semaphore for the given semaphore_key."""
     from skipper.celery import app as celery_app
 
     with celery_app.pool.acquire(block=True) as conn:
         redis_client = conn.default_channel.client
 
-        key = f"semaphore:{table_key}"
+        key = f"semaphore:{semaphore_key}"
         # Initialize the semaphore with an expiry if it doesn't exist
         current_value = redis_client.get(key)
         if current_value is None:
@@ -184,19 +182,19 @@ def acquire_semaphore(table_key):
 
         # Atomically increment the count
         count = redis_client.incr(key)
-        if count > CONCURRENCY_LIMIT:
+        if count > concurrency_limit:
             # Decrement back if we exceed the limit and return False
             redis_client.decr(key)
             return False
         return True
 
-def release_semaphore(table_key):
-    """Release the semaphore for the given table_key."""
+def release_semaphore(semaphore_key: str) -> None:
+    """Release the semaphore for the given semaphore_key."""
     from skipper.celery import app as celery_app
 
     with celery_app.pool.acquire(block=True) as conn:
         redis_client = conn.default_channel.client
-        key = f"semaphore:{table_key}"
+        key = f"semaphore:{semaphore_key}"
         # Decrement the count to release a permit
         redis_client.decr(key)
         # Reset the semaphore if it goes to zero
@@ -224,7 +222,8 @@ def async_persist_data_point_chunk(
         if task_data is None:
             logger.warn('task data not found, either claimed by someone else or task does not exist (anymore)')
         if task_data is not None:
-            if not acquire_semaphore(task_data.data_series.id):
+            # TODO: make this configurable
+            if not acquire_semaphore(task_data.data_series.id, concurrency_limit=4):
                 retry_delay =min(2 ** self.request.retries, MAX_RETRY_DELAY)
                 print("Retrying in {} seconds".format(retry_delay))
                 raise self.retry(countdown=retry_delay)
