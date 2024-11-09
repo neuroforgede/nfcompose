@@ -5,4 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-SKIPPER_CONTAINER_TYPE=CELERY exec python3 -m pipenv run celery -A skipper worker --pool=gevent --concurrency 20  --loglevel=info -Q celery,event_queue,event_cleanup,health_check,data_series_cleanup,persist_data,file_registry_cleanup,index_creation,requeue_persist_data
+SKIPPER_CONTAINER_TYPE=CELERY exec python3 -m pipenv run celery -A skipper \
+    beat \
+    --pidfile=/neuroforge/skipper/celery.pid \
+    --loglevel=INFO

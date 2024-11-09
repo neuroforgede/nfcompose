@@ -313,22 +313,25 @@ _db_ssl_settings = (
         'sslmode': environment.SKIPPER_DB_SSL_MODE,
     } if environment.SKIPPER_DB_SSL_ENABLE else {}
 )
-_db_engine = (
-    'django.db.backends.postgresql'
-    if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true')
-    else 'django.db.backends.postgresql'
-)
-_db_options = (
-    {
+_db_engine = 'django.db.backends.postgresql'
+
+_db_options = {}
+if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true'):
+    _db_options = {
         'pool': {
             'min_size': max(2, environment.SKIPPER_GUNICORN_WORKER_CONCURRENCY),
             'max_size': max(2, environment.SKIPPER_GUNICORN_WORKER_CONCURRENCY),
-            'timeout': 10
+            'timeout': environment.SKIPPER_GUNICORN_WORKER_DB_POOL_TIMEOUT
         }
     }
-    if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.SKIPPER_TESTING and not TYPE_CHECKING and not (os.environ.get('MYPY_RUN', 'false') == 'true')
-    else {}
-)
+else:
+    _db_options = {
+        'pool': {
+            'min_size': max(2, environment.SKIPPER_CELERY_WORKER_CONCURRENCY),
+            'max_size': max(2, environment.SKIPPER_CELERY_WORKER_CONCURRENCY),
+            'timeout': environment.SKIPPER_CELERY_WORKER_DB_POOL_TIMEOUT
+        }
+    }
 
 if os.environ.get('MYPY_RUN', 'false') == 'true':
     DATABASES: Dict[str, Any] = {}

@@ -163,18 +163,57 @@ def wake_up_requeue_persist_data_point_chunk() -> None:
                         found = True
                         break
 
-        if not found:
-            async_persist_data_point_chunk.delay(elem.id)
 
+# Set a limit for concurrent workers per table_key
+CONCURRENCY_LIMIT = 1
+LOCK_TIMEOUT = 60  # seconds; set how long a task can hold the permit
+MAX_RETRY_DELAY = 60  # seconds; set the maximum delay for retries
+
+def acquire_semaphore(table_key):
+    """Attempt to acquire a semaphore for the given table_key."""
+    from skipper.celery import app as celery_app
+
+    with celery_app.pool.acquire(block=True) as conn:
+        redis_client = conn.default_channel.client
+
+        key = f"semaphore:{table_key}"
+        # Initialize the semaphore with an expiry if it doesn't exist
+        current_value = redis_client.get(key)
+        if current_value is None:
+            redis_client.set(key, 0, nx=True, ex=LOCK_TIMEOUT)
+
+        # Atomically increment the count
+        count = redis_client.incr(key)
+        if count > CONCURRENCY_LIMIT:
+            # Decrement back if we exceed the limit and return False
+            redis_client.decr(key)
+            return False
+        return True
+
+def release_semaphore(table_key):
+    """Release the semaphore for the given table_key."""
+    from skipper.celery import app as celery_app
+
+    with celery_app.pool.acquire(block=True) as conn:
+        redis_client = conn.default_channel.client
+        key = f"semaphore:{table_key}"
+        # Decrement the count to release a permit
+        redis_client.decr(key)
+        # Reset the semaphore if it goes to zero
+        if int(redis_client.get(key)) <= 0:
+            redis_client.delete(key)
 
 # to prevent weird race conditions under heavy load, we retry if the data is not there yet
 
 @task(
     name="_3_dynamic_sql_persist_data_point_chunk",
     acks_late=True,
-    queue='persist_data'
+    queue='persist_data',
+    bind=True,
+    max_retries=None,
 )  # type: ignore
 def async_persist_data_point_chunk(
+    self,
     task_data_reference_id: int
 ) -> None:
     with transaction.atomic():
@@ -185,22 +224,31 @@ def async_persist_data_point_chunk(
         if task_data is None:
             logger.warn('task data not found, either claimed by someone else or task does not exist (anymore)')
         if task_data is not None:
-            # should we lock here?
-            persist_data_point_chunk(
-                tenant_id=str(task_data.tenant.id),
-                tenant_name=task_data.tenant.name,
-                data_series_id=str(task_data.data_series.id),
-                data_series_external_id=task_data.data_series.external_id,
-                data_series_backend=task_data.data_series.backend,
-                validated_datas=task_data.data['validated_datas'],
-                serialization_keys=task_data.data['serialization_keys'],
-                point_in_time_timestamp=task_data.point_in_time.timestamp(),
-                user_id=str(task_data.user.id),
-                record_source=task_data.record_source,
-                sub_clock=task_data.sub_clock
-            )
-            task_data.delete()
-            # TODO: write error if error happened
+            if not acquire_semaphore(task_data.data_series.id):
+                retry_delay =min(2 ** self.request.retries, MAX_RETRY_DELAY)
+                print("Retrying in {} seconds".format(retry_delay))
+                raise self.retry(countdown=retry_delay)
+            
+            try:
+                # should we lock here?
+                persist_data_point_chunk(
+                    tenant_id=str(task_data.tenant.id),
+                    tenant_name=task_data.tenant.name,
+                    data_series_id=str(task_data.data_series.id),
+                    data_series_external_id=task_data.data_series.external_id,
+                    data_series_backend=task_data.data_series.backend,
+                    validated_datas=task_data.data['validated_datas'],
+                    serialization_keys=task_data.data['serialization_keys'],
+                    point_in_time_timestamp=task_data.point_in_time.timestamp(),
+                    user_id=str(task_data.user.id),
+                    record_source=task_data.record_source,
+                    sub_clock=task_data.sub_clock
+                )
+                task_data.delete()
+                # TODO: write error if error happened
+            finally:
+                # Release the semaphore after processing
+                release_semaphore(task_data.data_series.id)
 
 
 def persist_data_point_chunk(
