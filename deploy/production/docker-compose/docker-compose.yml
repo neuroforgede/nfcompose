@@ -214,6 +214,10 @@ services:
       <<: *x-skipper-celery-env
       SKIPPER_CELERY_WORKER_CONCURRENCY: "2"
       SKIPPER_CONTAINER_TYPE: "CELERY"
+      # explicitly only add the queues that are not separated out already
+      # both healthcheck and event delivery have a tendency to pile up in bad
+      # network conditions
+      SKIPPER_CELERY_WORKER_QUEUES: "celery,data_series_cleanup,persist_data,file_registry_cleanup,index_creation,requeue_persist_data"
 
   skipper_celery_beat:
     image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.1}"
