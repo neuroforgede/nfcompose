@@ -333,6 +333,9 @@ else:
         }
     }
 
+if environment.SKIPPER_TESTING or TYPE_CHECKING:
+    _db_options = {}
+
 if os.environ.get('MYPY_RUN', 'false') == 'true':
     DATABASES: Dict[str, Any] = {}
 else:
