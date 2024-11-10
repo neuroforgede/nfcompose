@@ -57,7 +57,7 @@ def int_or_crontab(input: Any, key: str) -> Union[int, crontab]:
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-app.conf.worker_prefetch_multiplier = 2
+app.conf.worker_prefetch_multiplier = 1
 app.conf.beat_schedule = {
     'event-queue-heartbeat': {
         'task': '_3_wake_up_heartbeat_consumers',
