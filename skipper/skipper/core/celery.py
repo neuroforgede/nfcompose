@@ -72,3 +72,40 @@ if SKIPPER_CELERY_TESTING:
         return current_app.task(*args, **dict({'base': SyncDelayTask}, **kwargs))
 else:
     task = current_app.task
+
+
+def acquire_semaphore(semaphore_key: str, concurrency_limit: int, lock_timeout: int) -> bool:
+    """Attempt to acquire a semaphore for the given semaphore_key."""
+    from skipper.celery import app as celery_app
+
+    with celery_app.pool.acquire(block=True) as conn:
+        redis_client = conn.default_channel.client
+
+        key = f"semaphore:{semaphore_key}"
+        # Initialize the semaphore with an expiry if it doesn't exist
+        current_value = redis_client.get(key)
+        if current_value is None:
+            redis_client.set(key, 0, nx=True, ex=lock_timeout)
+
+        # Atomically increment the count
+        count = redis_client.incr(key)
+        if count > concurrency_limit:
+            # Decrement back if we exceed the limit and return False
+            redis_client.decr(key)
+            return False
+        return True
+
+def release_semaphore(semaphore_key: str) -> None:
+    """Release the semaphore for the given semaphore_key."""
+    from skipper.celery import app as celery_app
+
+    with celery_app.pool.acquire(block=True) as conn:
+        redis_client = conn.default_channel.client
+        key = f"semaphore:{semaphore_key}"
+        # Decrement the count to release a permit
+        redis_client.decr(key)
+        
+        redis_val = redis_client.get(key)
+        # Reset the semaphore if it goes to zero
+        if redis_val is not None and int(redis_val) <= 0:
+            redis_client.delete(key)
