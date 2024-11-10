@@ -66,7 +66,7 @@ def consumer_heartbeat(queue: BaseTenantQueue, job: TenantPostgresQueueJob) -> A
 def actual_run_heartbeat_consumers(tenant_id: str, consumer_id: str) -> None:
     _list = Tenant.objects.filter(id=tenant_id)
     if len(_list) != 1:
-        logger.warn('did not find tenant with id ' + tenant_id)
+        logger.warning('did not find tenant with id ' + tenant_id)
         return
     tenant = _list[0]
     queue = get_queue(

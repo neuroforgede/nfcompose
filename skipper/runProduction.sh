@@ -98,6 +98,7 @@ if [ "${SKIPPER_CONTAINER_TYPE}" == "CELERY" ]; then
     -O fair \
     -Q $celery_worker_queues \
     --loglevel=INFO \
+    --pool=gevent
     --concurrency=$celery_worker_concurrency
 elif [ "${SKIPPER_CONTAINER_TYPE}" == "CELERY_BEAT" ]; then
   cd /neuroforge/skipper || (echo "/neuroforge/skipper does not exist" && exit 1)

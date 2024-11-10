@@ -48,6 +48,7 @@ from skipper.dataseries.storage.static_ds_information import compute_data_series
 from skipper.settings import DATA_SERIES_DYNAMIC_SQL_DB
 from skipper.testing import SKIPPER_CELERY_TESTING
 from skipper.core.lint import sql_cursor
+from skipper.dataseries.raw_sql import dbtime
 
 __T = TypeVar('__T')
 __U = TypeVar('__U')
@@ -527,7 +528,8 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
                     # when testing, immediately run the code,
                     # as we are in the same transaction always
                     async_persist_data_point_chunk.delay(
-                        task_data_reference_id=task_data.id
+                        task_data_reference_id=task_data.id,
+                        queue_time=dbtime.now()
                     )
                 else:
                     # in production, we need to do this on transaction commit
@@ -549,6 +551,7 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
                     sub_clock=sub_clock
                 )
 
+            queue_time = dbtime.now()
             # spawn the celery task after the transaction commits
             # this is to ensure the task exists
             # There is a slight possibility that data
@@ -556,7 +559,8 @@ class DynamicStorageViewAdapter(StorageViewAdapter):
             # but for that we have healthchecks
             transaction.on_commit(
                lambda: [async_persist_data_point_chunk.delay(
-                   task_data_reference_id=tsk_id
+                   task_data_reference_id=tsk_id,
+                   queue_time=queue_time
                ) for tsk_id in task_data_ids],
                using=settings.DATA_SERIES_DYNAMIC_SQL_DB_BULK
             )

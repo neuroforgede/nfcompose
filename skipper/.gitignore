@@ -12,3 +12,4 @@
 /pycharm-venv/**
 *.pid
 _tests_report_*.txt
+testing/*

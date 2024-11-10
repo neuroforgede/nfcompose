@@ -13,6 +13,7 @@ from skipper.core.admin import TenantAwareAdminForm, TenantAwareAdmin
 from skipper.dataseries.models import ConsumerEvent, BulkInsertTaskData, MetaModelTaskData
 from skipper.dataseries.models.metamodel.consumer import Consumer
 from skipper.dataseries.models.metamodel.data_series import DataSeries
+from skipper.dataseries.raw_sql import dbtime
 
 
 # only superusers are allowed to change things as this
@@ -141,7 +142,7 @@ class BulkInsertTaskDataAdmin(TenantAwareAdmin):
 
     def requeue(self, request: HttpRequest, queryset: QuerySet[BulkInsertTaskData]) -> None:
         for elem in queryset:
-            async_persist_data_point_chunk.delay(elem.id)
+            async_persist_data_point_chunk.delay(elem.id, dbtime.now())
 
     def has_change_permission(self, request: HttpRequest, obj: Optional[Model] = None) -> bool:
         return False
