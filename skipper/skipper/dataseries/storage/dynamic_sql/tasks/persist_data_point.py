@@ -11,11 +11,12 @@ import uuid
 from typing import Iterable, Dict, Any, List, Tuple, Type, TypeVar, Callable, Generator, Union, cast, Optional
 
 from celery.utils.log import get_task_logger  # type: ignore
+from celery.exceptions import Ignore # type: ignore
 from django.db import transaction
 from django_multitenant.utils import set_current_tenant, get_current_tenant  # type: ignore
 
 from skipper import settings
-from skipper.core.celery import task
+from skipper.core.celery import task, acquire_semaphore, release_semaphore
 from skipper.core.models.tenant import Tenant
 from skipper.dataseries.models import BulkInsertTaskData
 from skipper.dataseries.models.event import data_point_event, ConsumerEventType
@@ -25,6 +26,13 @@ from skipper.dataseries.storage.dynamic_sql.queries.modification_materialized.in
 from skipper.dataseries.storage.dynamic_sql.tasks.common import get_or_fail
 from skipper.dataseries.storage.static_ds_information import DataPointSerializationKeys
 from skipper.dataseries.raw_sql import dbtime
+from skipper.environment import \
+    SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_PER_DATA_SERIES, \
+    SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_LOCK_TIMEOUT, \
+    SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_MAX_RETRY_DELAY, \
+    SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_AGE_MINUTES, \
+    SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_TASK_EXPIRE_MINUTES, \
+    SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_COOLDOWN_MINUTES
 
 logger = get_task_logger(__name__)
 
@@ -140,67 +148,98 @@ class RetryException(Exception):
 
 @task(
     name="_3_wake_up_requeue_persist_data_point_chunk",
-    queue='requeue_persist_data'
+    queue='requeue_persist_data',
+    ignore_result=True,
+    bind=True
 )  # type: ignore
-def wake_up_requeue_persist_data_point_chunk() -> None:
-    import base64
-    import json
-    from skipper.celery import app as celery_app
-
+def wake_up_requeue_persist_data_point_chunk(self) -> None:   
     for elem in BulkInsertTaskData.objects.filter(
-        point_in_time__lt=dbtime.now() - timezone.timedelta(minutes=30)
-    ).order_by('id'):
-        found = False
-        # we need to check if the task is still in the queue
-        with celery_app.pool.acquire(block=True) as conn:
-            cursor = conn.default_channel.client.scan_iter('persist_data:*')
-            for key in cursor:
-                task = conn.default_channel.client.get(key)
-                if task is not None:
-                    j = json.loads(task)
-                    j['body'] = json.loads(base64.b64decode(j['body']))
-                    if elem.id == j['body']['task_data_reference_id']:
-                        found = True
-                        break
+        point_in_time__lt=dbtime.now() - timezone.timedelta(
+            minutes=SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_AGE_MINUTES
+        )
+    ).order_by('id').values('id'):
+        task_data_id = elem['id']
+        # dont requeue if we did already do that recently
+        if not acquire_semaphore(
+            semaphore_key='bulk-requeue-taskdata-id:task_data:' + str(task_data_id),
+            concurrency_limit=1,
+            lock_timeout=SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_COOLDOWN_MINUTES * 60
+        ):
+            logger.info(f'skipping requeue for task data with id {task_data_id}, a task with the same task data will have been requeued recently or is currently being processed')
+            continue
 
-        if not found:
-            async_persist_data_point_chunk.delay(elem.id)
-
+        logger.info(f'requeueing task data with id {task_data_id} as it was older than {SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_AGE_MINUTES} minutes')
+        async_persist_data_point_chunk.delay(
+            task_data_reference_id=task_data_id,
+            queue_time=dbtime.now()
+        )
 
 # to prevent weird race conditions under heavy load, we retry if the data is not there yet
 
 @task(
     name="_3_dynamic_sql_persist_data_point_chunk",
     acks_late=True,
-    queue='persist_data'
+    queue='persist_data',
+    bind=True,
+    max_retries=None,
+    expires=SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_TASK_EXPIRE_MINUTES * 60
 )  # type: ignore
 def async_persist_data_point_chunk(
-    task_data_reference_id: int
+    self,
+    task_data_reference_id: int,
+    queue_time: Optional[datetime.datetime] = None
 ) -> None:
     with transaction.atomic():
         # this must run outside of any tenant context or we dont get all data in a multitenant environment
         set_current_tenant(None)
+
         # skip the task if it was already claimed by another task
         task_data = BulkInsertTaskData.objects.filter(id=task_data_reference_id).select_for_update(skip_locked=True).first()
         if task_data is None:
-            logger.warn('task data not found, either claimed by someone else or task does not exist (anymore)')
+            logger.info(f'task data for task with id {task_data_reference_id} not found, either claimed by someone else or task does not exist (anymore)')
+
         if task_data is not None:
-            # should we lock here?
-            persist_data_point_chunk(
-                tenant_id=str(task_data.tenant.id),
-                tenant_name=task_data.tenant.name,
-                data_series_id=str(task_data.data_series.id),
-                data_series_external_id=task_data.data_series.external_id,
-                data_series_backend=task_data.data_series.backend,
-                validated_datas=task_data.data['validated_datas'],
-                serialization_keys=task_data.data['serialization_keys'],
-                point_in_time_timestamp=task_data.point_in_time.timestamp(),
-                user_id=str(task_data.user.id),
-                record_source=task_data.record_source,
-                sub_clock=task_data.sub_clock
-            )
-            task_data.delete()
-            # TODO: write error if error happened
+            # make sure to notify the requeuing mechanism that we are working on this task via the extra semaphore
+            if not acquire_semaphore(
+                semaphore_key='bulk-requeue-taskdata-id:task_data:' + str(task_data.id),
+                concurrency_limit=1,
+                lock_timeout=SKIPPER_CELERY_PERSIST_DATA_POINT_CHUNK_REQUEUE_COOLDOWN_MINUTES * 60
+            ):
+                # log and ignore if we could not acquire the semaphore.
+                # this is not the end of days, but there will be another task execution that does nothing
+                logger.info(f'could not acquire semaphore for task data with id {task_data.id}, a task with the same task data will have been requeued recently')
+
+            if not acquire_semaphore(
+                semaphore_key='async_persist_data_point_chunk:dataseries:' + str(task_data.data_series.id),
+                concurrency_limit=SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_PER_DATA_SERIES,
+                lock_timeout=SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_LOCK_TIMEOUT
+            ):
+                retry_delay = min(2 ** self.request.retries, SKIPPER_CELERY_DATA_SERIES_BULK_ASYNC_CONCURRENCY_MAX_RETRY_DELAY)
+                logger.info("Retrying in {} seconds".format(retry_delay))
+                raise self.retry(countdown=retry_delay)
+            
+            try:
+                # should we lock here?
+                persist_data_point_chunk(
+                    tenant_id=str(task_data.tenant.id),
+                    tenant_name=task_data.tenant.name,
+                    data_series_id=str(task_data.data_series.id),
+                    data_series_external_id=task_data.data_series.external_id,
+                    data_series_backend=task_data.data_series.backend,
+                    validated_datas=task_data.data['validated_datas'],
+                    serialization_keys=task_data.data['serialization_keys'],
+                    point_in_time_timestamp=task_data.point_in_time.timestamp(),
+                    user_id=str(task_data.user.id),
+                    record_source=task_data.record_source,
+                    sub_clock=task_data.sub_clock
+                )
+                task_data.delete()
+                # TODO: write error if error happened
+            finally:
+                # Release the semaphore after processing
+                release_semaphore('async_persist_data_point_chunk:dataseries:' + str(task_data.data_series.id))
+                # also release the semaphore for the requeue to clean up memory in redis
+                release_semaphore('bulk-requeue-taskdata-id:task_data:' + str(task_data.id))
 
 
 def persist_data_point_chunk(

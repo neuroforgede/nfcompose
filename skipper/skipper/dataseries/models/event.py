@@ -191,6 +191,7 @@ def try_send_events(
         "skipper.dataseries.consumer": str(consumer.id),
         "skipper.core.tenant": str(consumer.tenant.name)
     }):
+        logger.info("start sending events for consumer " + str(consumer.id))
         _split_target_url = urlsplit(consumer.target)
         sanitize_response: Callable[[str], str]
         sanitize_headers: Callable[[Dict[str, str]], Dict[str, str]]
