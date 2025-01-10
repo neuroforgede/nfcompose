@@ -13,7 +13,7 @@ from typing import Any, Dict
 
 from skipper import modules
 from skipper.core.tests.base import BaseViewTest, BASE_URL
-from skipper.settings import AWS_S3_TEST_OUTSIDE_BASE_URL, AWS_S3_ENDPOINT_URL
+from skipper.settings import AWS_S3_TEST_OUTSIDE_BASE_URL, SKIPPER_S3_MEDIA_ENDPOINT_URL
 
 DATA_SERIES_BASE_URL = BASE_URL + modules.url_representation(modules.Module.DATA_SERIES) + '/'
 
@@ -80,7 +80,7 @@ class Base(BaseViewTest):
         ).json()['data'][0]
 
         # direct without a nginx proxy we should get the internal url
-        self.assertTrue(AWS_S3_ENDPOINT_URL in str(dp_1['payload']['1']))
+        self.assertTrue(SKIPPER_S3_MEDIA_ENDPOINT_URL in str(dp_1['payload']['1']))
 
         dp_1 = self.client.get(
             path=self.data_series['data_points'] + f'?external_id=should_succeed',
