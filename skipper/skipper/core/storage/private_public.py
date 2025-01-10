@@ -36,35 +36,11 @@ class PrivatePublicS3Boto3Storage(S3Boto3Storage):  # type: ignore
         if not behind_proxy:
             return private_url
 
-        s3_url_translate_to_outside_url = setting('AWS_S3_URL_TRANSLATE_TO_OUTSIDE_URL')
-        if s3_url_translate_to_outside_url is None or len(s3_url_translate_to_outside_url) == 0:
-
-            # still support the simple replace logic if we did not define any outside host setting
-            s3_outside_url = setting('AWS_S3_OUTSIDE_URL')
-            s3_endpoint_url = setting('AWS_S3_ENDPOINT_URL')
-            if s3_outside_url is not None:
-                return private_url.replace(s3_endpoint_url, s3_outside_url, 1)
-
-            return private_url
-
-        for rule in s3_url_translate_to_outside_url:
-            match_rule = rule.get('match', {})
-            match_any = match_rule.get('any', False)
+        if self.external_endpoint_url is not None and self.external_endpoint_url != '':
+            scheme = parse.urlsplit(self.external_endpoint_url).scheme
+            host = parse.urlsplit(self.external_endpoint_url).netloc
             split_url = parse.urlsplit(private_url)
-
-            if 'X-Forwarded-Proto' in headers and 'Host' in headers:
-                match_scheme = 'scheme' in match_rule and match_rule['scheme'] == headers['X-Forwarded-Proto']
-                match_host = 'host' in match_rule and match_rule['host'] == headers['Host']
-            else:
-                # at this point only match any will work
-                match_scheme = False
-                match_host = False
-
-            if match_any or (match_scheme and match_host):
-                replace_rule = rule.get('replace', {})
-                scheme = replace_rule.get('scheme', None)
-                host = replace_rule.get('host', None)
-                return replace_in_split_url(split_url=split_url, scheme=scheme, host=host)
+            return replace_in_split_url(split_url=split_url, scheme=scheme, host=host)
         return private_url
 
 

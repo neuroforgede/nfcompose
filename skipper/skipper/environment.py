@@ -69,11 +69,5 @@ else:
 if SKIPPER_SQL_LINT not in ['strict']:
     SKIPPER_SQL_LINT = None
 
-
 # finally import all from environment_secret
 from skipper.environment_secret import *
-
-# and extract the computed configs from it
-SKIPPER_S3_ENDPOINT_SCHEME = urllib.parse.urlsplit(SKIPPER_S3_ENDPOINT_URL).scheme
-SKIPPER_S3_ENDPOINT_HOST = urllib.parse.urlsplit(SKIPPER_S3_ENDPOINT_URL).hostname
-SKIPPER_S3_ENDPOINT_NETLOC = urllib.parse.urlsplit(SKIPPER_S3_ENDPOINT_URL).netloc
