@@ -74,7 +74,7 @@ SKIPPER_S3_STATIC_REGION_NAME = os.environ.get('SKIPPER_S3_STATIC_REGION_NAME', 
 # defaulting to path style to work with minio by default
 SKIPPER_S3_STATIC_ADDRESSING_STYLE = os.environ.get('SKIPPER_S3_STATIC_ADDRESSING_STYLE', 'path')
 
-def check_s3_settings():
+def check_s3_settings() -> None:
     # Collect all variables we assigned earlier for MEDIA and STATIC
     variables_to_check = {
         'SKIPPER_S3_MEDIA_ACCESS_KEY_ID': SKIPPER_S3_MEDIA_ACCESS_KEY_ID,
