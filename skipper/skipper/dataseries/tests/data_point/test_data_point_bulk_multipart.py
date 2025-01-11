@@ -15,7 +15,7 @@ from typing import Any, Dict
 from skipper import modules
 from skipper.core.tests.base import BaseViewTest, BASE_URL
 from skipper.dataseries.storage.contract import StorageBackendType
-from skipper.settings import AWS_S3_ENDPOINT_URL
+from skipper.settings import SKIPPER_S3_MEDIA_ENDPOINT_URL
 
 DATA_SERIES_BASE_URL = BASE_URL + modules.url_representation(modules.Module.DATA_SERIES) + '/'
 
@@ -234,7 +234,7 @@ class ImageTest(Base):
         return generate_photo_file()
 
     def check_data(self, value: Any) -> None:
-        self.assertTrue(AWS_S3_ENDPOINT_URL in str(value))
+        self.assertTrue(SKIPPER_S3_MEDIA_ENDPOINT_URL in str(value))
 
     def _test_multipart_batch_two(self, idx: int, backend: str) -> None:
         data_series = self.create_payload(DATA_SERIES_BASE_URL + 'dataseries/', payload={
