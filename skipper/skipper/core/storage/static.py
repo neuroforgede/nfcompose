@@ -11,8 +11,8 @@ from storages.utils import setting  # type: ignore
 
 @deconstructible
 class S3Boto3StaticStorage(PrivatePublicS3Boto3Storage):  # type: ignore
-    bucket_name = setting('NF_AWS_STORAGE_BUCKET_NAME_STATIC')
-    querystring_auth = setting('NF_AWS_QUERYSTRING_AUTH_STATIC')
+    bucket_name = setting('SKIPPER_S3_STATIC_BUCKET_NAME')
+    querystring_auth = False
     access_key = setting('SKIPPER_S3_STATIC_ACCESS_KEY_ID')
     secret_key = setting('SKIPPER_S3_STATIC_SECRET_ACCESS_KEY')
     endpoint_url = setting('SKIPPER_S3_STATIC_ENDPOINT_URL')
