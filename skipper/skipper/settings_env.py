@@ -266,7 +266,7 @@ CSP_FRAME_ANCESTORS = [
     *environment.SKIPPER_DJANGO_DSP_FRAME_ANCESTORS
 ]
 
-if environment.SKIPPER_S3_STATIC_EXTERNAL_ENDPOINT_URL != "":
+if environment.SKIPPER_S3_STATIC_EXTERNAL_ENDPOINT_URL is not None and environment.SKIPPER_S3_STATIC_EXTERNAL_ENDPOINT_URL != "":
     csp_static_url = f'{environment.SKIPPER_S3_STATIC_EXTERNAL_ENDPOINT_URL}/{environment.SKIPPER_S3_STATIC_BUCKET_NAME}/'
 else:
     csp_static_url = f'{environment.SKIPPER_S3_STATIC_ENDPOINT_URL}/{environment.SKIPPER_S3_STATIC_BUCKET_NAME}/'
