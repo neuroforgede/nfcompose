@@ -35,9 +35,9 @@ if (
         "SKIPPER_S3_ENDPOINT_URL": "http://nfcomposes3:6044",
         "SKIPPER_S3_EXTERNAL_ENDPOINT_URL": 'http://localhost:' + os.getenv('SEAWEEDFS_DEV_OUTSIDE_PORT', '6044'),
         "SKIPPER_S3_MEDIA_BUCKET_NAME": "skipper-media",
-        "SKIPPER_S3_MEDIA_ADDRESSING_STYLE": "virtual",
+        "SKIPPER_S3_MEDIA_ADDRESSING_STYLE": "path",
         "SKIPPER_S3_STATIC_BUCKET_NAME": "skipper-static",
-        "SKIPPER_S3_STATIC_ADDRESSING_STYLE": "virtual",
+        "SKIPPER_S3_STATIC_ADDRESSING_STYLE": "path",
         **os.environ
     })
     # for unit tests
