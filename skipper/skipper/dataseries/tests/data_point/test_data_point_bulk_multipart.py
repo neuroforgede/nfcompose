@@ -234,7 +234,7 @@ class ImageTest(Base):
         return generate_photo_file()
 
     def check_data(self, value: Any) -> None:
-        self.assertTrue(SKIPPER_S3_MEDIA_ENDPOINT_URL in str(value))
+        self.assertIn(SKIPPER_S3_MEDIA_ENDPOINT_URL, str(value))
 
     def _test_multipart_batch_two(self, idx: int, backend: str) -> None:
         data_series = self.create_payload(DATA_SERIES_BASE_URL + 'dataseries/', payload={

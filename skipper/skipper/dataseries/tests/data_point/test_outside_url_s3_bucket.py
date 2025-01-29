@@ -80,7 +80,7 @@ class Base(BaseViewTest):
         ).json()['data'][0]
 
         # direct without a nginx proxy we should get the internal url
-        self.assertTrue(SKIPPER_S3_MEDIA_ENDPOINT_URL in str(dp_1['payload']['1']))
+        self.assertIn(SKIPPER_S3_MEDIA_ENDPOINT_URL, str(dp_1['payload']['1']))
 
         dp_1 = self.client.get(
             path=self.data_series['data_points'] + f'?external_id=should_succeed',
@@ -91,7 +91,7 @@ class Base(BaseViewTest):
         ).json()['data'][0]
 
         # with the nginx header we should get the outside url
-        self.assertTrue(AWS_S3_TEST_OUTSIDE_BASE_URL in str(dp_1['payload']['1']))
+        self.assertIn(AWS_S3_TEST_OUTSIDE_BASE_URL, str(dp_1['payload']['1']))
 
 
 class Image(Base):
