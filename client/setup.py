@@ -20,7 +20,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="compose_client",
     scripts=['bin/compose_cli'],
-    version="2.3.2",
+    version="2.3.3",
     author="NeuroForge GmbH & Co. KG",
     author_email="kontakt@neuroforge.de",
     description="NF Compose package",
