@@ -12,5 +12,6 @@ class DataSeriesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self) -> None:
-        from skipper.dataseries import healthcheck
-        healthcheck.register_health_checks()
+        pass
+        # from skipper.dataseries import healthcheck
+        # healthcheck.register_health_checks()

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0916dd34197cc57877e0ffdc2846958cf2bc46afac2e17caf0a1ed44f8b42a52"
+            "sha256": "2b8182b9df444b6853aacd1ef6a44e25d9add6b4d49ce6308eca0479b0a1d5ab"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -436,14 +436,6 @@
             ],
             "index": "pypi",
             "version": "==0.8.2"
-        },
-        "django-prometheus": {
-            "hashes": [
-                "sha256:cf9b26f7ba2e4568f08f8f91480a2882023f5908579681bcf06a4d2465f12168",
-                "sha256:f9c8b6c780c9419ea01043c63a437d79db2c33353451347894408184ad9c3e1e"
-            ],
-            "index": "pypi",
-            "version": "==2.3.1"
         },
         "django-slowtests": {
             "hashes": [
@@ -1700,7 +1692,7 @@
                 "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
                 "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"
             ],
-            "markers": "python_version < '3.13'",
+            "markers": "python_version >= '3.8'",
             "version": "==4.12.2"
         },
         "tzdata": {

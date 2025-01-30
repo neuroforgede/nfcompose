@@ -6,7 +6,6 @@
 
 from django.apps import AppConfig
 
-from skipper.flow import healthcheck
 
 
 class FlowConfig(AppConfig):
@@ -14,4 +13,7 @@ class FlowConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self) -> None:
-        healthcheck.register_health_checks()
+        pass
+        # from skipper.flow import healthcheck
+
+        # healthcheck.register_health_checks()
