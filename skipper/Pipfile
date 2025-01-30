@@ -24,7 +24,6 @@ django-guardian = "==2.4.0"
 django-multitenant = "==3.0.0"
 django-cors-headers = "==4.3.1"
 pip-licenses = "==4.3.4"
-django-prometheus = "==2.3.1"
 tblib = "==3.0.0"
 jsonschema = {version = "==4.21.0"}
 gevent = "==24.2.1"

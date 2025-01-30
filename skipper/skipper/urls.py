@@ -105,7 +105,6 @@ urlpatterns: List[Any] = module_patterns
 urlpatterns += [
     path(settings.ROOT_API_PATH, Overview.as_view()),
     path('admin/', admin.site.urls),
-    path('', include('django_prometheus.urls'))
 ]
 # for non production environments, we directly serve static files
 urlpatterns += cast(Any, static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))

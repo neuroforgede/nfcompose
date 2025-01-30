@@ -58,12 +58,6 @@ DEBUG = environment.SKIPPER_DJANGO_DEBUG
 
 SQL_LINT = environment.SKIPPER_SQL_LINT
 
-if os.environ.get("RUN_MAIN") != "true":
-    PROMETHEUS_METRICS_EXPORT_PORT_RANGE = range(8001, 8050)
-
-PROMETHEUS_EXPORT_MIGRATIONS = True
-PROMETHEUS_METRIC_NAMESPACE = environment.SKIPPER_INSTALLATION_NAME
-
 LOGIN_REDIRECT_URL = ('..')
 
 URL_FIELD_NAME='url'
@@ -222,7 +216,6 @@ INSTALLED_APPS = [
     'pgq',
     'corsheaders',
     'rest_framework.authtoken',
-    'django_prometheus',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
@@ -244,7 +237,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'skipper.core.middleware.TrackCurrentRequestMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'csp.middleware.CSPMiddleware',
@@ -257,7 +249,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'skipper.core.middleware.TenantFromUserMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
