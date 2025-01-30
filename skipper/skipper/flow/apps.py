@@ -13,7 +13,6 @@ class FlowConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self) -> None:
-        pass
-        # from skipper.flow import healthcheck
-
-        # healthcheck.register_health_checks()
+        from skipper.flow import healthcheck
+        
+        healthcheck.register_health_checks()
