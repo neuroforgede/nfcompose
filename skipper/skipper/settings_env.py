@@ -322,6 +322,9 @@ if skipper_container_type in ['DJANGO', 'DJANGO_INTERNAL'] and not environment.S
             'timeout': environment.SKIPPER_GUNICORN_WORKER_DB_POOL_TIMEOUT
         }
     }
+elif skipper_container_type in ['CELERY_BEAT']:
+    # don't allocate a pool for celery beat
+    _db_options = {}
 else:
     _db_options = {
         'pool': {
