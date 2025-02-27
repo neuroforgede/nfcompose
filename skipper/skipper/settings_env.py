@@ -326,13 +326,7 @@ elif skipper_container_type in ['CELERY_BEAT']:
     # don't allocate a pool for celery beat
     _db_options = {}
 else:
-    _db_options = {
-        'pool': {
-            'min_size': max(2, environment.SKIPPER_CELERY_WORKER_CONCURRENCY),
-            'max_size': max(2, environment.SKIPPER_CELERY_WORKER_CONCURRENCY),
-            'timeout': environment.SKIPPER_CELERY_WORKER_DB_POOL_TIMEOUT
-        }
-    }
+    _db_options = {}
 
 if environment.SKIPPER_TESTING or TYPE_CHECKING:
     _db_options = {}
