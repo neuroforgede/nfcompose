@@ -15,7 +15,7 @@ pytz = "==2024.1"
 django-enumchoicefield = "==1.1.0"
 requests = "==2.32.2"
 django-filter = "==23.5"
-gunicorn = {version = "==22.0.0", extras = ["gevent"]}
+gunicorn = {version = "==23.0.0", extras = ["gevent"]}
 django-storages = "==1.12.3"
 boto3 = "==1.34.49"
 celery = "==5.3.6"
