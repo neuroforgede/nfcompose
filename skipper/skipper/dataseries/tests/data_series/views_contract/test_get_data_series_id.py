@@ -40,8 +40,8 @@ class GetDataSeriesIdTest(TestCase):
             'data_series': str(self.data_series.id)
         }
 
-        self.assertEquals(str(self.data_series.id), get_data_series_id(kwargs_object=kwargs))
-        self.assertEquals(str(self.data_series.id), get_data_series_id(kwargs))
+        self.assertEqual(str(self.data_series.id), get_data_series_id(kwargs_object=kwargs))
+        self.assertEqual(str(self.data_series.id), get_data_series_id(kwargs))
 
     def test_get_data_series_id_by_external_id(self) -> None:
         kwargs = {
@@ -49,5 +49,5 @@ class GetDataSeriesIdTest(TestCase):
             'by_external_id': True
         }
 
-        self.assertEquals(str(self.data_series.id), get_data_series_id(kwargs_object=kwargs))
-        self.assertEquals(str(self.data_series.id), get_data_series_id(kwargs))
+        self.assertEqual(str(self.data_series.id), get_data_series_id(kwargs_object=kwargs))
+        self.assertEqual(str(self.data_series.id), get_data_series_id(kwargs))

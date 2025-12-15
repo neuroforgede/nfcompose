@@ -20,4 +20,4 @@ class CSRFTokenTest(TestCase):
         client = APIClient()
 
         response = client.get(path=BASE_URL + "common/auth/csrftoken/")
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)

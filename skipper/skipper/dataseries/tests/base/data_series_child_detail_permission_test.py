@@ -44,9 +44,9 @@ class BaseDataSeriesChildDetailPermissionTest(BaseRESTPermissionTest):
     def __without_data_series_obj_permissions(self) -> None:
         malformed_without_permissions = self.method_under_test_malformed()
         if malformed_without_permissions is not None:
-            self.assertEquals(self.malformed_without_data_series_obj_permission_status(), malformed_without_permissions.status_code)
+            self.assertEqual(self.malformed_without_data_series_obj_permission_status(), malformed_without_permissions.status_code)
         proper_without_permissions = self.method_under_test_proper()
-        self.assertEquals(self.proper_without_data_series_obj_permission_status(), proper_without_permissions.status_code)
+        self.assertEqual(self.proper_without_data_series_obj_permission_status(), proper_without_permissions.status_code)
 
     def _add_dataseries_perms(self) -> None:
         data_series = DataSeries.objects.get(
@@ -170,9 +170,9 @@ class BaseDataSeriesChildDetailPermissionTest(BaseRESTPermissionTest):
     def without_extra_permissions_test(self) -> None:
         malformed_without_permissions = self.method_under_test_malformed()
         if malformed_without_permissions is not None:
-            self.assertEquals(status.HTTP_403_FORBIDDEN, malformed_without_permissions.status_code)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, malformed_without_permissions.status_code)
         proper_without_permissions = self.method_under_test_proper()
-        self.assertEquals(status.HTTP_403_FORBIDDEN, proper_without_permissions.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, proper_without_permissions.status_code)
 
     def after_base_test(self) -> None:
         self._after_base_test(
@@ -195,9 +195,9 @@ class BaseDataSeriesChildDetailPermissionTest(BaseRESTPermissionTest):
         def without_permissions(expected_status_code: int) -> None:
             malformed_without_permissions = self.method_under_test_malformed()
             if malformed_without_permissions is not None:
-                self.assertEquals(expected_status_code, malformed_without_permissions.status_code)
+                self.assertEqual(expected_status_code, malformed_without_permissions.status_code)
             proper_without_permissions = self.method_under_test_proper()
-            self.assertEquals(expected_status_code, proper_without_permissions.status_code)
+            self.assertEqual(expected_status_code, proper_without_permissions.status_code)
 
         # still has global permissions on dataseries, so should get 403 after this
         remove_perm(

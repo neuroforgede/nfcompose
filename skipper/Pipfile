@@ -5,29 +5,29 @@ name = "pypi"
 
 [packages]
 setuptools = "==70.0.0"
-djangorestframework = "==3.15.2"
-djangorestframework-simplejwt = { version = "==5.3.1" }
+djangorestframework = "==3.16.1"
+djangorestframework-simplejwt = { version = "==5.5.1" }
 # at least required for simplejwt crypto
-cryptography = "==43.0.1"
+cryptography = "==46.0.3"
 django-extensions = "==3.2.3"
-psycopg = {version = "==3.2.3", extras = ["binary", "pool"]}
-pytz = "==2024.1"
+psycopg = {version = "==3.3.2", extras = ["binary", "pool"]}
+pytz = "==2025.2"
 django-enumchoicefield = "==1.1.0"
-requests = "==2.32.2"
-django-filter = "==23.5"
+requests = "==2.32.5"
+django-filter = "==24.3"
 gunicorn = {version = "==23.0.0", extras = ["gevent"]}
 django-storages = "==1.12.3"
 boto3 = "==1.34.49"
 celery = "==5.3.6"
 django-celery-results = "==2.5.1"
 django-guardian = "==2.4.0"
-django-multitenant = "==3.0.0"
+django-multitenant = "4.1.1"
 django-cors-headers = "==4.3.1"
 pip-licenses = "==4.3.4"
 tblib = "==3.0.0"
 jsonschema = {version = "==4.21.0"}
-gevent = "==24.2.1"
-greenlet = "==3.0.3"
+gevent = "==25.9.1"
+greenlet = "==3.3.0"
 "zope.event" = "==5.0"
 "zope.interface" = "==6.2"
 mypy = "==1.0.1"
@@ -55,9 +55,9 @@ opentelemetry-instrumentation-botocore = "==0.48b0"
 opentelemetry-instrumentation-psycopg = "==0.48b0"
 opentelemetry-instrumentation-redis = "==0.48b0"
 sqlparse = "==0.5.0"
-Django = "==5.1.5"
-Pillow = "==10.3.0"
-FormEncode = "==2.0.1"
+Django = "==6.0"
+Pillow = "==12.0.0"
+FormEncode = "==2.1.1"
 SQLAlchemy = "==1.4.51"
 Deprecated = "==1.2.14"
 protobuf = "==3.20.3"
@@ -74,4 +74,4 @@ coverage = "*"
 runProduction = "bash runProduction.sh"
 
 [requires]
-python_version = "3.11"
+python_version = "3.14"

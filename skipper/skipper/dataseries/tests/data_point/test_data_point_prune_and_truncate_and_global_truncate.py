@@ -102,7 +102,7 @@ class BaseClasses:
                     f"batch-0.external_id": external_id,
                     "batch-0.payload.1": self.gen_data()
                 }, format='multipart')
-            self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         def assert_entity_count_db(
                 self,
@@ -1127,10 +1127,10 @@ class BaseClasses:
                 )
 
             s3_data_dp_1_resp = requests.get(dp_1['payload']['1'])
-            self.assertEquals(status.HTTP_200_OK, s3_data_dp_1_resp.status_code)
+            self.assertEqual(status.HTTP_200_OK, s3_data_dp_1_resp.status_code)
 
             s3_data_dp_2_resp = requests.get(dp_2['payload']['1'])
-            self.assertEquals(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
+            self.assertEqual(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
 
             before_delete = dbtime.now()
 
@@ -1160,10 +1160,10 @@ class BaseClasses:
             )
 
             s3_data_dp_1_resp = requests.get(dp_1['payload']['1'])
-            self.assertEquals(status.HTTP_200_OK, s3_data_dp_1_resp.status_code)
+            self.assertEqual(status.HTTP_200_OK, s3_data_dp_1_resp.status_code)
 
             s3_data_dp_2_resp = requests.get(dp_2['payload']['1'])
-            self.assertEquals(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
+            self.assertEqual(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
 
             file_registry.garbage_collect(
                 storage=default_media_storage,
@@ -1171,11 +1171,11 @@ class BaseClasses:
             )
 
             s3_data_dp_1_resp = requests.get(dp_1['payload']['1'])
-            self.assertEquals(status.HTTP_404_NOT_FOUND, s3_data_dp_1_resp.status_code,
+            self.assertEqual(status.HTTP_404_NOT_FOUND, s3_data_dp_1_resp.status_code,
                               's3 data should be pruned for dataseries ' + str(data_series))
 
             s3_data_dp_2_resp = requests.get(dp_2['payload']['1'])
-            self.assertEquals(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
+            self.assertEqual(status.HTTP_200_OK, s3_data_dp_2_resp.status_code)
 
 
 class ImageFactTest(BaseClasses.BaseFileLikeTest):

@@ -13,5 +13,5 @@ def validate_string(string: str) -> bool:
 
 
 def validate_sql_string(string: str) -> bool:
-    regex = re.compile('[a-zA-Z0-9_\-"]+')
+    regex = re.compile(r'[a-zA-Z0-9_\-"]+')
     return regex.fullmatch(string) is not None

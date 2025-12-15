@@ -77,7 +77,7 @@ class Base(BaseViewTest):
                 "batch-0.payload.1": self.gen_data(),
                 "async": self._async
             }, format='multipart')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         dp_1 = self.get_payload(data_series['data_points'] + f'?external_id=should_succeed')['data'][0]
         self.assertTrue(
@@ -106,7 +106,7 @@ class FloatTest(Base):
         return 1.0
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals(1.0, value)
+        self.assertEqual(1.0, value)
 
 
 class AsyncFloatTest(FloatTest):
@@ -121,7 +121,7 @@ class StringTest(Base):
         return "123"
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals('123', value)
+        self.assertEqual('123', value)
 
 
 class AsyncStringTest(StringTest):
@@ -136,7 +136,7 @@ class TextTest(Base):
         return "123"
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals('123', value)
+        self.assertEqual('123', value)
 
 
 class AsyncTextTest(TextTest):
@@ -151,7 +151,7 @@ class JSONTest(Base):
         return "\"\\\"\\\"\""
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals('\"\"', value)
+        self.assertEqual('\"\"', value)
 
     def gen_null(self) -> Any:
         return 'null'
@@ -172,7 +172,7 @@ class JSONTest(Base):
                 "batch-0.payload.1": self.gen_null(),
                 "async": self._async
             }, format='multipart')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         dp_1 = self.get_payload(data_series['data_points'] + f'?external_id=should_succeed')['data'][0]
         self.assertTrue(
@@ -204,7 +204,7 @@ class JSONComplexTest(Base):
         return json.dumps(self.data)
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals(self.data, value)
+        self.assertEqual(self.data, value)
 
 
 class AsyncJSONComplexTest(JSONComplexTest):
@@ -219,7 +219,7 @@ class TimestampTest(Base):
         return '2019-12-15T19:09:25.007985'
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals('2019-12-15T19:09:25.007985', value)
+        self.assertEqual('2019-12-15T19:09:25.007985', value)
 
 
 class AsyncTimestampTest(TimestampTest):
@@ -253,7 +253,7 @@ class ImageTest(Base):
                 "batch-1.payload.1": self.gen_data(),
                 "async": self._async
             }, format='multipart')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         dp_1 = self.get_payload(data_series['data_points'] + f'?external_id=should_succeed')['data'][0]
         self.assertTrue(
@@ -290,7 +290,7 @@ class BooleanTest(Base):
         return True
 
     def check_data(self, value: Any) -> None:
-        self.assertEquals(True, value)
+        self.assertEqual(True, value)
 
 
 class AsyncBooleanTest(BooleanTest):

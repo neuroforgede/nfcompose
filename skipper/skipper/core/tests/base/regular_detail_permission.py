@@ -41,10 +41,10 @@ class BaseModelDetailPermissionTest(BaseRESTPermissionTest):
     def __without_obj_permissions(self) -> None:
         malformed_without_permissions = self.method_under_test_malformed()
         if malformed_without_permissions is not None:
-            self.assertEquals(self.malformed_without_base_obj_permission_status(),
+            self.assertEqual(self.malformed_without_base_obj_permission_status(),
                               malformed_without_permissions.status_code)
         proper_without_permissions = self.method_under_test_proper()
-        self.assertEquals(self.proper_without_base_obj_permission_status(), proper_without_permissions.status_code)
+        self.assertEqual(self.proper_without_base_obj_permission_status(), proper_without_permissions.status_code)
 
     def _extra_add_base_permission(self) -> None:
         obj = self.model_type.objects.get(
@@ -131,9 +131,9 @@ class BaseModelDetailPermissionTest(BaseRESTPermissionTest):
     def without_extra_permissions_test(self) -> None:
         malformed_without_permissions = self.method_under_test_malformed()
         if malformed_without_permissions is not None:
-            self.assertEquals(self.malformed_without_obj_permission_status(), malformed_without_permissions.status_code)
+            self.assertEqual(self.malformed_without_obj_permission_status(), malformed_without_permissions.status_code)
         proper_without_permissions = self.method_under_test_proper()
-        self.assertEquals(self.proper_without_obj_permission_status(), proper_without_permissions.status_code)
+        self.assertEqual(self.proper_without_obj_permission_status(), proper_without_permissions.status_code)
 
     def after_base_test(self) -> None:
         self._after_base_test(
@@ -153,9 +153,9 @@ class BaseModelDetailPermissionTest(BaseRESTPermissionTest):
         def without_permissions(expected_status_code: int) -> None:
             malformed_without_permissions = self.method_under_test_malformed()
             if malformed_without_permissions is not None:
-                self.assertEquals(expected_status_code, malformed_without_permissions.status_code)
+                self.assertEqual(expected_status_code, malformed_without_permissions.status_code)
             proper_without_permissions = self.method_under_test_proper()
-            self.assertEquals(expected_status_code, proper_without_permissions.status_code)
+            self.assertEqual(expected_status_code, proper_without_permissions.status_code)
 
         # still has global permissions on object, so should get 403 after this
         remove_perm(

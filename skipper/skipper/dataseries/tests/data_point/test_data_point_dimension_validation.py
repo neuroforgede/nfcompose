@@ -87,7 +87,7 @@ class Base(BaseViewTest):
                 "payload": {}
             }, format='json')
 
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         error_json = response.json()
         self.assertTrue('payload' in error_json)
         self.assertTrue(self.dim_1['external_id'] in error_json['payload'])
@@ -105,7 +105,7 @@ class Base(BaseViewTest):
                 "identify_dimensions_by_external_id": False
             }, format='json')
 
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         error_json = response.json()
 
@@ -125,7 +125,7 @@ class Base(BaseViewTest):
                 "identify_dimensions_by_external_id": False
             }, format='json')
 
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         error_json = response.json()
 
@@ -144,7 +144,7 @@ class Base(BaseViewTest):
                 },
                 "identify_dimensions_by_external_id": False
             }, format='json')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
     def test_should_work_identify_by_external_id(self) -> None:
         response = self.client.post(
@@ -157,7 +157,7 @@ class Base(BaseViewTest):
                 },
                 "identify_dimensions_by_external_id": True
             }, format='json')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
     def test_both_entries_wrong_and_wrong_external_id(self) -> None:
         response = self.client.post(
@@ -169,7 +169,7 @@ class Base(BaseViewTest):
                     self.dim_2['external_id']: self.dim_entries_2[1]['id'],
                 }
             }, format='json')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         response = self.client.post(
             path=self.data_series['data_points'],
@@ -183,7 +183,7 @@ class Base(BaseViewTest):
                 "identify_dimensions_by_external_id": True
             }, format='json')
 
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         error_json = response.json()
         self.assertTrue('external_id' in error_json)
@@ -200,7 +200,7 @@ class Base(BaseViewTest):
                 "identify_dimensions_by_external_id": False
             }, format='json')
 
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         error_json = response.json()
         self.assertTrue('external_id' in error_json)

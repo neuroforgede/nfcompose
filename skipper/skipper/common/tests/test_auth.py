@@ -32,7 +32,7 @@ class AuthTokenTest(TestCase):
             'user': 'wrong_user',
             'password': 'nf'
         })
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_get_auth_token_wrong_password(self) -> None:
         User.objects.create_superuser(username='nf', password='nf', email='test@neuroforge.de')
@@ -42,7 +42,7 @@ class AuthTokenTest(TestCase):
             'user': 'nf',
             'password': 'wrong_password'
         })
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_get_auth_token_no_password(self) -> None:
         User.objects.create_superuser(username='nf', password='nf', email='test@neuroforge.de')
@@ -51,7 +51,7 @@ class AuthTokenTest(TestCase):
         response = client.post(path=BASE_URL + "common/auth/authtoken/", data={
             'password': 'nf'
         })
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_get_auth_token_no_user(self) -> None:
         User.objects.create_superuser(username='nf', password='nf', email='test@neuroforge.de')
@@ -60,7 +60,7 @@ class AuthTokenTest(TestCase):
         response = client.post(path=BASE_URL + "common/auth/authtoken/", data={
             'user': 'nf'
         })
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_get_auth_token(self) -> None:
         User.objects.create_superuser(username='nf', password='nf', email='test@neuroforge.de')
@@ -71,7 +71,7 @@ class AuthTokenTest(TestCase):
                 'username': 'nf',
                 'password': 'nf'
             }, format='json')
-            self.assertEquals(status.HTTP_200_OK, response.status_code)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
 
             token_json = response.json()
             self.assertTrue('token' in token_json)
@@ -97,7 +97,7 @@ class AuthTokenTest(TestCase):
                 'username': 'nf2',
                 'password': 'nf2'
             }, format='json')
-            self.assertEquals(status.HTTP_200_OK, response.status_code)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
 
             token_json = response.json()
             self.assertTrue('token' in token_json)
@@ -107,8 +107,8 @@ class AuthTokenTest(TestCase):
 
         # getting the token should not log us in even if we are logged in
         response = client.get(path=BASE_URL + "common/auth/check/", format='json')
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
-        self.assertEquals(response.json()['username'], 'nf')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(response.json()['username'], 'nf')
 
     def test_should_not_log_in(self) -> None:
         User.objects.create_superuser(username='nf', password='nf', email='test@neuroforge.de')
@@ -121,7 +121,7 @@ class AuthTokenTest(TestCase):
                 'username': 'nf2',
                 'password': 'nf2'
             })
-            self.assertEquals(status.HTTP_200_OK, response.status_code)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
 
             token_json = response.json()
             self.assertTrue('token' in token_json)
@@ -131,4 +131,4 @@ class AuthTokenTest(TestCase):
 
         # getting the token should not log us in even if we are logged in
         response = client.get(path=BASE_URL + "common/auth/check/", format='json')
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)

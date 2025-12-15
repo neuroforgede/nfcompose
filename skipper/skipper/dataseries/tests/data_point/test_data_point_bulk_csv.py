@@ -86,9 +86,9 @@ class Base(BaseViewTest):
             )
 
             if self.should_fail:
-                self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+                self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
             else:
-                self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+                self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
                 dp_1 = self.get_payload(data_series['data_points'] + f'?external_id=should_succeed{idx}')['data'][0]
                 self.assertTrue(
@@ -99,7 +99,7 @@ class Base(BaseViewTest):
                     dp_1['payload']['1'],
                     "fact in second datapoint should not be null"
                 )
-                self.assertEquals(dp_1['payload']['1'], self.actual_data())
+                self.assertEqual(dp_1['payload']['1'], self.actual_data())
 
     def test_csv_batch(self) -> None:
         idx = 0

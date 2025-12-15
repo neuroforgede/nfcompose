@@ -246,7 +246,7 @@ class GetDataSeriesObjectTest(TestCase):
                 found_ds = get_data_series_object(kwargs_object=kwargs, action=action, request=fake_request)
                 self.assertIsNotNone(found_ds)
                 assert found_ds is not None
-                self.assertEquals(self.data_series.id, found_ds.id)
+                self.assertEqual(self.data_series.id, found_ds.id)
 
                 if action == DATASERIES_PERMISSION_KEY_DATA_SERIES and method == 'GET':
                     # dont remove GET perm
@@ -292,7 +292,7 @@ class GetDataSeriesObjectTest(TestCase):
                 found_ds = get_data_series_object(kwargs_object=kwargs, action=action, request=fake_request)
                 self.assertIsNotNone(found_ds)
                 assert found_ds is not None
-                self.assertEquals(self.data_series.id, found_ds.id)
+                self.assertEqual(self.data_series.id, found_ds.id)
 
                 if action == DATASERIES_PERMISSION_KEY_DATA_SERIES and method == 'GET':
                     # dont remove GET perm

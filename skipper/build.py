@@ -203,7 +203,7 @@ def build_base_image(base_image_name: str, base_image_tag: str) -> None:
     subprocess.check_call([
         'docker',
         'pull',
-        'python:3.11'
+        'python:3.14'
     ])
     subprocess.check_call([
         'docker',

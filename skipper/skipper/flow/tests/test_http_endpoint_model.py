@@ -55,7 +55,7 @@ class HttpEndpointModelTest(TestCase):
                 method=method,
                 system=True
             )
-            self.assertEquals(False, endpoint.public)
+            self.assertEqual(False, endpoint.public)
 
     def test_clean_no_engine_not_system(self) -> None:
         endpoint = self._endpoint()

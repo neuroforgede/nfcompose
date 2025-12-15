@@ -23,7 +23,7 @@ check_result "failed to run ci_setup.sh"
 FAILED='no'
 
 # START testing section
-HTTP_CODE=$(docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" --rm python:3.11 bash -c 'exec curl -o /dev/null -w '%{http_code}' -s http://admin:admin@skipper.test.local:8000/api/')
+HTTP_CODE=$(docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" --rm python:3.14 bash -c 'exec curl -o /dev/null -w '%{http_code}' -s http://admin:admin@skipper.test.local:8000/api/')
 if [ "$HTTP_CODE" == '200' ]; then
     echo "successfully got HTTP 200 from skipper"
 else
@@ -32,7 +32,7 @@ else
     FAILED='yes'
 fi
 
-docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" -v "$(pwd):/client" --rm python:3.11 bash -c 'cp -r /client /tests && cd /tests && rm -rf venv && bash create_venv.sh && source venv/bin/activate && bash install_dev_dependencies.sh && exec bash test.sh'
+docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" -v "$(pwd):/client" --rm python:3.14 bash -c 'cp -r /client /tests && cd /tests && rm -rf venv && bash create_venv.sh && source venv/bin/activate && bash install_dev_dependencies.sh && exec bash test.sh'
 check_result "integration tests failed"
 # END testing section
 
