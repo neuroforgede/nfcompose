@@ -47,7 +47,7 @@ class DebugTelemetryPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Method": 'GET'
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
         assign_perm('debug.telemetry.ui', user)
 
@@ -62,4 +62,4 @@ class DebugTelemetryPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Method": 'GET'
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)

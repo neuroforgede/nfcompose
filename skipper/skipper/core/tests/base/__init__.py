@@ -421,16 +421,16 @@ class BaseRESTPermissionTest(_BaseRESTPermissionTest):
         def without_permissions() -> None:
             malformed_without_permissions = self.method_under_test_malformed()
             if malformed_without_permissions is not None:
-                self.assertEquals(self.malformed_without_permission_status(), malformed_without_permissions.status_code)
+                self.assertEqual(self.malformed_without_permission_status(), malformed_without_permissions.status_code)
             proper_without_permissions = self.method_under_test_proper()
-            self.assertEquals(self.proper_without_permission_status(), proper_without_permissions.status_code)
+            self.assertEqual(self.proper_without_permission_status(), proper_without_permissions.status_code)
 
         def with_permissions() -> None:
             malformed_with_permissions = self.method_under_test_malformed()
             if malformed_with_permissions is not None:
-                self.assertEquals(self.malformed_with_permission_status(), malformed_with_permissions.status_code)
+                self.assertEqual(self.malformed_with_permission_status(), malformed_with_permissions.status_code)
             proper_with_permissions = self.method_under_test_proper()
-            self.assertEquals(self.proper_with_permission_status(), proper_with_permissions.status_code)
+            self.assertEqual(self.proper_with_permission_status(), proper_with_permissions.status_code)
 
         # not logged in
         without_permissions()

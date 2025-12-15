@@ -20,7 +20,7 @@ CUR_DIR=$(pwd)
 
 FAILED='no'
 
-docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" -v "$(pwd):/client" --rm python:3.11 bash -c 'cp -r /client /tests && cd /tests && rm -rf venv && bash create_venv.sh && source venv/bin/activate && bash install_dev_dependencies.sh && exec bash test.sh'
+docker run --rm --network "${COMPOSE_PROJECT_NAME}_nfcompose" -v "$(pwd):/client" --rm python:3.14 bash -c 'cp -r /client /tests && cd /tests && rm -rf venv && bash create_venv.sh && source venv/bin/activate && bash install_dev_dependencies.sh && exec bash test.sh'
 check_result "integration tests failed"
 # END testing section
 

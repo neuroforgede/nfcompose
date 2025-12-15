@@ -60,7 +60,7 @@ class DimensionTest(BaseViewTest):
                     "1": None
                 }
             }, format='json')
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_missing_as_null(self) -> None:
         self.add_dim(optional=False)
@@ -73,7 +73,7 @@ class DimensionTest(BaseViewTest):
                     "1": None
                 }
             }, format='json')
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_null_as_optional(self) -> None:
         self.add_dim(optional=True)
@@ -86,4 +86,4 @@ class DimensionTest(BaseViewTest):
                     "1": None
                 }
             }, format='json')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)

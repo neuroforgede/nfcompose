@@ -54,7 +54,7 @@ class DataSeriesTest(BaseViewTest):
             'external_id': 'my_dim_1',
             'optional': False
         })
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, failed_response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, failed_response.status_code)
 
     def test_cant_delete_dataseries_if_still_referenced(self) -> None:
         data_series = self.create_payload(DATA_SERIES_BASE_URL + 'dataseries/', payload={
@@ -90,7 +90,7 @@ class DataSeriesTest(BaseViewTest):
         self.assertEqual(deletion_response.status_code, status.HTTP_400_BAD_REQUEST)
         deletion_response_json = deletion_response.json()
         self.assertIn('visible_references', deletion_response_json)
-        self.assertEquals(1, len(deletion_response_json['visible_references']))
+        self.assertEqual(1, len(deletion_response_json['visible_references']))
         self.assertIn('data_series', deletion_response_json['visible_references'][0])
         self.assertIn('dimension', deletion_response_json['visible_references'][0])
         self.assertURLEqual(deletion_response_json['visible_references'][0]['data_series'], data_series['url'])  # type: ignore

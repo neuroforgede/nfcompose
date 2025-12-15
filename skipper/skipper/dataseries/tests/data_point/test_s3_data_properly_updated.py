@@ -110,16 +110,16 @@ class DataPointTest(BaseViewTest):
 
 
         initial_resp = requests.get(initial['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, initial_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, initial_resp.status_code)
 
         initial_resp_again = requests.get(initial['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, initial_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, initial_resp.status_code)
 
         # ensure the following assertion will make sense by getting the initial file twice and comparing it to itself
         self.assertEqual(ascii(initial_resp.content), ascii(initial_resp_again.content))
 
         updated_resp = requests.get(updated['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, updated_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, updated_resp.status_code)
 
         self.assertNotEqual(ascii(initial_resp.content), ascii(updated_resp.content))
 
@@ -160,15 +160,15 @@ class DataPointTest(BaseViewTest):
             updated = updated_payload_resp.json()
 
         initial_resp = requests.get(initial['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, initial_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, initial_resp.status_code)
 
         initial_resp_again = requests.get(initial['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, initial_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, initial_resp.status_code)
 
         # ensure the following assertion will make sense by getting the initial file twice and comparing it to itself
         self.assertEqual(ascii(initial_resp.content), ascii(initial_resp_again.content))
 
         updated_resp = requests.get(updated['payload']['s3_file'])
-        self.assertEquals(status.HTTP_200_OK, updated_resp.status_code)
+        self.assertEqual(status.HTTP_200_OK, updated_resp.status_code)
 
         self.assertNotEqual(ascii(initial_resp.content), ascii(updated_resp.content))

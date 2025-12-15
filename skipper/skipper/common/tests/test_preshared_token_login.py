@@ -46,7 +46,7 @@ class PresharedTokenAuthTest(TestCase):
         client = APIClient()
 
         unauthenticated = client.get(path=BASE_URL + "common/auth/check/")
-        self.assertEquals(status.HTTP_403_FORBIDDEN, unauthenticated.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, unauthenticated.status_code)
 
         user1_pst1 = PreSharedToken.objects.create(
             key='MY_AWESOME_SECRET_PRESHARED_TOKEN1',
@@ -59,8 +59,8 @@ class PresharedTokenAuthTest(TestCase):
             follow=False,
             HTTP_AUTHORIZATION=f'PreSharedToken {user1_pst1.key}'
         )
-        self.assertEquals(status.HTTP_200_OK, authenticated.status_code)
-        self.assertEquals(authenticated.json()['username'], user1.username)
+        self.assertEqual(status.HTTP_200_OK, authenticated.status_code)
+        self.assertEqual(authenticated.json()['username'], user1.username)
 
         user1_pst2 = PreSharedToken.objects.create(
             key='MY_AWESOME_SECRET_PRESHARED_TOKEN2',
@@ -73,6 +73,6 @@ class PresharedTokenAuthTest(TestCase):
             follow=False,
             HTTP_AUTHORIZATION=f'PreSharedToken {user1_pst2.key}'
         )
-        self.assertEquals(status.HTTP_200_OK, authenticated.status_code)
-        self.assertEquals(authenticated.json()['username'], user1.username)
+        self.assertEqual(status.HTTP_200_OK, authenticated.status_code)
+        self.assertEqual(authenticated.json()['username'], user1.username)
 

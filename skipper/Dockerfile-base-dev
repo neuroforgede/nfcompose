@@ -4,7 +4,7 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
-FROM python:3.11
+FROM python:3.14
 
 # so celery immediately quits and does not wait around to get killed by docker
 # this way it puts jobs back that were set to acks_late=True
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install setuptools==68.2.2
 RUN pip install --upgrade pip==23.3.1
-RUN pip install pipenv==2023.10.24
+RUN pip install pipenv==2026.0.2
 ENV PIPENV_IGNORE_VIRTUALENVS=1
 ENV PIPENV_VENV_IN_PROJECT=1
 

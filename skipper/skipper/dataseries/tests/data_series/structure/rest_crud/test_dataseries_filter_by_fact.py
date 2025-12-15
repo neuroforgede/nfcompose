@@ -63,11 +63,11 @@ class DataSeriesFilterByFactTest(BaseViewTest):
         self.client.post(path=data_series['data_points'], data=data_point_b, format='json')
 
         def data_equals_data_point(data: Dict[str, Any], data_point: Dict[str, Any]) -> None:
-            self.assertEquals(data_point['external_id'], data['external_id'])
-            self.assertEquals(data_point['payload']['float_fact'], data['payload']['float_fact'])
-            self.assertEquals(data_point['payload']['string_fact'], data['payload']['string_fact'])
-            self.assertEquals(data_point['payload']['text_fact'], data['payload']['text_fact'])
-            self.assertEquals(data_point['payload']['boolean_fact'], data['payload']['boolean_fact'])
+            self.assertEqual(data_point['external_id'], data['external_id'])
+            self.assertEqual(data_point['payload']['float_fact'], data['payload']['float_fact'])
+            self.assertEqual(data_point['payload']['string_fact'], data['payload']['string_fact'])
+            self.assertEqual(data_point['payload']['text_fact'], data['payload']['text_fact'])
+            self.assertEqual(data_point['payload']['boolean_fact'], data['payload']['boolean_fact'])
 
         payload_a = data_point_a['payload']
         for fact in payload_a:
@@ -75,7 +75,7 @@ class DataSeriesFilterByFactTest(BaseViewTest):
                 pass
             else:
                 response = self.client.get(path=f'{data_series["data_points"]}?filter={{ "{fact}": {json.dumps(payload_a[fact])} }}').json()
-                self.assertEquals(1, len(response['data']))
+                self.assertEqual(1, len(response['data']))
                 data_equals_data_point(response['data'][0], data_point_a)
 
         payload_b = data_point_b['payload']
@@ -85,6 +85,6 @@ class DataSeriesFilterByFactTest(BaseViewTest):
             else:
                 response = self.client.get(
                     path=f'{data_series["data_points"]}?filter={{ "{fact}": {json.dumps(payload_b[fact])} }}').json()
-                self.assertEquals(1, len(response['data']))
+                self.assertEqual(1, len(response['data']))
                 data_equals_data_point(response['data'][0], data_point_b)
 

@@ -62,7 +62,7 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
             'name': 'my_data_series_1',
             'external_id': '/'
         }, format='json')
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, should_fail.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, should_fail.status_code)
 
     def test_create_and_fetch_via_external_id_in_url(self) -> None:
         data_series = self.create_payload(self.url_under_test, payload={
@@ -71,8 +71,8 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
         }, simulate_tenant=False)
 
         manual_url_response = self.client.get(self.url_under_test + 'external_id1/')
-        self.assertEquals(status.HTTP_200_OK, manual_url_response.status_code)
-        self.assertEquals(data_series, manual_url_response.json())
+        self.assertEqual(status.HTTP_200_OK, manual_url_response.status_code)
+        self.assertEqual(data_series, manual_url_response.json())
 
     def test_returned_has_correct_paths(self) -> None:
         data_series = self.create_payload(self.url_under_test, payload={
@@ -94,10 +94,10 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
         self.check_urls_by_external_id_dp(data_point)
 
         should_redirect = self.client.get(path=self.url_under_test + 'external_id1/datapoint/1')
-        self.assertEquals(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
+        self.assertEqual(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
 
         by_external_id_dp = self.get_payload(self.url_under_test + 'external_id1/datapoint/1/')
-        self.assertEquals(data_point, by_external_id_dp)
+        self.assertEqual(data_point, by_external_id_dp)
 
         # url in the returned json should still be the canonical url as that is always safe
         self.check_urls_by_external_id_dp(data_point)
@@ -122,11 +122,11 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
             should_redirect = self.client.get(
                 path=self.url_under_test + f'{data_series["external_id"]}/{fact_type}fact/{external_id_fact}'
             )
-            self.assertEquals(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
+            self.assertEqual(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
 
             by_external_id_fact = self.get_payload(self.url_under_test + f'{data_series["external_id"]}/{fact_type}fact/{external_id_fact}/')
             self.check_urls_by_external_id_fact(fact, fact_type)
-            self.assertEquals(fact, by_external_id_fact)
+            self.assertEqual(fact, by_external_id_fact)
 
     def test_dimensions_are_accessible_via_external_id_url(self) -> None:
         external_id_ds = f'external_id_dim'
@@ -153,8 +153,8 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
         should_redirect = self.client.get(
             path=self.url_under_test + f'{data_series["external_id"]}/dimension/{external_id_dim}'
         )
-        self.assertEquals(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
+        self.assertEqual(status.HTTP_301_MOVED_PERMANENTLY, should_redirect.status_code)
 
         by_external_id_dim = self.get_payload(self.url_under_test + f'{data_series["external_id"]}/dimension/{external_id_dim}/')
         self.check_urls_by_external_id_dimension(dim)
-        self.assertEquals(dim, by_external_id_dim)
+        self.assertEqual(dim, by_external_id_dim)

@@ -52,7 +52,7 @@ class DataPointTest(BaseViewTest):
                     "payload": {}
                 }]
             }, format='json')
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
     def test_missing_as_null(self) -> None:
@@ -72,7 +72,7 @@ class DataPointTest(BaseViewTest):
                     }
                 }]
             }, format='json')
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_null_as_optional(self) -> None:
         float_fact = self.create_payload(self.data_series['float_facts'], {
@@ -91,7 +91,7 @@ class DataPointTest(BaseViewTest):
                     }
                 }]
             }, format='json')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
 
 # FIXME: add tests for all other fact types

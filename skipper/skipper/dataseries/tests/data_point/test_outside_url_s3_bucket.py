@@ -72,7 +72,7 @@ class Base(BaseViewTest):
                 f"batch-0.external_id": 'should_succeed',
                 "batch-0.payload.1": self.gen_data()
             }, format='multipart')
-        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         dp_1 = self.client.get(
             path=self.data_series['data_points'] + f'?external_id=should_succeed',

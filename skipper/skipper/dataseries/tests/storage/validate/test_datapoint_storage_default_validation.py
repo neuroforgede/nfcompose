@@ -199,7 +199,7 @@ class GeneralTest(Base):
         self.assertTrue('external_id' in result)
         self.assertTrue('payload' in result)
         self.assertTrue(isinstance(result['payload'], dict))
-        self.assertEquals(0, len(result['payload']))
+        self.assertEqual(0, len(result['payload']))
 
     def test_payload_multi_value_dict(self) -> None:
         validation_request = self.empty_request()
@@ -301,9 +301,9 @@ class BaseFactTest(Base):
             self.assertTrue('external_id' in result)
             self.assertTrue('payload' in result)
             self.assertTrue(isinstance(result['payload'], dict))
-            self.assertEquals(1, len(result['payload']))
+            self.assertEqual(1, len(result['payload']))
             self.assertTrue(isinstance(result['payload']['facty_boy'], self.type))
-            self.assertEquals(correct_value, result['payload']['facty_boy'])
+            self.assertEqual(correct_value, result['payload']['facty_boy'])
 
     def test_optional_null(self) -> None:
         validation_request = self.empty_request()
@@ -321,8 +321,8 @@ class BaseFactTest(Base):
         self.assertTrue('external_id' in result)
         self.assertTrue('payload' in result)
         self.assertTrue(isinstance(result['payload'], dict))
-        self.assertEquals(1, len(result['payload']))
-        self.assertEquals(None, result['payload']['facty_boy'])
+        self.assertEqual(1, len(result['payload']))
+        self.assertEqual(None, result['payload']['facty_boy'])
 
     def test_optional_not_present(self) -> None:
         validation_request = self.empty_request()
@@ -338,7 +338,7 @@ class BaseFactTest(Base):
         self.assertTrue('external_id' in result)
         self.assertTrue('payload' in result)
         self.assertTrue(isinstance(result['payload'], dict))
-        self.assertEquals(0, len(result['payload']))
+        self.assertEqual(0, len(result['payload']))
 
 
 class FloatFactTest(BaseFactTest):
@@ -614,12 +614,12 @@ class DimensionTest(Base):
             self.assertTrue('external_id' in result)
             self.assertTrue('payload' in result)
             self.assertTrue(isinstance(result['payload'], dict))
-            self.assertEquals(1, len(result['payload']))
+            self.assertEqual(1, len(result['payload']))
             self.assertTrue(isinstance(result['payload']['dimmy_boy'], str))
             if self.by_external_id:
-                self.assertEquals(self.data_point_for_dim.id, result['payload']['dimmy_boy'])
+                self.assertEqual(self.data_point_for_dim.id, result['payload']['dimmy_boy'])
             else:
-                self.assertEquals(correct_value, result['payload']['dimmy_boy'])
+                self.assertEqual(correct_value, result['payload']['dimmy_boy'])
 
     def test_optional_null(self) -> None:
         validation_request = self.empty_request()
@@ -636,8 +636,8 @@ class DimensionTest(Base):
         self.assertTrue('external_id' in result)
         self.assertTrue('payload' in result)
         self.assertTrue(isinstance(result['payload'], dict))
-        self.assertEquals(1, len(result['payload']))
-        self.assertEquals(None, result['payload']['dimmy_boy'])
+        self.assertEqual(1, len(result['payload']))
+        self.assertEqual(None, result['payload']['dimmy_boy'])
 
     def test_optional_not_present(self) -> None:
         validation_request = self.empty_request()
@@ -653,7 +653,7 @@ class DimensionTest(Base):
         self.assertTrue('external_id' in result)
         self.assertTrue('payload' in result)
         self.assertTrue(isinstance(result['payload'], dict))
-        self.assertEquals(0, len(result['payload']))
+        self.assertEqual(0, len(result['payload']))
 
 
 class DimensionByExternalIdTest(DimensionTest):

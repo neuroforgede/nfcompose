@@ -55,7 +55,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
             "HTTP_X_Original_Method": method
         }  # type: ignore
     )
-    self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+    self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     response = unauthenticated_client.get(
         path=self.actual_url_under_test,
@@ -66,7 +66,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
             "HTTP_X_Original_Method": method
         }  # type: ignore
     )
-    self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+    self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     assign_perm('flow.impl', user)
 
@@ -96,7 +96,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
                 "HTTP_X_Original_Method": _method
             }  # type: ignore
         )
-        self.assertEquals(all_set_status, _response.status_code)
+        self.assertEqual(all_set_status, _response.status_code)
 
         assign_perm('flow.use', user, endpoint)
 
@@ -109,7 +109,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
                 "HTTP_X_Original_Method": _method
             }  # type: ignore
         )
-        self.assertEquals(all_set_status, _response.status_code)
+        self.assertEqual(all_set_status, _response.status_code)
 
         if all_set_status == status.HTTP_200_OK:
             self.assertEqual(_response['flowuser'], '')
@@ -137,7 +137,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
                 "HTTP_X_Original_Method": _method
             }  # type: ignore
         )
-        self.assertEquals(all_set_status, _response.status_code)
+        self.assertEqual(all_set_status, _response.status_code)
 
         if all_set_status == status.HTTP_200_OK:
             self.assertEqual(_response['flowuser'], '')
@@ -196,7 +196,7 @@ def test_normal_user_permissions(self: 'HttpEndpointPermissionTest', method: str
             "HTTP_X_Original_Method": method
         }  # type: ignore
     )
-    self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+    self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
 
 class HttpEndpointPermissionTest(BaseViewTest):
@@ -214,7 +214,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
             **{
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_OPTIONS_forbidden_without_headers_logged_out(self) -> None:
         self.client.logout()
@@ -225,7 +225,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
             **{
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_OPTIONS_sets_upstream_properly(self) -> None:
         self.client.logout()
@@ -238,7 +238,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Method": 'OPTIONS'
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(response['flowupstream'], getattr(settings, 'SKIPPER_CONTAINER_UPSTREAM', 'http://skipper'))
         self.assertEqual(response['flowpath'], '/api/flow/options/')
 
@@ -253,7 +253,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Method": 'OPTIONS'
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(response['flowupstream'], getattr(settings, 'SKIPPER_CONTAINER_UPSTREAM', 'http://skipper'))
         self.assertEqual(response['flowhostname'], urlparse(response['flowupstream']).hostname)
         self.assertEqual(response['flowpath'], '/api/flow/options/')
@@ -271,7 +271,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                     "HTTP_ACCESS_CONTROL_REQUEST_METHOD": method
                 }  # type: ignore
             )
-            self.assertEquals(status.HTTP_200_OK, response.status_code)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
             self.assertEqual(response['flowupstream'],
                              getattr(settings, 'SKIPPER_CONTAINER_UPSTREAM', 'http://skipper'))
             self.assertEqual(response['flowhostname'], urlparse(response['flowupstream']).hostname)
@@ -290,7 +290,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                     "HTTP_ACCESS_CONTROL_REQUEST_METHOD": method
                 }  # type: ignore
             )
-            self.assertEquals(status.HTTP_200_OK, response.status_code)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
             self.assertEqual(response['flowupstream'],
                              getattr(settings, 'SKIPPER_CONTAINER_UPSTREAM', 'http://skipper'))
             self.assertEqual(response['flowhostname'], urlparse(response['flowupstream']).hostname)
@@ -302,7 +302,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
             data=None,
             follow=False
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_method_header_missing(self) -> None:
         response = self.client.get(
@@ -313,7 +313,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Uri": 'some/stuff/here',
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_uri_header_missing(self) -> None:
         response = self.client.get(
@@ -324,7 +324,7 @@ class HttpEndpointPermissionTest(BaseViewTest):
                 "HTTP_X_Original_Method": 'GET'
             }  # type: ignore
         )
-        self.assertEquals(status.HTTP_403_FORBIDDEN, response.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_public_endpoint_with_engine_returns_proper_headers_system(self) -> None:
         self.client.logout()
