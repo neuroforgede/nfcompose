@@ -56,7 +56,17 @@ def monkey_patch_multitenant() -> None:
 
     TenantModelMixin.tenant_object = tenant_object
 
+    def _do_update(self: Any, *args: Any, **kwargs: Any) -> Any:
+        """
+        This method is patched to be compatible with Django 6.0+
+        which passes one additional argument (forced_update) to _do_update
+        """
+        # Call the parent class _do_update with all arguments
+        return super(TenantModelMixin, self)._do_update(*args, **kwargs)
 
+    TenantModelMixin._do_update = _do_update
+
+    
 monkey_patch_multitenant()
 
 

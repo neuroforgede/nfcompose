@@ -22,38 +22,38 @@ class DataSeriesByExternalIdBasicTest(BaseViewTest):
     def check_urls_by_external_id(self, data_series: Dict[str, Any]) -> None:
         # by-external-id functionality should work, but not be the default, so we should still always give out
         # the canonical url, as this will always work
-        self.assertRegexpMatches(data_series['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/')
-        self.assertRegexpMatches(data_series['dimensions'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/dimension/')
-        self.assertRegexpMatches(data_series['json_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/jsonfact/')
-        self.assertRegexpMatches(data_series['timestamp_facts'],
+        self.assertRegex(data_series['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/')
+        self.assertRegex(data_series['dimensions'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/dimension/')
+        self.assertRegex(data_series['json_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/jsonfact/')
+        self.assertRegex(data_series['timestamp_facts'],
                                  DATA_SERIES_BASE_URL + r'dataseries/(.*)/timestampfact/')
-        self.assertRegexpMatches(data_series['file_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/filefact/')
-        self.assertRegexpMatches(data_series['image_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/imagefact/')
-        self.assertRegexpMatches(data_series['float_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/floatfact/')
-        self.assertRegexpMatches(data_series['boolean_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/booleanfact/')
-        self.assertRegexpMatches(data_series['text_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/textfact/')
-        self.assertRegexpMatches(data_series['string_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/stringfact/')
+        self.assertRegex(data_series['file_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/filefact/')
+        self.assertRegex(data_series['image_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/imagefact/')
+        self.assertRegex(data_series['float_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/floatfact/')
+        self.assertRegex(data_series['boolean_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/booleanfact/')
+        self.assertRegex(data_series['text_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/textfact/')
+        self.assertRegex(data_series['string_facts'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/stringfact/')
 
-        self.assertRegexpMatches(data_series['data_points'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/datapoint/')
+        self.assertRegex(data_series['data_points'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/datapoint/')
 
-        self.assertRegexpMatches(data_series['data_points_bulk'],
+        self.assertRegex(data_series['data_points_bulk'],
                                  DATA_SERIES_BASE_URL + r'dataseries/(.*)/bulk/datapoint/')
-        self.assertRegexpMatches(data_series['data_point_validate_external_ids'],
+        self.assertRegex(data_series['data_point_validate_external_ids'],
                                  DATA_SERIES_BASE_URL + r'dataseries/(.*)/bulk/check-external-ids/')
 
-        self.assertRegexpMatches(data_series['cube_sql'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/cubesql/')
-        self.assertRegexpMatches(data_series['create_view'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/createview/')
+        self.assertRegex(data_series['cube_sql'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/cubesql/')
+        self.assertRegex(data_series['create_view'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/createview/')
 
     def check_urls_by_external_id_dp(self, data_point: Dict[str, Any]) -> None:
-        self.assertRegexpMatches(data_point['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/datapoint/(.*)/')
+        self.assertRegex(data_point['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/datapoint/(.*)/')
 
     def check_urls_by_external_id_fact(self, fact: Dict[str, Any], fact_type: str) -> None:
-        self.assertRegexpMatches(fact['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/' + fact_type + 'fact/(.*)/')
+        self.assertRegex(fact['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/' + fact_type + 'fact/(.*)/')
 
     def check_urls_by_external_id_dimension(self, fact: Dict[str, Any]) -> None:
-        self.assertRegexpMatches(fact['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/dimension/(.*)/')
+        self.assertRegex(fact['url'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/dimension/(.*)/')
 
-        self.assertRegexpMatches(fact['reference'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/')
+        self.assertRegex(fact['reference'], DATA_SERIES_BASE_URL + r'dataseries/(.*)/')
 
     def test_create_broken_url_data_series(self) -> None:
         # for dataseries it should be impossible to create weird situations where
