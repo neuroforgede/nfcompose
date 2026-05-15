@@ -40,6 +40,33 @@ You can now access the playground in your browser using the credentials `admin`/
 
 ![grafik](https://github.com/neuroforgede/nfcompose/assets/719760/d4af576b-bf94-446c-8432-bb35f20aac02)
 
+## Codex In The Dev Container
+
+The `neuroforge_skipper_base_dev` container can now run the Codex CLI directly.
+It installs `@openai/codex`, mounts your host `~/.codex` directory into the
+container for persistent auth/config, and exposes the full repository at
+`/workspace/nfcompose`.
+
+Rebuild the dev environment after pulling these changes:
+
+```bash
+bash setup_devenv.sh
+```
+
+Then launch Codex inside the running dev container:
+
+```bash
+bash run_codex_in_devenv.sh --yolo
+```
+
+If you prefer to start an interactive shell first:
+
+```bash
+COMPOSE_PROJECT_NAME=$(whoami)_skipper docker compose exec neuroforge_skipper_base_dev bash
+cd /workspace/nfcompose
+codex --yolo
+```
+
 # Use cases
 
 ## As a data hub (export)

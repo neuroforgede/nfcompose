@@ -54,7 +54,10 @@ services:
         - CONTAINER_USER_ID=${CONTAINER_USER_ID}
         - CONTAINER_GROUP_ID=${CONTAINER_GROUP_ID}
     volumes:
+      - .:/workspace/nfcompose
       - ./skipper:/neuroforge/skipper
+      - ${HOME}/.codex:/home/neuroforge/.codex
+    working_dir: /workspace/nfcompose
     ports:
       - "127.0.0.1:${PYTHON_DEV_OUTSIDE_PORT:-10000}:8000"
       - "127.0.0.1:${PYTHON_DEV_FLOWER_OUTSIDE_PORT:-5555}:5555"
@@ -73,7 +76,7 @@ services:
   # this simulates an outside docker container, when deploying, this is some kind of ingress into the system
   # this could be any kind of proxying software, since the heavy lifting is handled by skipper_proxy
   cephalopodnginxdev:
-    image: "nginx:1.23.3"
+    image: "nginx:1.31.0"
     ports:
       - "127.0.0.1:${NGINX_DEV_OUTSIDE_PORT:-6043}:443"
     restart: unless-stopped

@@ -5,9 +5,8 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-# we use a custom dockerfile so we can get python 3.8 improvements by disabling
-# semantic interposition, see https://github.com/docker-library/python/issues/501
-FROM python:3.8
+# keep the integration dev image on the supported Python runtime used elsewhere in the repo
+FROM python:3.11.15
 
 ARG CONTAINER_USER_ID
 ARG CONTAINER_GROUP_ID
@@ -41,4 +40,3 @@ USER neuroforge
 WORKDIR /integration
 
 CMD tail -f /dev/null
-

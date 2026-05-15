@@ -219,13 +219,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
-    'health_check',  # required
-    'health_check.db',  # stock Django health checkers
-    'health_check.cache',
-    'health_check.storage',
-    'health_check.contrib.celery',  # requires celery
-    'health_check.contrib.s3boto3_storage',  # requires boto and S3BotoStorage backend
-    'health_check.contrib.redis',  # required Redis broker
+    'health_check',
     'django_celery_results',
 ] + SKIPPER_MODULES + SKIPPER_SUB_MODULES + [
     'skipper.main',

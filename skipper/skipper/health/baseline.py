@@ -4,39 +4,39 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
+import asyncio
+
+from django.conf import settings
 from django.utils import timezone
-from health_check.cache.backends import CacheBackend  # type: ignore
-from health_check.contrib.redis.backends import RedisHealthCheck  # type: ignore
-from health_check.contrib.s3boto3_storage.backends import S3Boto3StorageHealthCheck  # type: ignore
-from health_check.db.backends import DatabaseBackend  # type: ignore
-from health_check.storage.backends import DefaultFileStorageHealthCheck  # type: ignore
+from health_check.checks import Cache, Database, Storage  # type: ignore
+from health_check.contrib.redis import Redis as RedisHealthCheck  # type: ignore
+from redis.asyncio import Redis as RedisClient  # type: ignore
 
 from skipper.health.contract import ServiceWarning
 
 
 def database_check() -> None:
-    backend = DatabaseBackend()
-    backend.check_status()
+    Database().run()
 
 
 def cache_check() -> None:
-    backend = CacheBackend()
-    backend.check_status()
+    asyncio.run(Cache().run())
 
 
 def default_file_storage_check() -> None:
-    backend = DefaultFileStorageHealthCheck()
-    backend.check_status()
+    Storage(alias='default').run()
 
 
 def s3boto3_check() -> None:
-    backend = S3Boto3StorageHealthCheck()
-    backend.check_status()
+    Storage(alias='default').run()
 
 
 def redis_check() -> None:
-    backend = RedisHealthCheck()
-    backend.check_status()
+    asyncio.run(
+        RedisHealthCheck(
+            client_factory=lambda: RedisClient.from_url(settings.REDIS_URL)
+        ).run()
+    )
 
 
 def celery_check() -> None:

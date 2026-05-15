@@ -31,14 +31,14 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Operating System :: OS Independent",
     ],
     test_suite='setup.cli_test_suite',
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     install_requires=[
         "requests>=2.10",
         "dataclasses-json>=0.5.2",

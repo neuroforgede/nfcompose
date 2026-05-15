@@ -4,7 +4,7 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
-FROM node:20
+FROM node:20.20.2
 
 ARG CONTAINER_USER_ID
 ARG CONTAINER_GROUP_ID
@@ -28,4 +28,3 @@ USER "${CONTAINER_USER_ID}"
 WORKDIR /client
 
 CMD tail -f /dev/null
-

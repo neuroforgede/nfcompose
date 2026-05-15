@@ -5,7 +5,7 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-FROM python:3.11
+FROM python:3.11.15
 
 RUN apt-get update && apt-get install -y sudo vim python3-virtualenv python3-setuptools
 RUN sudo apt-get upgrade -y
@@ -24,4 +24,3 @@ RUN echo '%skipper ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN echo '%neuroforge ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER skipper
-

@@ -5,6 +5,6 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-FROM nginx:1.23.3
+FROM nginx:1.31.0
 
 RUN adduser -D -u 9999 skipper

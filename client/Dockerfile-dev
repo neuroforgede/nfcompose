@@ -4,7 +4,7 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
-FROM python:3.11
+FROM python:3.11.15
 
 ARG CONTAINER_USER_ID
 ARG CONTAINER_GROUP_ID
@@ -38,4 +38,3 @@ USER neuroforge
 WORKDIR /client
 
 CMD tail -f /dev/null
-
