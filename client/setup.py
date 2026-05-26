@@ -40,22 +40,24 @@ setuptools.setup(
     test_suite='setup.cli_test_suite',
     python_requires='>=3.9',
     install_requires=[
-        "requests>=2.10",
-        "dataclasses-json>=0.5.2",
-        "click>=7.1, < 9.0",
+        "requests>=2.32.5,<2.33",
+        "dataclasses-json>=0.6.7,<0.7",
+        "click>=8.1.8,<8.2",
     ],
     extras_require={
         'dev': [
             # THESE MUST stay in dev, as this has a gpl license
-            'pytest',
+            'pytest>=8.3.5,<9',
             # no pytest-pep8 as it fetches pytest-cache which is gpl licensed
-            'pytest-cov',
+            'pytest-cov>=7.0.0,<8',
             'faker==8.1.2',
             'pyfakefs==4.3.3',
-            'wheel',
-            'liccheck>=0.7.2',
-            "mypy>=0.800",
-            "types-requests==2.28.11.13"
+            'wheel>=0.45.1,<1',
+            # liccheck currently imports pkg_resources, which setuptools 82 removed.
+            'setuptools<82',
+            'liccheck==0.9.2',
+            "mypy>=1.19.1,<1.20",
+            "types-requests==2.32.4.20250913"
         ]
     }
 )
