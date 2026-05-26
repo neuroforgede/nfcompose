@@ -18,7 +18,7 @@ from django_multitenant.utils import get_tenant_column, get_current_tenant  # ty
 from guardian.admin import GuardedModelAdmin  # type: ignore
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.models import TokenProxy  # type: ignore
-from typing import Any, Optional, List, Iterable, Dict, Sequence, cast, Tuple
+from typing import Any, Optional, List, Iterable, Dict, Sequence, cast, Tuple, Type
 
 from django_celery_results.admin import TaskResultAdmin, GroupResultAdmin  # type: ignore
 from django_celery_results.models import TaskResult, GroupResult  # type: ignore
@@ -123,12 +123,18 @@ class _UserFilter(SimpleListFilter):
 class TenantAwareAdmin(GuardedModelAdmin):  # type: ignore
     form = TenantAwareAdminForm
 
-    def get_form(self, request: HttpRequest, obj: Optional[Model] = None, **kwargs: Any) -> Any:
-        form = super().get_form(request, obj=obj, **kwargs)
-        form.request = request
+    def get_form(
+            self,
+            request: HttpRequest,
+            obj: Optional[Model] = None,
+            change: bool = False,
+            **kwargs: Any
+    ) -> Type[Any]:
+        form = super().get_form(request, obj=obj, change=change, **kwargs)
+        cast(Any, form).request = request
         return form
 
-    def get_list_filter(self, request: HttpRequest) -> Iterable[Any]:
+    def get_list_filter(self, request: HttpRequest) -> Sequence[Any]:
         filters = super().get_list_filter(request)
         new_filters: List[Any] = []
         for _filter in filters:
@@ -151,7 +157,7 @@ class TenantAwareAdmin(GuardedModelAdmin):  # type: ignore
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request: HttpRequest) -> 'QuerySet[Any]':
-        qs: QuerySet[Any] = super().get_queryset(request)
+        qs: QuerySet[Any] = super().get_queryset(request)  # type: ignore[no-untyped-call]
 
         tenant = get_current_tenant()
         if tenant is not None:
@@ -173,11 +179,11 @@ class TenantAwareSoftDeleteAdmin(TenantAwareAdmin):  # type: ignore
 
 class AllowedLoginRedirectHostAdmin(TenantAwareSoftDeleteAdmin):
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('id', 'tenant', 'host', 'deleted_at')
-    list_filter: Sequence[str] = ('id', 'tenant', 'host', 'deleted_at')
-    search_fields: Sequence[str] = ('tenant__name', 'host')
+    list_display: Any = ('id', 'tenant', 'host', 'deleted_at')
+    list_filter: Any = ('id', 'tenant', 'host', 'deleted_at')
+    search_fields: Any = ('tenant__name', 'host')
     ordering: List[str] = []
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
 
 
 admin.site.register(AllowedLoginRedirectHost, AllowedLoginRedirectHostAdmin)
@@ -195,11 +201,11 @@ class PreSharedTokenAdmin(GuardedModelAdmin):  # type: ignore
     so they can just take the password and impersonate that user.
     """
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('user', 'key', 'deleted_at')
-    list_filter = (_UserFilter, 'key', 'deleted_at')
-    search_fields: Sequence[str] = ('user__username', )
+    list_display: Any = ('user', 'key', 'deleted_at')
+    list_filter: Any = (_UserFilter, 'key', 'deleted_at')
+    search_fields: Any = ('user__username', )
     ordering: List[str] = ['user__username']
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
     actions = ['hard_delete']
 
     def hard_delete(self, request: HttpRequest, queryset: SoftDeletionQuerySet[Any]) -> None:
@@ -222,7 +228,7 @@ class PreSharedTokenAdmin(GuardedModelAdmin):  # type: ignore
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request: HttpRequest) -> 'QuerySet[Any]':
-        qs = super().get_queryset(request)
+        qs = super().get_queryset(request)  # type: ignore[no-untyped-call]
 
         tenant = get_current_tenant()
         is_superuser = request is not None and request.user.is_superuser
@@ -267,11 +273,11 @@ class TenantJobAdminForm(TenantAwareAdminForm):
 class TenantJobAdmin(TenantAwareAdmin):
     form = TenantJobAdminForm
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('id', 'queue', 'globally_unique_identifier', 'task', 'priority', 'created_at', 'execute_at')
-    list_filter: Sequence[str] = ('tenant', 'queue', )
-    search_fields: Sequence[str] = ('globally_unique_identifier', 'task')
+    list_display: Any = ('id', 'queue', 'globally_unique_identifier', 'task', 'priority', 'created_at', 'execute_at')
+    list_filter: Any = ('tenant', 'queue', )
+    search_fields: Any = ('globally_unique_identifier', 'task')
     ordering: List[str] = []
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
 
     def has_change_permission(self, request: HttpRequest, obj: Optional[Model] = None) -> bool:
         return request.user.is_superuser
@@ -292,7 +298,7 @@ class TenantAwareUserAdmin(UserAdmin):
     actions = ['hard_delete']
 
     def get_queryset(self, request: HttpRequest) -> 'QuerySet[Any]':
-        qs = super().get_queryset(request)
+        qs = super().get_queryset(request)  # type: ignore[no-untyped-call]
 
         tenant = get_current_tenant()
         is_superuser = request is not None and request.user.is_superuser
@@ -333,7 +339,7 @@ class TenantAwareGroupAdmin(GroupAdmin):
     actions = ['hard_delete']
 
     def get_queryset(self, request: HttpRequest) -> 'QuerySet[Any]':
-        qs = super().get_queryset(request)
+        qs = super().get_queryset(request)  # type: ignore[no-untyped-call]
 
         tenant = get_current_tenant()
         is_superuser = request is not None and request.user.is_superuser

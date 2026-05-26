@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-setuptools = "==82.0.1"
+setuptools = "==81.0.0"
 djangorestframework = "==3.17.1"
 djangorestframework-simplejwt = { version = "==5.5.1" }
 # at least required for simplejwt crypto

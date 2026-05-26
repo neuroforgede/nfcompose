@@ -18,4 +18,4 @@ def escape(string: str, connection_name: str = 'default') -> str:
     if not validate_sql_string(string):
         raise APIException('SQL may only contain a-zA-Z0-9_%\'()-" .')
     with connections[connection_name].cursor() as cursor:
-        return sql.Identifier(string).as_string(cursor.cursor)
+        return cast(str, sql.Identifier(string).as_string(cursor.cursor))

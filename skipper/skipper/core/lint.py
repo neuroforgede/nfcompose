@@ -26,7 +26,7 @@ class UnexpectedNameLintingException(BadTokenLintingException):
 
 def find_all_groups(token: Token) -> Generator[TokenList, None, None]:
     if isinstance(token, TokenList):
-        for child in token.get_sublists():
+        for child in token.get_sublists():  # type: ignore[no-untyped-call]
             for elem in find_all_groups(child):
                 yield elem
         yield token
