@@ -32,7 +32,7 @@ class CLIDumpTest(unittest.TestCase):
             }
         })
 
-        runner = CliRunner(mix_stderr=True)
+        runner = CliRunner()
         result = runner.invoke(cli, [
             'dump',
             'dataseries',
