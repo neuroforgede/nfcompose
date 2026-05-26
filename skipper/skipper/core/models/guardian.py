@@ -87,7 +87,7 @@ def get_objects_for_user_custom(
 
     # Now we should extract list of pk values for which we would filter
     # queryset
-    user_model = get_user_obj_perms_model(queryset.model)
+    user_model = cast(Any, get_user_obj_perms_model(cast(Any, queryset.model)))
     user_obj_perms_queryset = (user_model.objects
                                .filter(user=user))
     if len(codenames):
@@ -95,13 +95,13 @@ def get_objects_for_user_custom(
             permission__codename__in=codenames)
     direct_fields = ['content_object__pk', 'permission__codename']
     generic_fields = ['object_pk', 'permission__codename']
-    if user_model.objects.is_generic():
+    if cast(Any, user_model.objects).is_generic():
         user_fields = generic_fields
     else:
         user_fields = direct_fields
 
     if use_groups:
-        group_model = get_group_obj_perms_model(queryset.model)
+        group_model = cast(Any, get_group_obj_perms_model(cast(Any, queryset.model)))
         group_filters = {
             'group__%s' % cast(Any, get_user_model()).groups.field.related_query_name(): user,
         }
@@ -110,7 +110,7 @@ def get_objects_for_user_custom(
                 'permission__codename__in': codenames,
             })
         groups_obj_perms_queryset = group_model.objects.filter(**group_filters)
-        if group_model.objects.is_generic():
+        if cast(Any, group_model.objects).is_generic():
             group_fields = generic_fields
         else:
             group_fields = direct_fields
@@ -130,18 +130,18 @@ def get_objects_for_user_custom(
             return objects
 
     if not any_perm and len(codenames) > 1:
-        counts = user_obj_perms_queryset.values(
+        counts: Any = user_obj_perms_queryset.values(
             user_fields[0]).annotate(object_pk_count=Count(user_fields[0]))
         user_obj_perms_queryset = counts.filter(
             object_pk_count__gte=len(codenames))
 
-    values = user_obj_perms_queryset.values_list(user_fields[0], flat=True)
-    if user_model.objects.is_generic():
+    values: Any = user_obj_perms_queryset.values_list(user_fields[0], flat=True)
+    if cast(Any, user_model.objects).is_generic():
         values = set(values)
     q = Q(pk__in=values)
     if use_groups:
         values = groups_obj_perms_queryset.values_list(group_fields[0], flat=True)
-        if group_model.objects.is_generic():
+        if cast(Any, group_model.objects).is_generic():
             values = set(values)
         q |= Q(pk__in=values)
 

@@ -127,11 +127,11 @@ class AllowedLoginRedirectHost(SoftDeletionTenantModel):
 
 class TenantAdmin(GuardedModelAdmin):  # type: ignore
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('id', 'name', 'deleted_at')
-    list_filter: Sequence[str] = ('name', 'deleted_at')
-    search_fields: Sequence[str] = ('id', 'name')
+    list_display: Any = ['id', 'name', 'deleted_at']
+    list_filter: Any = ['name', 'deleted_at']
+    search_fields: Any = ['id', 'name']
     ordering: List[str] = []
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
     actions = ['hard_delete']
 
     def hard_delete(self, request: HttpRequest, queryset: SoftDeletionQuerySet[Any]) -> None:
@@ -158,11 +158,11 @@ admin.site.register(Tenant, TenantAdmin)
 
 class Tenant_UserAdmin(GuardedModelAdmin):  # type: ignore
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('id', 'tenant', 'user', 'system', 'tenant_manager', 'deleted_at')
-    list_filter: Sequence[str] = ('tenant', 'system', 'deleted_at', 'tenant_manager')
-    search_fields: Sequence[str] = ('user__username', 'tenant__name')
+    list_display: Any = ['id', 'tenant', 'user', 'system', 'tenant_manager', 'deleted_at']
+    list_filter: Any = ['tenant', 'system', 'deleted_at', 'tenant_manager']
+    search_fields: Any = ['user__username', 'tenant__name']
     ordering: List[str] = []
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
     actions = ['hard_delete']
 
     def hard_delete(self, request: HttpRequest, queryset: SoftDeletionQuerySet[Any]) -> None:
@@ -191,11 +191,11 @@ admin.site.register(Tenant_User, Tenant_UserAdmin)
 
 class Tenant_GroupAdmin(GuardedModelAdmin):  # type: ignore
     prepopulated_fields: Dict[str, Any] = {}
-    list_display: Sequence[str] = ('id', 'tenant', 'group', 'system', 'deleted_at')
-    list_filter = ('id', 'tenant', 'group', 'system', 'deleted_at')
-    search_fields: Sequence[str] = ('group__name', 'tenant__name')
+    list_display: Any = ['id', 'tenant', 'group', 'system', 'deleted_at']
+    list_filter: Any = ['id', 'tenant', 'group', 'system', 'deleted_at']
+    search_fields: Any = ['group__name', 'tenant__name']
     ordering: List[str] = []
-    date_hierarchy: Optional[List[str]] = None
+    date_hierarchy: Optional[str] = None
 
     def hard_delete(self, request: HttpRequest, queryset: SoftDeletionQuerySet[Any]) -> None:
         queryset.hard_delete()
