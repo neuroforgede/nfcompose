@@ -143,7 +143,7 @@ class CLIDiffTest(unittest.TestCase):
             }
         })
 
-        runner = CliRunner(mix_stderr=True)
+        runner = CliRunner()
         result = runner.invoke(cli, [
             'diff',
             'dataseries',
@@ -169,5 +169,4 @@ class CLIDiffTest(unittest.TestCase):
 
         self.assertIn('my_ds', _diffs)
         self.assertIn('my_ds_2', _diffs)
-
 
