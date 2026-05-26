@@ -9,8 +9,8 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "axios": "^1.4.0",
-    "form-data": "^4.0.0",
-    "jest": "^29.6.2"
+    "axios": "^1.16.1",
+    "form-data": "^4.0.5",
+    "jest": "^29.7.0"
   }
 }
