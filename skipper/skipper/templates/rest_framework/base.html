@@ -138,7 +138,7 @@
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
-                {% for action_name, url in extra_actions|items %}
+                {% for action_name, url in extra_actions.items %}
                 <li><a href="{{ url }}">{{ action_name }}</a></li>
                 {% endfor %}
               </ul>
@@ -203,8 +203,8 @@
               </div>
 
               <div class="response-info" aria-label="{% trans "response info" %}">
-                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% for key, val in response_headers|items %}
-<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize }}</span>{% endfor %}
+                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% for key, val in response_headers.items %}
+<b>{{ key }}:</b> <span class="lit">{{ val|urlize }}</span>{% endfor %}
 
 </span>{{ content|urlize }}</pre>
               </div>
