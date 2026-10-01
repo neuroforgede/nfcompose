@@ -4,7 +4,7 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
-FROM nginx:1.31.0
+FROM nginx:1.31.6
 RUN apt-get update && apt-get upgrade -y
 
 # update the image

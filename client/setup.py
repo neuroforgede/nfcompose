@@ -47,17 +47,17 @@ setuptools.setup(
     extras_require={
         'dev': [
             # THESE MUST stay in dev, as this has a gpl license
-            'pytest>=8.3.5,<9',
+            'pytest>=8.4.2,<9',
             # no pytest-pep8 as it fetches pytest-cache which is gpl licensed
-            'pytest-cov>=7.0.0,<8',
+            'pytest-cov>=7.1.0,<8',
             'faker==8.1.2',
-            'pyfakefs==4.3.3',
+            'pyfakefs==4.7.0',
             'wheel>=0.45.1,<1',
             # liccheck currently imports pkg_resources, which setuptools 82 removed.
             'setuptools<82',
             'liccheck==0.9.2',
             "mypy>=1.19.1,<1.20",
-            "types-requests==2.32.4.20250913"
+            "types-requests==2.32.4.20260107"
         ]
     }
 )

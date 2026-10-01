@@ -76,7 +76,7 @@ services:
   # this simulates an outside docker container, when deploying, this is some kind of ingress into the system
   # this could be any kind of proxying software, since the heavy lifting is handled by skipper_proxy
   cephalopodnginxdev:
-    image: "nginx:1.31.0"
+    image: "nginx:1.31.6"
     ports:
       - "127.0.0.1:${NGINX_DEV_OUTSIDE_PORT:-6043}:443"
     restart: unless-stopped
