@@ -1,0 +1,26 @@
+{
+    "identities": [
+        {
+            "name": "anonymous",
+            "actions": [
+                "Read:skipper-static"
+            ]
+        },
+        {
+            "name": "skipper",
+            "credentials": [
+                {
+                    "accessKey": "secret",
+                    "secretKey": "verysecret"
+                }
+            ],
+            "actions": [
+                "Admin",
+                "Read",
+                "List",
+                "Tagging",
+                "Write"
+            ]
+        }
+    ]
+}

@@ -4,12 +4,6 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 # All rights reserved
-version: '3.5'
-
-x-minio-credentials: &minio-credentials
-  MINIO_ROOT_USER: skipper-test
-  MINIO_ROOT_PASSWORD: WMH37f3R8RZyN2CMycWGV3EwuMpxGKhG8NBKaswD6hfFPUrmhg9b6PjfyD8RW4AV3JuRLDTa8JRvTWRYASs5xbwB9qHyTW7BZ6V59FPTytb7jvZ4VsnmbrY4WRSVCS9C
-
 services:
   awscli:
     entrypoint: "tail -f /dev/null"
@@ -163,9 +157,9 @@ services:
     #  - /etc/ssl/certs/ca-certificates.crt:/neuroforge/skipper/trusted_ca.crt
 
   s3:
-    image: minio/minio:RELEASE.2024-04-28T17-53-50Z
+    image: chrislusf/seaweedfs:4.48
     restart: unless-stopped
-    command: server /data --console-address ":8001" --address ":6044"
+    command: server -ip=s3 -ip.bind=0.0.0.0 -dir=/data -s3 -s3.port=6044 -s3.config=/etc/seaweedfs/s3.json
     networks:
       nfcompose:
         aliases:
@@ -174,22 +168,8 @@ services:
         aliases:
           - nfcomposes3.${INTERNAL_DOMAIN_SUFFIX:-test.local}
     volumes:
-      - s3_volume:/data
-    environment:
-      *minio-credentials
-
-  minio_client:
-    image: minio/mc:RELEASE.2024-04-29T09-56-05Z
-    command: /minio_client_scripts/setup_skipper-test_user.sh
-    entrypoint: /bin/sh
-    networks:
-      nfcompose:
-    volumes:
-      - ./minio_client_scripts:/minio_client_scripts
-    depends_on:
-      - s3
-    environment:
-      *minio-credentials
+      - seaweedfs_data:/data
+      - ./s3.json:/etc/seaweedfs/s3.json:ro
 
 networks:
   nfcompose:
@@ -200,6 +180,6 @@ networks:
     driver: bridge
 
 volumes:
-  s3_volume:
+  seaweedfs_data:
   postgres:
   redis:
