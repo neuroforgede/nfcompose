@@ -87,7 +87,3 @@ check_result "failed to create skipper-media s3 bucket"
 echo "collecting static files for nfcompose..."
 docker compose exec -T nfcomposeskipper bash -c 'cd /neuroforge/skipper && exec python manage.py collectstatic --noinput'
 check_result "failed to collect static files"
-
-echo "setting up anonymous policies for skipper-static bucket"
-docker compose run --entrypoint /bin/sh --rm minio_client /minio_client_scripts/setup_anonymous_user.sh
-check_result "failed to set policies for skipper-static bucket"
