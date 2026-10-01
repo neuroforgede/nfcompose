@@ -6,7 +6,7 @@
 
 
 # keep the integration dev image on the supported Python runtime used elsewhere in the repo
-FROM python:3.11.15
+FROM python:3.11.16
 
 ARG CONTAINER_USER_ID
 ARG CONTAINER_GROUP_ID
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 	python3-virtualenv \
 	python3-setuptools
 
-RUN pip install --upgrade pip==21.2.4
+RUN pip install --upgrade pip==26.1.2
 
 RUN apt-get update && apt-get install -y \
     openssh-server
