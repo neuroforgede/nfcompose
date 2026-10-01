@@ -67,6 +67,30 @@ cd /workspace/nfcompose
 codex --yolo
 ```
 
+## S3 signature configuration
+
+Set `SKIPPER_S3_SIGNATURE_VERSION=s3v4` in the environment of the Skipper services
+to use AWS Signature Version 4. Media and static storage inherit this value;
+`SKIPPER_S3_MEDIA_SIGNATURE_VERSION` and `SKIPPER_S3_STATIC_SIGNATURE_VERSION`
+can override it independently. Unset or empty values use the SDK's default
+signing behavior. The value `s3` selects legacy Signature Version 2.
+
+For Hetzner in Nuremberg, a media storage configuration is:
+
+```dotenv
+SKIPPER_S3_MEDIA_SIGNATURE_VERSION=s3v4
+SKIPPER_S3_MEDIA_ENDPOINT_URL=https://nbg1.your-objectstorage.com
+SKIPPER_S3_MEDIA_REGION_NAME=nbg1
+SKIPPER_S3_MEDIA_ADDRESSING_STYLE=path
+SKIPPER_S3_MEDIA_BUCKET_NAME=media-xxx-prod
+SKIPPER_S3_MEDIA_EXTERNAL_ENDPOINT_URL=
+```
+
+Recreate the affected services after changing their environment. For signed
+SigV4 URLs, leave the external endpoint empty when the normal endpoint is
+publicly accessible: the current URL helper rewrites the hostname after signing,
+which invalidates SigV4 signatures if the hostname changes.
+
 # Use cases
 
 ## As a data hub (export)

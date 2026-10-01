@@ -19,5 +19,6 @@ class S3Boto3MediaStorage(PrivatePublicS3Boto3Storage):  # type: ignore
     endpoint_url = setting('SKIPPER_S3_MEDIA_ENDPOINT_URL')
     external_endpoint_url = setting('SKIPPER_S3_MEDIA_EXTERNAL_ENDPOINT_URL')
     region_name = setting('SKIPPER_S3_MEDIA_REGION_NAME')
+    signature_version = setting('SKIPPER_S3_MEDIA_SIGNATURE_VERSION')
     addressing_style = setting('SKIPPER_S3_MEDIA_ADDRESSING_STYLE')
     location = setting('SKIPPER_S3_MEDIA_BASE_PATH')

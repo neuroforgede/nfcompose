@@ -18,5 +18,6 @@ class S3Boto3StaticStorage(PrivatePublicS3Boto3Storage):  # type: ignore
     endpoint_url = setting('SKIPPER_S3_STATIC_ENDPOINT_URL')
     external_endpoint_url = setting('SKIPPER_S3_STATIC_EXTERNAL_ENDPOINT_URL')
     region_name = setting('SKIPPER_S3_STATIC_REGION_NAME')
+    signature_version = setting('SKIPPER_S3_STATIC_SIGNATURE_VERSION')
     addressing_style = setting('SKIPPER_S3_STATIC_ADDRESSING_STYLE')
     location = setting('SKIPPER_S3_STATIC_BASE_PATH')
