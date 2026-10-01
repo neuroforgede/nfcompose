@@ -4,15 +4,12 @@
 # This file is part of NF Compose
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 # All rights reserved
-version: '3.8'
-
 x-s3-settings: &x-s3-settings
+  # Keep these credentials in sync with s3.json.
   # these should all be the same
-  MINIO_ROOT_USER: secret
   AWS_ACCESS_KEY_ID: secret
   SKIPPER_S3_ACCESS_KEY_ID: "secret"
   # these should all be the same
-  MINIO_ROOT_PASSWORD: verysecret
   AWS_SECRET_ACCESS_KEY: verysecret
   SKIPPER_S3_SECRET_ACCESS_KEY: "verysecret"
 
@@ -36,7 +33,7 @@ x-skipper-env: &x-skipper-env
   SKIPPER_DB_SSL_ENABLE: "false"
   # SKIPPER_DB_SSL_MODE: "verify-ca"
 
-  SKIPPER_S3_EXTERNAL_ENDPOINT_URL: "http://minio.localhost:9000"
+  SKIPPER_S3_EXTERNAL_ENDPOINT_URL: "http://s3.localhost:9000"
   SKIPPER_S3_ENDPOINT_URL: "http://nfcomposes3.local:6044"
   SKIPPER_S3_MEDIA_BUCKET_NAME: "skipper-media"
   SKIPPER_S3_STATIC_BUCKET_NAME: "skipper-static"
@@ -363,25 +360,10 @@ services:
       nfcompose:
     restart: on-failure
 
-  # TODO: unify this with create_buckets
-  create_buckets_post:
-    image: minio/mc:RELEASE.2024-04-29T09-56-05Z
-    entrypoint: /bin/sh
-    command: 
-      - -c
-      - |
-        mc alias set nfcomposes3 http://nfcomposes3.local:6044 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD
-        exec mc anonymous set download nfcomposes3/skipper-static
-    networks:
-      nfcompose:
-    restart: on-failure
-    environment:
-      *x-s3-settings
-
   s3:
-    image: minio/minio:RELEASE.2024-04-28T17-53-50Z
+    image: chrislusf/seaweedfs:4.48
     restart: unless-stopped
-    command: server /data --console-address ":8001" --address ":6044"
+    command: server -ip=s3 -ip.bind=0.0.0.0 -dir=/data -s3 -s3.port=6044 -s3.config=/etc/seaweedfs/s3.json
     ports:
       - 9000:6044
     networks:
@@ -389,9 +371,8 @@ services:
         aliases:
           - nfcomposes3.local
     volumes:
-      - s3_volume:/data
-    environment:
-      *x-s3-settings
+      - seaweedfs_data:/data
+      - ./s3.json:/etc/seaweedfs/s3.json:ro
 
 networks:
   nfcompose_consumers:
@@ -405,7 +386,7 @@ networks:
     attachable: false
 
 volumes:
-  s3_volume:
+  seaweedfs_data:
   postgres:
   redis:
   nodered:
