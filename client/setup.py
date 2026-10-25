@@ -20,7 +20,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="compose_client",
     scripts=['bin/compose_cli'],
-    version="2.3.6",
+    version="2.3.7",
     author="NeuroForge GmbH & Co. KG",
     author_email="kontakt@neuroforge.de",
     description="NF Compose package",
@@ -40,24 +40,29 @@ setuptools.setup(
     test_suite='setup.cli_test_suite',
     python_requires='>=3.9',
     install_requires=[
-        "requests>=2.32.5,<2.33",
+        # Patched Requests/urllib3 releases no longer support Python 3.9.
+        'requests>=2.34.2,<3; python_version >= "3.10"',
+        'urllib3>=2.8.0,<3; python_version >= "3.10"',
+        'requests>=2.32.5,<2.33; python_version < "3.10"',
+        'certifi>=2026.10.23',
         "dataclasses-json>=0.6.7,<0.7",
         "click>=8.1.8,<8.2",
     ],
     extras_require={
         'dev': [
             # THESE MUST stay in dev, as this has a gpl license
-            'pytest>=8.4.2,<9',
+            'pytest>=9.1.1,<10; python_version >= "3.10"',
+            'pytest>=8.4.2,<9; python_version < "3.10"',
             # no pytest-pep8 as it fetches pytest-cache which is gpl licensed
             'pytest-cov>=7.1.0,<8',
             'faker==8.1.2',
             'pyfakefs==4.7.0',
             'wheel>=0.45.1,<1',
-            # liccheck currently imports pkg_resources, which setuptools 82 removed.
-            'setuptools<82',
-            'liccheck==0.9.2',
+            'packaging>=26.2,<27',
+            'setuptools>=84.2.1; python_version >= "3.10"',
             "mypy>=1.19.1,<1.20",
-            "types-requests==2.32.4.20260107"
+            'types-requests==2.33.0.20261006; python_version >= "3.10"',
+            'types-requests==2.32.4.20260107; python_version < "3.10"',
         ]
     }
 )

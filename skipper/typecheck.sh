@@ -19,14 +19,15 @@ export PYTHONPATH=${PYTHONPATH}:${PWD}
 _PIPENV_PREFIX='python3 -m pipenv run'
 _REQUIREMENTS_STR='python3 -m pipenv requirements'
 _MYPY_INCREMENTAL='--no-incremental'
-if [ "PRODUCTION_BUILD" == "yes" ]; then
+if [ "${PRODUCTION_BUILD:-}" == "yes" ]; then
     _PIPENV_PREFIX=''
-    _REQUIREMENTS_STR='pip3 freeze'
+    _REQUIREMENTS_STR='python3 -m pip freeze'
     _MYPY_INCREMENTAL='--no-incremental'
 fi
 
 # first step, check licenses
-$_PIPENV_PREFIX liccheck -s liccheck.ini -l PARANOID -r <($_REQUIREMENTS_STR)
+LICENSE_REQUIREMENTS=$($_REQUIREMENTS_STR) || exit 1
+$_PIPENV_PREFIX python check_licenses.py --policy liccheck.ini --requirements - <<< "$LICENSE_REQUIREMENTS"
 check_result "failed license check"
 
 MYPY_RUN=true $_PIPENV_PREFIX mypy skipper --no-strict-optional \

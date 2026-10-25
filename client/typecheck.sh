@@ -19,7 +19,8 @@ source venv/bin/activate || echo "not using a venv"
 export PYTHONPATH=${PYTHONPATH}:${PWD}
 
 # first step, check licenses
-liccheck -s liccheck.ini -l PARANOID -r <(pip freeze)
+LICENSE_REQUIREMENTS=$(python -m pip freeze) || exit 1
+python check_licenses.py --policy liccheck.ini --requirements - <<< "$LICENSE_REQUIREMENTS"
 check_result "failed to run license check"
 
 echo "checking types in compose_client"

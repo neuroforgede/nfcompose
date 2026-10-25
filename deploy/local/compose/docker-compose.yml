@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
 
   nfcomposeskipper:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.6}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.7}"
     networks:
       postgres:
       nfcompose:
@@ -60,7 +60,7 @@ services:
   
   # inside facing container used for separating internal requests so that outside requests are not harmed by etl jobs
   nfcomposeskipper_internal:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.6}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.7}"
     networks:
       postgres:
       nfcompose:
@@ -80,7 +80,7 @@ services:
         SKIPPER_TASK_DASHBOARD_UPSTREAM: "http://skipper.task.dashboard.${INTERNAL_DOMAIN_SUFFIX:-test.local}:5555"
 
   nfcompose_skipper_celery:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.6}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.7}"
     networks:
       - postgres
       - nfcompose
@@ -98,7 +98,7 @@ services:
     restart: unless-stopped
 
   nfcompose_skipper_celery_beat:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.6}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.7}"
     networks:
       - postgres
       - nfcompose
@@ -120,7 +120,7 @@ services:
     restart: unless-stopped
 
   nfcompose_skipper_task_dashboard:
-    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.6}"
+    image: "${SKIPPER_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper:2.3.7}"
     networks:
       postgres: {}
       nfcompose:
@@ -138,7 +138,7 @@ services:
     restart: unless-stopped
 
   nfcomposeskipperproxy:
-    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.3.6}"
+    image: "${SKIPPER_PROXY_DOCKER_IMAGE:-ghcr.io/neuroforgede/nfcompose-skipper-proxy:2.3.7}"
     restart: unless-stopped
     depends_on:
       - nfcomposeskipper
