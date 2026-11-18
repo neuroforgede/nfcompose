@@ -5,6 +5,6 @@
 # [2019] - [2024] © NeuroForge GmbH & Co. KG
 
 
-FROM nginx:1.31.7
+FROM nginx:1.31.9
 
-RUN adduser -D -u 9999 skipper
+RUN useradd --create-home --uid 9999 skipper
