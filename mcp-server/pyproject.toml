@@ -7,7 +7,7 @@ name = "nfcompose-mcp-server"
 version = "0.1.0"
 description = "Read-only REST MCP server for NF Compose"
 requires-python = ">=3.11"
-dependencies = ["compose-client>=2.3.7,<3", "mcp>=1.20,<2"]
+dependencies = ["compose-client>=2.3.8,<3", "mcp>=1.20,<2"]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10"]
